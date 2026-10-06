@@ -21,9 +21,10 @@ import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-tok
 import { ConnectionMagicRouter, GetCommitmentSignature } from "@magicblock-labs/ephemeral-rollups-sdk";
 import idl from "./idl/tick.json";
 import demoMarket from "./idl/demo-market.json";
+import { retryingFetch } from "../../clients/rpc";
 
 const DEVNET_URL = clusterApiUrl("devnet");
-const ER_URL = "https://devnet-us.magicblock.app/";
+const ER_URL = "https://devnet-us.magicblock.app";
 export const ER_VALIDATOR = new PublicKey("MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd");
 export const PROGRAM_ID = new PublicKey((idl as any).address ?? "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY");
 
@@ -57,7 +58,11 @@ function loadOrCreateWallet(): Keypair {
   return kp;
 }
 
-export const connection = new Connection(DEVNET_URL, "confirmed");
+export const connection = new Connection(DEVNET_URL, {
+  commitment: "confirmed",
+  disableRetryOnRateLimit: true,
+  fetch: retryingFetch,
+});
 export const router = new ConnectionMagicRouter(ER_URL, "confirmed");
 export const wallet = loadOrCreateWallet();
 const browserWallet = {

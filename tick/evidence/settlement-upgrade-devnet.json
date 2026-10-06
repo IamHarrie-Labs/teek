@@ -1,0 +1,10 @@
+{
+  "network": "devnet",
+  "program": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY",
+  "programData": "2sBr8QDtS6vmbKX5n5aaKsTk342vjxT3Pmx3o2xFxh9b",
+  "signature": "3XKZWdx8CJWRPUuN9azSxQn7NaiZB6GeZ72aBtq9bnHJ85uu89eriAgJdSxhHP327hyQtMyBDUfzTRB3mo6igBUx",
+  "sha256": "2d539968f8dce06ffeea92f9eca155ece9aac925dc872ef0b175d0548d4a7b97",
+  "bytes": 634128,
+  "slot": "507966927",
+  "verifiedByteEquality": true
+}

@@ -21,14 +21,15 @@ import {
   ConnectionMagicRouter,
   GetCommitmentSignature,
 } from "@magicblock-labs/ephemeral-rollups-sdk";
-import type { Tick } from "../target/types/tick";
+import type { Tick } from "../tick/src/idl/tick";
+import { retryingFetch } from "../clients/rpc";
 
 const idl = JSON.parse(
-  fs.readFileSync(path.join(process.cwd(), "target/idl/tick.json"), "utf8")
+  fs.readFileSync(path.join(process.cwd(), "tick/src/idl/tick.json"), "utf8")
 );
 
 const BASE_URL = "https://api.devnet.solana.com";
-const ER_URL = "https://devnet-us.magicblock.app/";
+const ER_URL = "https://devnet-us.magicblock.app";
 const ER_VALIDATOR = new PublicKey("MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd");
 const DELEGATION_PROGRAM_ID = new PublicKey("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
 const EPHEMERAL_VRF_QUEUE = new PublicKey("5hBR571xnXppuCPveTrctfTU7tJLSN94nq7kv7FRK5Tc");
@@ -39,7 +40,11 @@ describe("tick (hosted MagicBlock ER)", function () {
   this.timeout(420_000);
 
   const authority = (AnchorProvider.env().wallet as Wallet).payer;
-  const baseConnection = new Connection(BASE_URL, "confirmed");
+  const baseConnection = new Connection(BASE_URL, {
+    commitment: "confirmed",
+    disableRetryOnRateLimit: true,
+    fetch: retryingFetch,
+  });
   const baseProvider = new AnchorProvider(baseConnection, new Wallet(authority), {
     commitment: "confirmed",
   });
@@ -143,7 +148,8 @@ describe("tick (hosted MagicBlock ER)", function () {
 
     for (const candidate of markets) {
       if (!candidate.account.authority.equals(authority.publicKey)) continue;
-      if (candidate.account.batchPeriodSlots.toNumber() < 300) continue;
+      // The hosted ER runs ~10 ms/slot; 3,000 slots gives a 30 s submit window.
+      if (candidate.account.batchPeriodSlots.toNumber() < 3000) continue;
 
       const [orderBook] = PublicKey.findProgramAddressSync(
         [Buffer.from("order_book"), candidate.publicKey.toBuffer()],
@@ -191,7 +197,7 @@ describe("tick (hosted MagicBlock ER)", function () {
       );
 
       await baseProgram.methods
-        .initializeMarket(new BN(300))
+        .initializeMarket(new BN(3000))
         .accounts({
           authority: authority.publicKey,
           baseMint,
@@ -366,8 +372,8 @@ describe("tick (hosted MagicBlock ER)", function () {
       (value: any) =>
         value.currentBatchId.toNumber() >
         erMarketBeforeOrders.currentBatchId.toNumber(),
-      30,
-      3_000
+      180,
+      500
     );
 
     const buyIx = await erProgram.methods

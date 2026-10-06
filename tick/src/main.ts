@@ -105,8 +105,10 @@ app.innerHTML = `
       Everything above is a local simulation for intuition. This is the real
       thing: program <code id="onchain-program"></code> deployed on Solana
       devnet, trading against an actual on-chain market. Orders you submit
-      here really lock your balance, really seal into a real order book, and
-      really clear against MagicBlock's live VRF oracle.
+      here really lock your balance, land in a real batch order book on
+      MagicBlock's hosted ER, and really clear at one price against MagicBlock's
+      live VRF oracle. Orders in this market demo are publicly readable; private
+      bids are part of Tick Launch.
     </p>
     <div class="onchain-grid">
       <div class="onchain-col">
@@ -594,32 +596,48 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
       markLastDemoLog("done");
     }
 
-    addDemoLog("Opening a fresh ER-clock batch with ephemeral VRF…");
-    const beforeOpen = await chain.fetchErMarket();
-    setOnchainStatus("opening fresh ER batch…");
-    await chain.openErSubmitWindow();
-    await waitFor(
-      "ER VRF callback to open a fresh batch",
-      () => chain.fetchErMarket(),
-      (market) => market.currentBatchId > beforeOpen.currentBatchId,
-      30,
-      3000
-    );
-    markLastDemoLog("done");
+    // The hosted ER runs ~10 ms/slot, so a batch window is only seconds long;
+    // if a slow network lets it close mid-submission, open a fresh batch and resubmit.
+    const batchSealed = /BatchSealed|"Custom":6002|0x1772/;
+    const maxAttempts = 3;
+    for (let attempt = 1; ; attempt++) {
+      addDemoLog(
+        attempt === 1
+          ? "Opening a fresh ER-clock batch with ephemeral VRF…"
+          : `Batch closed before both orders landed; opening a new batch (attempt ${attempt} of ${maxAttempts})…`
+      );
+      const beforeOpen = await chain.fetchErMarket();
+      setOnchainStatus("opening fresh ER batch…");
+      await chain.openErSubmitWindow();
+      await waitFor(
+        "ER VRF callback to open a fresh batch",
+        () => chain.fetchErMarket(),
+        (market) => market.currentBatchId > beforeOpen.currentBatchId,
+        180,
+        500
+      );
+      markLastDemoLog("done");
 
-    addDemoLog("Submitting one buy and one sell through the hosted ER router…");
-    setOnchainStatus("submitting buy through hosted ER…");
-    await chain.submitOrderOnEr("buy", 100, 10);
-    setOnchainStatus("submitting sell through hosted ER…");
-    await chain.submitOrderOnEr("sell", 100, 10);
-    await waitFor(
-      "both ER orders",
-      () => chain.fetchErOrderBook(),
-      (book) => book.orderCount >= 2,
-      10,
-      1000
-    );
-    markLastDemoLog("done");
+      addDemoLog("Submitting one buy and one sell through the hosted ER router…");
+      try {
+        setOnchainStatus("submitting buy through hosted ER…");
+        await chain.submitOrderOnEr("buy", 100, 10);
+        setOnchainStatus("submitting sell through hosted ER…");
+        await chain.submitOrderOnEr("sell", 100, 10);
+        await waitFor(
+          "both ER orders",
+          () => chain.fetchErOrderBook(),
+          (book) => book.orderCount >= 2,
+          10,
+          1000
+        );
+        markLastDemoLog("done");
+        break;
+      } catch (err) {
+        if (attempt >= maxAttempts || !batchSealed.test(String((err as any)?.message ?? err))) throw err;
+        markLastDemoLog("done");
+      }
+    }
 
     addDemoLog("Waiting for the ER batch window to close…");
     const marketWithOrders = await chain.fetchErMarket();
@@ -669,7 +687,7 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
 
     await refreshOnchainState();
     setOnchainStatus(`live demo complete — committed ${result.commitmentSignature.slice(0, 8)}…`);
-    addDemoLog("Done: sealed ER orders cleared at one uniform price and settled back to devnet.", "done");
+    addDemoLog("Done: ER batch cleared at one uniform price and settled back to devnet.", "done");
   } catch (err: any) {
     markLastDemoLog("error");
     setOnchainStatus(`live demo failed: ${err.message ?? err}`, true);

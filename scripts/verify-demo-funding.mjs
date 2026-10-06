@@ -1,0 +1,24 @@
+// Verify the local judge faucet after funding a disposable browser wallet.
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {Connection,PublicKey} from '@solana/web3.js';
+import {getAccount} from '@solana/spl-token';
+const receipts=JSON.parse(readFileSync('target/launch-demo/funding-receipts.json','utf8'));
+const [wallet,receipt]=Object.entries(receipts).find(([,r])=>!r.pending)??[];
+assert.ok(wallet&&receipt,'Fund a browser demo wallet first');
+const mint=JSON.parse(readFileSync('tick/evidence/launch-demo-devnet.json','utf8')).launches[0].quoteMint;
+const connection=new Connection('https://api.devnet.solana.com','confirmed');
+assert.equal(await connection.getGenesisHash(),'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG');
+const owner=new PublicKey(wallet),address=new PublicKey(receipt.quoteAccount);
+const before=await getAccount(connection,address),sol=await connection.getBalance(owner);
+assert.equal(before.owner.toBase58(),wallet);assert.equal(before.mint.toBase58(),mint);
+assert.equal(before.amount,100_000_000n);assert.ok(sol>=50_000_000);
+const post=(origin,quoteMint)=>fetch('http://127.0.0.1:8790/fund',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({wallet,quoteMint})});
+const duplicate=await post('http://127.0.0.1:5173',mint);
+assert.equal(duplicate.status,200);assert.deepEqual(await duplicate.json(),receipt);
+const after=await getAccount(connection,address);
+assert.equal(after.amount,before.amount);assert.equal(await connection.getBalance(owner),sol);
+assert.equal((await post('https://untrusted.example',mint)).status,403);
+assert.equal((await post('http://127.0.0.1:5173',PublicKey.default.toBase58())).status,400);
+writeFileSync('tick/evidence/demo-funding-devnet.json',JSON.stringify({network:'devnet',wallet,quoteAccount:receipt.quoteAccount,quoteAmount:after.amount.toString(),lamports:sol,signature:receipt.signature,checks:['browser funding receipt confirmed on-chain','duplicate request did not transfer or mint again','unknown origin rejected','unsupported quote mint rejected']},null,2));
+console.log('PASS judge funding: actual balances, idempotent retry, origin and mint restrictions');

@@ -36,7 +36,24 @@ const workspaceRoot = path.resolve(__dirname, "..", "..");
 const idl = JSON.parse(fs.readFileSync(path.join(workspaceRoot, "target/idl/tick.json"), "utf8"));
 
 const DEVNET_URL = "https://api.devnet.solana.com";
-const connection = new Connection(DEVNET_URL, "confirmed");
+// Same policy as clients/rpc.ts: resend the identical body on 429/5xx (signatures stay valid).
+async function retryingFetch(input, init) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await fetch(input, init);
+      if (![429, 502, 503, 504].includes(response.status) || attempt >= 4) return response;
+      await response.body?.cancel();
+    } catch (error) {
+      if (attempt >= 4) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, Math.min(2_000 * 2 ** attempt, 8_000)));
+  }
+}
+const connection = new Connection(DEVNET_URL, {
+  commitment: "confirmed",
+  disableRetryOnRateLimit: true,
+  fetch: retryingFetch,
+});
 
 const walletPath = path.join(os.homedir(), ".config/solana/id.json");
 const authority = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(walletPath, "utf8"))));

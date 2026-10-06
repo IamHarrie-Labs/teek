@@ -2,7 +2,7 @@
 
 ## 0:00–0:20 — Hook
 
-“Continuous order books reward speed. If a sniper bot is a few milliseconds faster, it can pick off stale quotes before normal users react. Tick shows the same market with one change: orders are sealed into batches, so speed stops being the edge.”
+“Continuous order books reward speed. If a sniper bot is a few milliseconds faster, it can pick off stale quotes before normal users react. Tick shows the same market with one change: orders are grouped into batches that clear at one price, so speed stops being the edge.”
 
 Show the top split-screen simulation. Point at the CLOB side where sniper PnL rises, then the Tick side where the sniper is flat or negative.
 

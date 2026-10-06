@@ -23,7 +23,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use ephemeral_rollups_sdk::anchor::{commit, delegate, vrf, vrf_callback};
+use ephemeral_rollups_sdk::anchor::{commit, delegate, ephemeral, vrf, vrf_callback};
 use ephemeral_rollups_sdk::cpi::DelegateConfig;
 use ephemeral_rollups_sdk::ephem::commit_and_undelegate_accounts;
 use ephemeral_rollups_sdk::vrf::{
@@ -33,7 +33,14 @@ use ephemeral_rollups_sdk::vrf::{
 
 pub mod clearing;
 pub mod errors;
+pub mod launch;
+pub mod dbc_wire;
+pub mod launch_allocation;
+pub mod launch_settlement;
 pub mod state;
+
+pub use launch::*;
+pub use launch_settlement::*;
 
 use clearing::{clear_batch as run_clearing, Order, Side};
 
@@ -46,9 +53,69 @@ use state::*;
 // Anchor.toml) once `solana-keygen new` + `anchor keys sync` have run.
 declare_id!("B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY");
 
+#[ephemeral]
 #[program]
 pub mod tick {
     use super::*;
+
+    pub fn initialize_launch(ctx: Context<InitializeLaunch>, launch_id: u64, terms: LaunchTerms) -> Result<()> {
+        launch::initialize(ctx, launch_id, terms)
+    }
+
+    pub fn register_launch_bid(ctx: Context<RegisterLaunchBid>, amount: u64) -> Result<()> {
+        launch::register(ctx, amount)
+    }
+
+    pub fn fund_launch_bid(ctx: Context<FundLaunchBid>, amount: u64) -> Result<()> {
+        launch::fund(ctx, amount)
+    }
+
+    pub fn withdraw_launch_funding(ctx: Context<WithdrawLaunchBid>, amount: u64) -> Result<()> {
+        launch::withdraw(ctx, amount)
+    }
+
+    pub fn delegate_launch_bid(ctx: Context<DelegateLaunchBid>) -> Result<()> {
+        launch::delegate_bid(ctx)
+    }
+
+    pub fn activate_private_launch_bid(ctx: Context<ActivateLaunchBid>) -> Result<()> {
+        launch::activate(ctx)
+    }
+
+    pub fn edit_launch_bid(ctx: Context<EditLaunchBid>, amount: u64) -> Result<()> {
+        launch::edit(ctx, amount)
+    }
+
+    pub fn commit_launch_bid(ctx: Context<CommitLaunchBid>) -> Result<()> {
+        launch::return_bid(ctx)
+    }
+
+    pub fn close_launch<'info>(ctx: Context<'info, CloseLaunch<'info>>) -> Result<()> {
+        launch::close(ctx)
+    }
+
+    pub fn expire_launch(ctx: Context<ExpireLaunch>) -> Result<()> {
+        launch::expire(ctx)
+    }
+    pub fn cancel_launch(ctx: Context<CancelLaunch>) -> Result<()> {
+        launch::cancel(ctx)
+    }
+
+    pub fn configure_launch_settlement(ctx: Context<ConfigureLaunchSettlement>, min_tokens_at_cap: u64, metadata: LaunchMetadata) -> Result<()> {
+        launch_settlement::configure(ctx,min_tokens_at_cap,metadata)
+    }
+    pub fn request_launch_randomness<'info>(ctx: Context<'info,RequestLaunchRandomness<'info>>) -> Result<()> {
+        launch_settlement::request(ctx)
+    }
+    pub fn launch_randomness_callback(ctx: Context<LaunchRandomnessCallback>, randomness: [u8;32], commitment: [u8;32]) -> Result<()> {
+        launch_settlement::receive(ctx,randomness,commitment)
+    }
+    pub fn settle_launch<'info>(ctx: Context<'info,SettleLaunch<'info>>) -> Result<()> {
+        launch_settlement::settle(ctx)
+    }
+    pub fn claim_launch_allocation(ctx: Context<ClaimLaunchAllocation>) -> Result<()> {
+        launch_settlement::claim(ctx)
+    }
 
     pub fn initialize_market(ctx: Context<InitializeMarket>, batch_period_slots: u64) -> Result<()> {
         let market = &mut ctx.accounts.market;

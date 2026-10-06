@@ -1,0 +1,46 @@
+{
+  "network": "local",
+  "oracle": "controlled scoped oracle fixture, not production VRF",
+  "privateBids": "closed bid genesis fixtures; live privacy tested separately",
+  "programHash": "2d539968f8dce06ffeea92f9eca155ece9aac925dc872ef0b175d0548d4a7b97",
+  "dbcMainnetHash": "4c26a8a5da99f8ce932fa0300c46675b527090021fbb74214c9486bedda9f23b",
+  "metadataMainnetHash": "31f0a627dba051a938de650464e55cc5397a4be0fd496929c1f9cf02fe5e9011",
+  "launches": [
+    {
+      "launch": "EaVFNMxjxLFTLzYR7hbxARWeywBfDDFeqnFWhfmiEGaQ",
+      "pool": "92w4kfnzkUPDFZQ522eK8J7W4LTKNJGQm4m6cvEpKF9n",
+      "outcome": "settled and all allocations/refunds claimed",
+      "bidders": 2,
+      "quoteSpent": "600000",
+      "baseReceived": "1897418306355",
+      "computeUnits": 282987,
+      "signature": "2zz1r2PAaNFDz2X3VqCEPH8hM4AcNTmMrNHZusuNwPJ1cKrDtcCh3W7eYq4ThFA1RhzQrRjkDTdFF4urApehDncC",
+      "request": "25gdNZt7EdqHFnYW7sBEuQbWShUTCrENUFhgbj95AECfVkUn7CytHsDZ6eP6NWX9nMGxbVs2yAd6gJpJKsiu9AKF",
+      "callback": "4QnanomsjsSGS8YxGNnYmc75YHAx7eMMggom8hB5WAhXWP3NpNsnU84uxyHeQLN1nqPvRokuisDk2wt31zWAsG6F"
+    },
+    {
+      "launch": "7MymtuMeQwqtEQGoWLNJdpGwaeJEfmGKvrTZdZhZYqme",
+      "outcome": "swap rolled back; unauthorized cancel rejected; creator cancelled and all deposits refunded"
+    },
+    {
+      "launch": "FsA3i8y8PwxFfbZmu87RPW1KimaSWNkZvK1usftMLifG",
+      "pool": "8iiMGTwtSnW6PC44331SEhQ9wtH5ZTsW2Gt6Jrra1LdL",
+      "outcome": "settled and all allocations/refunds claimed",
+      "bidders": 24,
+      "quoteSpent": "600000",
+      "baseReceived": "1897418306355",
+      "computeUnits": 385964,
+      "signature": "4LrG9UvQHGSRf8dWnZZtJYaSWMVeJU7msAMsXXR2GuCcZcsWJeATiJxCUEp9X6ZeCEhE5hNdAQadL1Y8UCb8Q4K5",
+      "request": "4PyQQVCQqyDyJ4qpRQAWy5i5GwUa1mgfk8y5WUZS22m6ooGQ7CvX5XcXqPMoPPJu7BaANfk4gVmmtf1rCrJJCb5j",
+      "callback": "5yQCcNsA6V5zYSFvUvLenBgLXsPyHqRZ97EztCPvD38TNHqVuuVhyb46EjaKevGSqGwb1aATzi64W1u5581W8aD7"
+    }
+  ],
+  "checks": [
+    {
+      "label": "Strict rejection-code run completed",
+      "passed": true,
+      "rejectionAssertions": 45,
+      "basis": "Verified successful runner exit and matching PASS console assertions for program rejection codes; --prepared run uses already-created genesis fixtures."
+    }
+  ]
+}

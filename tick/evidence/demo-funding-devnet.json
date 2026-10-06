@@ -1,0 +1,14 @@
+{
+  "network": "devnet",
+  "wallet": "HjsUgkzbz7QCFequ5JfSh6btGFXBvne25wWZoXExgHYB",
+  "quoteAccount": "9WdAGDRP4dnPJ6AkKZL4bE3aCUKMRubj6PoREMcqKt4z",
+  "quoteAmount": "100000000",
+  "lamports": 50000000,
+  "signature": "519mep1sUzHydd55iKHBbtssrRxYPpreaonYUebtmJ5aUrTKx3zhmB7yvF9ij225YnP6Sz1CssDR3rUtqxwkgLqn",
+  "checks": [
+    "browser funding receipt confirmed on-chain",
+    "duplicate request did not transfer or mint again",
+    "unknown origin rejected",
+    "unsupported quote mint rejected"
+  ]
+}

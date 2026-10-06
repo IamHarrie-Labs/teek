@@ -31,7 +31,8 @@ import { createMint, createAccount, mintTo, TOKEN_PROGRAM_ID } from "@solana/spl
 import { assert } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-import type { Tick } from "../target/types/tick";
+import type { Tick } from "../tick/src/idl/tick";
+import { retryingFetch } from "../clients/rpc";
 
 // Loaded via fs rather than a static `import ... from "*.json"` — under
 // ts-mocha's ESM mode that needs an explicit `with { type: "json" }`
@@ -40,7 +41,7 @@ import type { Tick } from "../target/types/tick";
 // as an ES module (no `__dirname` there) — tests always run from the
 // workspace root regardless.
 const idl = JSON.parse(
-  fs.readFileSync(path.join(process.cwd(), "target/idl/tick.json"), "utf8")
+  fs.readFileSync(path.join(process.cwd(), "tick/src/idl/tick.json"), "utf8")
 );
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -85,7 +86,11 @@ const VRF_DEFAULT_QUEUE = new PublicKey("Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRU
 describe("tick (devnet + local ER)", function () {
   this.timeout(260_000);
 
-  const devnetConnection = new Connection(DEVNET_URL, "confirmed");
+  const devnetConnection = new Connection(DEVNET_URL, {
+    commitment: "confirmed",
+    disableRetryOnRateLimit: true,
+    fetch: retryingFetch,
+  });
   const authority = (anchor.AnchorProvider.env().wallet as Wallet).payer;
   const devnetProvider = new AnchorProvider(devnetConnection, new Wallet(authority), {
     commitment: "confirmed",
@@ -159,7 +164,7 @@ describe("tick (devnet + local ER)", function () {
 
     await devnetProgram.methods
       .initializeMarket(BATCH_PERIOD_SLOTS)
-      .accounts({
+      .accountsPartial({
         authority: authority.publicKey,
         baseMint,
         quoteMint,
@@ -261,13 +266,13 @@ describe("tick (devnet + local ER)", function () {
   it.skip("submits orders through the local Ephemeral Rollup and they land in the delegated order book", async () => {
     await erProgram.methods
       .submitOrder({ buy: {} }, new BN(110), new BN(10))
-      .accounts({ trader: buyer.publicKey, market, orderBook })
+      .accountsPartial({ trader: buyer.publicKey, market, orderBook })
       .signers([buyer])
       .rpc();
 
     await erProgram.methods
       .submitOrder({ sell: {} }, new BN(90), new BN(10))
-      .accounts({ trader: seller.publicKey, market, orderBook })
+      .accountsPartial({ trader: seller.publicKey, market, orderBook })
       .signers([seller])
       .rpc();
 
@@ -334,7 +339,7 @@ describe("tick (devnet + local ER)", function () {
     // trip, not about how tight the window can be.
     await devnetProgram.methods
       .initializeMarket(new BN(600))
-      .accounts({
+      .accountsPartial({
         authority: authority.publicKey,
         baseMint: vrfBaseMint,
         quoteMint: vrfQuoteMint,

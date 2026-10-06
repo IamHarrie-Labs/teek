@@ -2,6 +2,56 @@ import type { ClearResult, Fill, Order } from "./types";
 import { mulberry32, seededShuffle } from "./prng";
 
 /**
+ * Expected allocation is exactly weight * available / total, so splitting an
+ * order (one wallet or many) can't raise its expected fill. Mirrors
+ * `pro_rata_dependent_round` in clearing.rs, including RNG draw order.
+ */
+export function proRataDependentRound(
+  weights: number[],
+  available: number,
+  rng: () => number
+): number[] {
+  const total = weights.reduce((s, w) => s + BigInt(w), 0n);
+  if (total === 0n) return weights.map(() => 0);
+
+  const avail = BigInt(available);
+  const alloc: bigint[] = [];
+  const rems: bigint[] = [];
+  let floored = 0n;
+  for (const w of weights) {
+    const num = BigInt(w) * avail;
+    alloc.push(num / total);
+    rems.push(num % total);
+    floored += num / total;
+  }
+  const leftover = avail - floored;
+
+  const walk = seededShuffle(
+    weights.map((_, i) => i),
+    rng
+  );
+  if (leftover === 0n) return alloc.map(Number);
+
+  const nextU32 = () => BigInt(Math.floor(rng() * 4294967296));
+  const hi = nextU32();
+  const lo = nextU32();
+  const offset = ((hi << 32n) | lo) % total;
+  let cumulative = 0n;
+  let handedOut = 0n;
+  for (const idx of walk) {
+    cumulative += rems[idx];
+    let reached = 0n;
+    if (cumulative > offset) {
+      reached = (cumulative - offset + total - 1n) / total;
+      if (reached > leftover) reached = leftover;
+    }
+    alloc[idx] += reached - handedOut;
+    handedOut = reached;
+  }
+  return alloc.map(Number);
+}
+
+/**
  * Uniform-price call (batch) auction.
  *
  * Every order in the batch is invisible to every other order until this
@@ -76,50 +126,29 @@ export function clearBatch(orders: Order[], rngSeed: number): ClearResult {
   const rationed: ClearResult["rationed"] = [];
 
   const allocate = (side: Order[], available: number) => {
-    // Pro-rata by size, then a seeded random permutation assigns the
-    // leftover indivisible unit(s) — this is the VRF's job once this runs
-    // in the ER, so splitting one order into many can't game the rounding.
-    const totalQty = side.reduce((s, o) => s + o.qty, 0);
-    if (totalQty <= 0) return;
-
-    const raw = side.map((o) => ({
-      order: o,
-      exact: (o.qty / totalQty) * available,
-    }));
-    let base = raw.map((r) => ({
-      order: r.order,
-      qty: Math.floor(r.exact),
-      frac: r.exact - Math.floor(r.exact),
-    }));
-    let allocated = base.reduce((s, r) => s + r.qty, 0);
-    let remainder = Math.round(available - allocated);
-
-    // Rank by fractional remainder (largest-remainder method), tie-broken
-    // by the seeded shuffle so equal fractions don't always favor the same
-    // order id / submission order.
-    const ranked = seededShuffle(base, rng).sort((a, b) => b.frac - a.frac);
-    for (let i = 0; i < remainder && i < ranked.length; i++) {
-      ranked[i].qty += 1;
-    }
-
-    for (const r of base) {
-      if (r.qty > 0) {
+    const qtys = proRataDependentRound(
+      side.map((o) => o.qty),
+      available,
+      rng
+    );
+    side.forEach((order, i) => {
+      if (qtys[i] > 0) {
         fills.push({
-          orderId: r.order.id,
-          trader: r.order.trader,
-          side: r.order.side,
-          qty: r.qty,
+          orderId: order.id,
+          trader: order.trader,
+          side: order.side,
+          qty: qtys[i],
           price: clearingPrice,
         });
       }
-      if (r.qty < r.order.qty) {
+      if (qtys[i] < order.qty) {
         rationed.push({
-          orderId: r.order.id,
-          requestedQty: r.order.qty,
-          filledQty: r.qty,
+          orderId: order.id,
+          requestedQty: order.qty,
+          filledQty: qtys[i],
         });
       }
-    }
+    });
   };
 
   allocate(eligibleBuys, matchedQty);

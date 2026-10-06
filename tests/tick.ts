@@ -28,7 +28,7 @@ import {
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import { assert } from "chai";
-import type { Tick } from "../target/types/tick";
+import type { Tick } from "../tick/src/idl/tick";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -105,7 +105,7 @@ describe("tick", () => {
   it("initializes a market", async () => {
     await program.methods
       .initializeMarket(BATCH_PERIOD_SLOTS)
-      .accounts({
+      .accountsPartial({
         authority: authority.publicKey,
         baseMint,
         quoteMint,

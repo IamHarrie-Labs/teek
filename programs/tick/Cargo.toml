@@ -43,13 +43,14 @@ anchor-spl = "1.2.0"
 # attribute macros and request/response helpers used by `clear_batch` /
 # `clear_batch_callback` below, confirmed against MagicBlock's own
 # `roll-dice` example (magicblock-labs/magicblock-engine-examples).
-ephemeral-rollups-sdk = { version = "0.17", features = ["anchor", "vrf"] }
+ephemeral-rollups-sdk = { version = "0.17", features = ["anchor", "vrf", "access-control"] }
 
 # Required for zero-copy accounts (`OrderBook`/`Reveal` in state.rs) —
 # Anchor's own `#[account(zero_copy)]` docs call this out explicitly:
 # without it directly in this crate's own dependency graph, `Pod`/
 # `Zeroable` don't get implemented for our >32-element arrays.
 bytemuck = { version = "1.17", features = ["derive", "min_const_generics"] }
+solana-sha256-hasher = "=3.1.0"
 
 [profile.release]
 overflow-checks = true

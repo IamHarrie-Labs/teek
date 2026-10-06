@@ -596,7 +596,7 @@ base devnet instructions or the local TypeScript simulation.
 
 Current persistent demo market written in `tick/src/idl/demo-market.json`:
 
-- Market: `H7wiaJXt6vNqyf6MGfnhj6vbSLJTozuJzLPc4NoMxw97`
+- Market: `H7wiaJXt6vNqyf6MGfnhj6vbSLJTozuJzLPc4NoMxw97` (superseded later on 2026-09-11 by `A5TD7zDbBFuCWGQ9LheuFrphb8SuBccJh286UkYS8yo9`; which was itself replaced on 2026-10-06 by `4RKcixvD42i6kLdS3LodUbcCzV67JeKfLTqnTvHP1S3b` because accounts undelegated before the `process_undelegation` callback existed stayed owned by the delegation program; the current addresses are in `tick/src/idl/demo-market.json`)
 - Base mint: `2BC1CHzauu13rbsTEGQfjSXgZWv7KjQgtCbUW3nZU5Cg`
 - Quote mint: `FdTZ1aHZm3A1vXJfmSkFkdZYzdUZx3gwdr8CKvZDdPmy`
 - Hosted ER validator: `MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd`

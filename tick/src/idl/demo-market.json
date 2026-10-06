@@ -1,9 +1,9 @@
 {
-  "market": "A5TD7zDbBFuCWGQ9LheuFrphb8SuBccJh286UkYS8yo9",
-  "baseMint": "DMmczj8jjJhLrhTGaNeZXxvivVFz15MBws9utEe6GPZe",
-  "quoteMint": "41WxcNfSBzwxUshRMacTiGMRvTbUZ9pJz2nEZL1qb6xQ",
-  "baseVault": "6zGsaKh4GenN3uE4tjnbCUTCYyFSUq21ddRRV7ogeG6k",
-  "quoteVault": "FxYCmnejDu2voN3t85s5yGBRhWHf8y4WTUViMLAttBJ1",
-  "orderBook": "Cmndy35xFdM2LyqjyXMYBcjtyKt7nAiXZTfwoPCAPd7N",
-  "reveal": "9mvpsqAzZLFaH6ADaqhKgLPEcZDDcMZ6LwnWM9D33v9o"
+  "market": "4RKcixvD42i6kLdS3LodUbcCzV67JeKfLTqnTvHP1S3b",
+  "baseMint": "8HBnQM4dy6ZntLyxC1GaSwCaPLuvvUQGRGrnz7KRAHtd",
+  "quoteMint": "DVe1YZyFdreKgATVwWdTYtkYrbPpZ4W8RyUZF1X9MLGR",
+  "baseVault": "ddwC3n2ErNmGNsBGS6atTJXKFDo5wkhCqhpvMhNjVLM",
+  "quoteVault": "J6Dg9gbTgHEkQR2VFya3zqv9PoFpkrFFEHshUsJhZF4D",
+  "orderBook": "4XcCBcH6VSeHs4zaKENLjBsJsdrZFXWLwoAXP8ECRSdC",
+  "reveal": "FibcisbJB245Tg81XCx1BP4fwdMx1uXQNcdr32raKwW2"
 }

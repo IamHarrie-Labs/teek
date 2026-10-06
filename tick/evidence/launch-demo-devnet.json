@@ -1,0 +1,70 @@
+{
+  "network": "devnet",
+  "quoteToken": "synthetic SPL test token; not USDC",
+  "privacy": "bid amounts confidential during bidding; bids and earlier edit history public after close",
+  "oracle": "production MagicBlock scoped VRF",
+  "launches": [
+    {
+      "launch": "4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+      "name": "Tick Opening",
+      "outcome": "claimed",
+      "quoteMint": "GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj",
+      "config": "BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy",
+      "pool": "546iUE7n6YUUUQD4yygwbNtgYaKEdUEqLyX8V68jCR8C",
+      "totalBids": "789345",
+      "accepted": "600000",
+      "quoteSpent": "600000",
+      "baseReceived": "1897418306355",
+      "allocations": [
+        "800729499464",
+        "1096688806891"
+      ],
+      "refunds": [
+        "546794",
+        "353206"
+      ],
+      "privateReadDeniedDuringWindow": true,
+      "signatures": [
+        "4SWNrXFLhBsM8UjaNYBT97TepJnyX5PxmVEEx25y7WqcWCeMNV8VvL3WEWsMqqkTfKAJFEfBE3UaX8S4v2SzsFdf",
+        "4ztcbjnM1rGntfXui8D3o9cjnjYhQpQQtZmjeBp3HrzqqVEHncKozYvbbKaPXLmFDu3iaMwgUHwyVrsbktfmqCAv",
+        "3VJfejJ8hGWykJq7h1cShkeT2KQHHZHazCXvw23Yx5kphDkDNrREnpEpA3B9ELwaVUUYVNzACWBpfHtYJSMVZWNr",
+        "4o1mNtPqUFvETDCnaENH9ZWdNYao16uRoqYH2RzXDyroYbsXfsy7dy5yLEDRUGhLH6A8gr1b7ytubjdx3ogVN4jx",
+        "5J2r6yPGxR5RokssCcXNcT6Mwg1JdJP1yxsRirPWZLReheFYg1nMKYKaHmwwpZ4RFkJTpMbUuUiRq15RCQoEdXs5",
+        "4FRy5NBPKevT6UQKqJCWrZbMzganphBZL6KbLVw27xksq5jkawxv6HfKFZEqz6NjwVUqWzGV3zUJohNq6aFvRJYF",
+        "43TbZeCGHaR3V73i2TjDZnaP6QsNRAqtyCNDGMyxjsZPYqAxkfSksQApxCcgZqGUrvPhGWpo2dxsemq98Mk5wyKA",
+        "65FrAecNB5VK1vTcEZVoYh5SW9JZnLdrqekng4qouFFDz6QJ57BkrNiSwnPFxxzGCNd5juQgfqXGNctX5yiUm14n",
+        "5donPhsRwH7izvfJZG3szaBTLf2T6aYRNsy9E7sZjqyqwRBrbTgmtr9B5B3zMLuxBk82DYCL13of2AgsBzVckLfL"
+      ]
+    },
+    {
+      "launch": "B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+      "name": "Tick Refund",
+      "outcome": "refunded",
+      "quoteMint": "GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj",
+      "config": "BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy",
+      "pool": null,
+      "totalBids": "789345",
+      "accepted": "0",
+      "quoteSpent": "0",
+      "baseReceived": "0",
+      "allocations": [
+        "0",
+        "0"
+      ],
+      "refunds": [
+        "800000",
+        "700000"
+      ],
+      "privateReadDeniedDuringWindow": true,
+      "signatures": [
+        "2C2k5YWN2JoCWxmRC6hfS2v4T5aa67FaQVyt1jpsq6X1zXDvsyEETRUxE7ktZm8Wx7BwsEGybhLA2uvRHBj4yBks",
+        "4XgThcGDtytUb6dv4QNsUdK45eN2fgCSnFq9jsBgNtnEHNop2TsmA2ckgK6aXc6JTPvPkNTDJQVPMJzCYtdVDz3x",
+        "5nqxMNbxDfKEgUMyHAUfB9Z99akidKbeYovaERjux4z2a7odiwkiMMo3QDaJPdBUzxosygJEXaSmiGEZxKzsqsb5",
+        "4baEsM5PfvrifRTZJjKZHeTD6Qg3PTF9cVKBJpywQ4pSE2fKjwHG6UH3yr8shD6SdehKYqnMdKmdyFhD1DZCAqmz",
+        "5QkDm1taXJCVZH1khbodSLca4cCkvECjVKtxhz2skmUE4nj6bgSjTYdvbW4rqCDQSe7kWkYkgVpavFcj6J9juZY7",
+        "4rXSuuBGYs7gbLYxPyEdNRunZZSZ1W47cY16SyVUdw4wtDakY79us7rT2eNhzXx6Ffy1zWCZ2Auoe8qWnKGR9r9x",
+        "5iJ5WFNQD2SSSB9C3Po8fCpwk8YDTjtGSX96yjw5keJ5eDwF5qnZpZ1nYagVbne4vpEJVK4JmuYcdphRhARqKNgr"
+      ]
+    }
+  ]
+}

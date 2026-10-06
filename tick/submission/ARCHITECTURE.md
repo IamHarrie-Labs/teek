@@ -30,4 +30,4 @@ flowchart LR
 
 ## Why MagicBlock is required
 
-A normal Solana L1 demo can settle a batch, but it cannot make high-frequency sealed order submission feel live. Tick needs delegated real-time state, cheap repeated writes, asynchronous VRF callbacks, and fast commit/undelegate semantics. Those are the core MagicBlock primitives, not decorative integrations.
+A normal Solana L1 demo can settle a batch, but it cannot make high-frequency batched order submission feel live. Tick needs delegated real-time state, cheap repeated writes, asynchronous VRF callbacks, and fast commit/undelegate semantics. Those are the core MagicBlock primitives, not decorative integrations.

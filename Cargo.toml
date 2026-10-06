@@ -4,5 +4,6 @@ members = ["programs/*"]
 
 [profile.release]
 overflow-checks = true
+opt-level = "z"
 lto = "fat"
 codegen-units = 1

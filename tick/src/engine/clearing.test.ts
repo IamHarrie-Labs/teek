@@ -78,7 +78,75 @@ describe("clearBatch", () => {
     expect(total).toBe(10);
   });
 
-  it("cannot be gamed by splitting one large order into many small ones", () => {
+  const meanBuyFill = (orders: Order[], traders: string[], runs: number) => {
+    let sum = 0;
+    for (let seed = 0; seed < runs; seed++) {
+      sum += clearBatch(orders, seed)
+        .fills.filter((f) => f.side === "buy" && traders.includes(f.trader))
+        .reduce((s, f) => s + f.qty, 0);
+    }
+    return sum / runs;
+  };
+
+  it("does not raise expected fill when an order is split against a rival", () => {
+    // Largest-remainder rounding failed this case: whole, Alice expected 1; split 1+1, 4/3.
+    const supply = o("s", "sell", 100, 2);
+    const whole = [{ ...o("a", "buy", 100, 2), trader: "alice" }, o("bob", "buy", 100, 1), supply];
+    const split = [
+      { ...o("a1", "buy", 100, 1), trader: "alice" },
+      { ...o("a2", "buy", 100, 1), trader: "alice" },
+      o("bob", "buy", 100, 1),
+      supply,
+    ];
+    const exact = (2 * 2) / 3;
+    expect(Math.abs(meanBuyFill(whole, ["alice"], 20_000) - exact)).toBeLessThan(0.02);
+    expect(Math.abs(meanBuyFill(split, ["alice"], 20_000) - exact)).toBeLessThan(0.02);
+  });
+
+  it("does not raise expected fill when an order is split across wallets", () => {
+    const supply = o("s", "sell", 100, 7);
+    const rivals = [o("r1", "buy", 100, 5), o("r2", "buy", 100, 4)];
+    const whole = [o("w", "buy", 100, 6), supply, ...rivals];
+    const sybil = [o("x1", "buy", 100, 1), o("x2", "buy", 100, 2), o("x3", "buy", 100, 3), supply, ...rivals];
+    const exact = (6 * 7) / 15;
+    expect(Math.abs(meanBuyFill(whole, ["w"], 20_000) - exact)).toBeLessThan(0.03);
+    expect(Math.abs(meanBuyFill(sybil, ["x1", "x2", "x3"], 20_000) - exact)).toBeLessThan(0.03);
+  });
+
+  it("keeps token-scale fills within one unit of the exact share", () => {
+    // A case where the old floating-point shares mis-floored an order.
+    const qtys = [784037692694984, 1850254371174829, 1878154867246378, 434775631019738, 1684946552318898];
+    const available = 5410710769053579;
+    const total = qtys.reduce((s, q) => s + BigInt(q), 0n);
+    const orders = [...qtys.map((q, i) => o(`b${i}`, "buy", 100, q)), o("s", "sell", 100, available)];
+    for (let seed = 0; seed < 50; seed++) {
+      const r = clearBatch(orders, seed);
+      const buys = r.fills.filter((f) => f.side === "buy");
+      expect(buys.reduce((s, f) => s + BigInt(f.qty), 0n)).toBe(BigInt(available));
+      qtys.forEach((q, i) => {
+        const floor = (BigInt(q) * BigInt(available)) / total;
+        const got = BigInt(buys.find((f) => f.orderId === `b${i}`)?.qty ?? 0);
+        expect(got === floor || got === floor + 1n).toBe(true);
+      });
+    }
+  });
+
+  it("matches the Rust engine for the same seed", () => {
+    // Same vector and expected fills as clearing.rs.
+    const qtys = [7, 3, 5, 11, 2, 9];
+    const orders = [...qtys.map((q, i) => o(`b${i}`, "buy", 100, q)), o("s", "sell", 100, 13)];
+    const cases: [number, number[]][] = [
+      [4242, [2, 1, 2, 4, 1, 3]],
+      [7, [2, 1, 1, 4, 1, 4]],
+      [123456, [3, 1, 2, 3, 1, 3]],
+    ];
+    for (const [seed, expected] of cases) {
+      const r = clearBatch(orders, seed);
+      expect(qtys.map((_, i) => r.fills.find((f) => f.orderId === `b${i}`)?.qty ?? 0)).toEqual(expected);
+    }
+  });
+
+  it("changes nothing when there is no rival to take units from", () => {
     // Same total demand (30), split into 1 order vs 10 small ones, same seed.
     const supply = [o("s1", "sell", 100, 10)];
     const whole = [o("big", "buy", 100, 30), ...supply];

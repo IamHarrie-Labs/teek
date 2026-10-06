@@ -1,0 +1,226 @@
+{
+  "network": "Solana devnet",
+  "program": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY",
+  "privateValidator": "MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo",
+  "upgradeSignature": "57oroWo7XGE9pzmWRvpu6K5ESC95XR7Jvjj1s71sAVXue2GPe9vvHvdXpf3ToZUD3MXsh8jx4982MucAJbg1m7kq",
+  "binaryBytes": 638680,
+  "binarySha256": "cd7fbcd9e595f652d72f0ca41bce5e986568130c614b392ee3f81f2272dd16f9",
+  "deployedBytesMatched": true,
+  "hostedChecksPassed": 5,
+  "evidenceRegressionTestsPassed": 7,
+  "syntheticTestTokens": true,
+  "launch": {
+    "launch": "Gfd9X4W2m3uG436eg5bghQj3GEkFp4HLAV6KYuKCVNXR",
+    "quoteMint": "3XRtduHCGsGXn6DTahjrkEcdEpQK6Q8vDxY5YpWVnKcc",
+    "alice": "4NbWtSRZnfyvMTJMBDP7ERkvL9pHiE4CvrvFXk1FwJsZ",
+    "bob": "6HPhoqSNWehnXaWdDQJY8JJi6MepXzi9bBgwrZkhw7ej",
+    "sourceA": "DzbnfiVcmtS3wWbdas2WHYarGsTWvXq3KaeYi9mgYHxM",
+    "sourceB": "AEauHZWxMnZym4zEbuaT3Swisvf5nVTcG7ETeTZvr1FQ",
+    "opens": 1791238395,
+    "closeAt": 1791238455,
+    "settlementDeadline": 1791238575
+  },
+  "proof": {
+    "observations": [
+      {
+        "label": "Alice account read by 6HPhoqSNWehnXaWdDQJY8JJi6MepXzi9bBgwrZkhw7ej",
+        "observedAt": "2026-10-05T22:13:25.388Z",
+        "value": {
+          "jsonrpc": "2.0",
+          "id": 1,
+          "result": {
+            "context": {
+              "slot": 448452929
+            },
+            "value": null
+          }
+        }
+      },
+      {
+        "label": "Alice account read by BtiHqodafgFR34jUhTMRgdgRnEcGvYjHARYPFq5GzeG2",
+        "observedAt": "2026-10-05T22:13:25.797Z",
+        "value": {
+          "jsonrpc": "2.0",
+          "id": 1,
+          "result": {
+            "context": {
+              "slot": 448452969
+            },
+            "value": null
+          }
+        }
+      },
+      {
+        "label": "Owner-visible edit instruction verified",
+        "observedAt": "2026-10-05T22:13:26.527Z",
+        "value": {
+          "signature": "3KRqJZwBC6ViSp7sogsgM5BPRKLfcs5oQWn4ztg61pVBmYF66Y9StUiGbPLo8tBihVDzBG8dpZztAGz9W698kY8v",
+          "encodedInstructionMatched": true
+        }
+      },
+      {
+        "label": "Bob's own edit instruction verified",
+        "observedAt": "2026-10-05T22:13:26.531Z",
+        "value": {
+          "signature": "VcmnAcCZhERg9XbjoAisD9W7yARr3y8qFeZ5WYktefjGR5iWS3MxRNFjeeSMCPEVJgFQCTqmDoZRpMSNgwPwvMz",
+          "encodedInstructionMatched": true
+        }
+      },
+      {
+        "label": "Private clock at transaction privacy check",
+        "observedAt": "2026-10-05T22:13:26.925Z",
+        "value": 1791238406
+      },
+      {
+        "label": "Alice edit transaction read by Bob",
+        "observedAt": "2026-10-05T22:13:27.642Z",
+        "value": {
+          "jsonrpc": "2.0",
+          "id": 1,
+          "result": {
+            "slot": 448452058,
+            "transaction": {
+              "signatures": [
+                "3KRqJZwBC6ViSp7sogsgM5BPRKLfcs5oQWn4ztg61pVBmYF66Y9StUiGbPLo8tBihVDzBG8dpZztAGz9W698kY8v"
+              ],
+              "message": {
+                "header": {
+                  "numRequiredSignatures": 0,
+                  "numReadonlySignedAccounts": 0,
+                  "numReadonlyUnsignedAccounts": 0
+                },
+                "accountKeys": [],
+                "recentBlockhash": "11111111111111111111111111111111",
+                "instructions": []
+              }
+            },
+            "meta": {
+              "err": null,
+              "status": {
+                "Ok": null
+              },
+              "fee": 0,
+              "preBalances": [],
+              "postBalances": [],
+              "innerInstructions": [],
+              "logMessages": [],
+              "preTokenBalances": [],
+              "postTokenBalances": [],
+              "rewards": [],
+              "loadedAddresses": {
+                "writable": [],
+                "readonly": []
+              },
+              "returnData": null,
+              "computeUnitsConsumed": 0,
+              "costUnits": 0
+            },
+            "blockTime": 1791238396,
+            "transactionIndex": 0
+          }
+        }
+      },
+      {
+        "label": "Alice edit transaction read by creator",
+        "observedAt": "2026-10-05T22:13:27.645Z",
+        "value": {
+          "jsonrpc": "2.0",
+          "id": 1,
+          "result": {
+            "slot": 448452058,
+            "transaction": {
+              "signatures": [
+                "3KRqJZwBC6ViSp7sogsgM5BPRKLfcs5oQWn4ztg61pVBmYF66Y9StUiGbPLo8tBihVDzBG8dpZztAGz9W698kY8v"
+              ],
+              "message": {
+                "header": {
+                  "numRequiredSignatures": 0,
+                  "numReadonlySignedAccounts": 0,
+                  "numReadonlyUnsignedAccounts": 0
+                },
+                "accountKeys": [],
+                "recentBlockhash": "11111111111111111111111111111111",
+                "instructions": []
+              }
+            },
+            "meta": {
+              "err": null,
+              "status": {
+                "Ok": null
+              },
+              "fee": 0,
+              "preBalances": [],
+              "postBalances": [],
+              "innerInstructions": [],
+              "logMessages": [],
+              "preTokenBalances": [],
+              "postTokenBalances": [],
+              "rewards": [],
+              "loadedAddresses": {
+                "writable": [],
+                "readonly": []
+              },
+              "returnData": null,
+              "computeUnitsConsumed": 0,
+              "costUnits": 0
+            },
+            "blockTime": 1791238396,
+            "transactionIndex": 0
+          }
+        }
+      },
+      {
+        "label": "L1 return verified",
+        "observedAt": "2026-10-05T22:14:27.844Z",
+        "value": {
+          "totalBid": "789345",
+          "acceptedTotal": "600000",
+          "aliceFunded": "800000",
+          "bobFunded": "700000",
+          "bothClosed": true,
+          "privacyClosed": true
+        }
+      },
+      {
+        "label": "Expiry refunds verified",
+        "observedAt": "2026-10-05T22:16:23.378Z",
+        "value": {
+          "aliceBalance": "1000000",
+          "bobBalance": "1000000",
+          "vaultBalance": "0"
+        }
+      }
+    ],
+    "launch": "Gfd9X4W2m3uG436eg5bghQj3GEkFp4HLAV6KYuKCVNXR",
+    "opens": 1791238395,
+    "closeAt": 1791238455
+  },
+  "historyDisclosure": {
+    "launch": "k1Fu8vQ8VF3u9VWycwSjyw137rZ46ziJJHcsJELQUby",
+    "observedPhase": "after permission closure",
+    "earlierEdits": [
+      {
+        "signature": "5YHJj5aGXRqB5MM2SQpvEQuciyUcrRti4d5hZ9r4HRHFAzbWnSuCQ2ziQ5JMqAbnrjX5esPzzNmnhrnmaVRNjF3x",
+        "instruction": "editLaunchBid",
+        "amount": "333111",
+        "visibleToBob": true,
+        "visibleToCreator": true
+      },
+      {
+        "signature": "3CjgVbhXRwgRBvrGqngArTKvcmrfMi1nbz3WUYimspyyLFaKxsES3ie63FPvik3wqnEc5oXK6vKUrTk7bat1xv9B",
+        "instruction": "editLaunchBid",
+        "amount": "321123",
+        "visibleToBob": true,
+        "visibleToCreator": true
+      }
+    ]
+  },
+  "limits": [
+    "24 bid records; no Sybil resistance",
+    "Funding and timing public",
+    "Closing permissions reveals earlier edit history",
+    "Broad enumeration, subscriptions and TEE attestation not tested",
+    "ER outages can delay recovery; third-party private ingress recovery not proven",
+    "DBC settlement and token claims not implemented"
+  ]
+}
