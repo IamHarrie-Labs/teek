@@ -1,0 +1,25 @@
+.anchor
+.DS_Store
+target
+node_modules
+dist
+build
+test-ledger
+.yarn
+tick/node_modules
+tick/dist
+
+# Local validator / ephemeral-rollup state (contains a validator keypair)
+magicblock-test-storage/
+
+# Never commit keypairs, wallets, or env files
+*-keypair.json
+**/id.json
+.env
+.env.*
+*.pem
+
+# Agent tooling state and logs
+.claude/
+.superstack/
+*.log

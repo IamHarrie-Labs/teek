@@ -1,0 +1,2411 @@
+{
+  "address": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY",
+  "metadata": {
+    "name": "tick",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Tick — a sealed, uniform-price batch auction on MagicBlock Ephemeral Rollups"
+  },
+  "instructions": [
+    {
+      "name": "clear_batch",
+      "docs": [
+        "Seals the current batch and requests real randomness from the",
+        "MagicBlock VRF oracle for the marginal-allocation tie-break. This",
+        "does NOT clear the batch itself — VRF is asynchronous by nature",
+        "(an oracle has to actually respond), so the real clearing happens",
+        "in `clear_batch_callback` once that randomness arrives. Meant to",
+        "be called by MagicBlock's Automation on a fixed cadence — this is",
+        "the \"metronome tick.\""
+      ],
+      "discriminator": [
+        194,
+        215,
+        191,
+        209,
+        220,
+        20,
+        81,
+        102
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Anyone can crank this once the window has elapsed — in production",
+            "this is called by MagicBlock Automation on a fixed cadence, not by",
+            "a privileged party, which is part of why speed within a batch can't",
+            "be bought: there's no gatekeeper to bribe or race either."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  100,
+                  101,
+                  114,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reveal",
+          "docs": [
+            "Only read here for its address (passed to the VRF callback via",
+            "`accounts_metas`) — `clear_batch_callback` is what actually writes",
+            "to it, once real randomness has arrived."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle_queue",
+          "writable": true
+        },
+        {
+          "name": "program_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vrf_program",
+          "address": "Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "clear_batch_callback",
+      "docs": [
+        "Invoked by the VRF oracle (never called directly by a client) once",
+        "real randomness for the request above is ready. Runs the actual",
+        "uniform-price auction over every order submitted this window,",
+        "writes the clearing price and every fill to `Reveal`, and opens",
+        "the next batch."
+      ],
+      "discriminator": [
+        228,
+        162,
+        115,
+        171,
+        229,
+        28,
+        112,
+        248
+      ],
+      "accounts": [
+        {
+          "name": "vrf_program_identity",
+          "docs": [
+            "Scoped VRF identity PDA, bound to this program. Its presence as a signer proves",
+            "the callback was issued by the VRF program for this program."
+          ],
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  100,
+                  101,
+                  114,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "randomness",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "commit_and_undelegate",
+      "docs": [
+        "Commits the market's settled state back to L1 and undelegates",
+        "`market`, `order_book`, and `reveal` from the ER — the point where",
+        "a batch's results become durable on mainnet rather than only",
+        "existing inside the rollup. In production this is a periodic",
+        "checkpoint (every N batches) driven by MagicBlock Automation, not",
+        "something that has to happen every single batch."
+      ],
+      "discriminator": [
+        9,
+        108,
+        132,
+        87,
+        184,
+        76,
+        98,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "order_book",
+          "writable": true
+        },
+        {
+          "name": "reveal",
+          "writable": true
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "delegate_accounts",
+      "docs": [
+        "Delegates the market's live-trading accounts — `market`,",
+        "`order_book`, and `reveal` — into MagicBlock's Ephemeral Rollup so",
+        "`submit_order`/`clear_batch` can run at ER speed there instead of",
+        "L1 block time, and (once Private ER is selected as the validator)",
+        "so the order book is invisible to the sequencer operator while a",
+        "batch is open. All three must be delegated together: any account",
+        "an ER instruction writes to has to already be owned by the",
+        "delegation program, and both `submit_order` and `clear_batch`",
+        "write to all three.",
+        "",
+        "`validator` pins the delegation to a specific ER validator (pass",
+        "`None` to let the network assign one). For local testing against",
+        "`@magicblock-labs/ephemeral-validator`, pass that validator's own",
+        "identity — otherwise delegation defaults to MagicBlock's hosted",
+        "validator, which a local ER instance never sees.",
+        "",
+        "`base_mint`/`quote_mint` are passed in rather than read off",
+        "`ctx.accounts.market` because `market` here is an `UncheckedAccount`,",
+        "not the typed `Account<Market>` — deliberately: Anchor",
+        "auto-reserializes a `mut` typed `Account<T>` back into its buffer",
+        "when the instruction returns, but by then `delegate_market` below",
+        "has already handed `market`'s ownership to the delegation program,",
+        "so that auto-write fails with \"modified data of an account it does",
+        "not own.\" `UncheckedAccount` skips that reserialize entirely — the",
+        "same reason the SDK's own generated buffer/record/metadata fields",
+        "use it. Confirmed by hitting exactly that error against real devnet."
+      ],
+      "discriminator": [
+        105,
+        251,
+        107,
+        209,
+        129,
+        29,
+        162,
+        157
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "buffer_market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                7,
+                141,
+                182,
+                107,
+                173,
+                54,
+                171,
+                54,
+                143,
+                248,
+                93,
+                176,
+                109,
+                110,
+                200,
+                44,
+                148,
+                90,
+                246,
+                162,
+                93,
+                169,
+                192,
+                196,
+                77,
+                68,
+                87,
+                52,
+                46,
+                114,
+                165
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "market",
+          "docs": [
+            "`quote_mint` by the seeds below. `UncheckedAccount` rather than",
+            "`Account<Market>` on purpose — Anchor auto-reserializes a `mut`",
+            "typed account when the instruction returns, which fails once",
+            "`delegate_market` (below) has already handed this account's",
+            "ownership to the delegation program mid-instruction. Confirmed by",
+            "hitting exactly that error (\"modified data of an account it does",
+            "not own\") against real devnet."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "base_mint"
+              },
+              {
+                "kind": "arg",
+                "path": "quote_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buffer_order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "order_book"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                7,
+                141,
+                182,
+                107,
+                173,
+                54,
+                171,
+                54,
+                143,
+                248,
+                93,
+                176,
+                109,
+                110,
+                200,
+                44,
+                148,
+                90,
+                246,
+                162,
+                93,
+                169,
+                192,
+                196,
+                77,
+                68,
+                87,
+                52,
+                46,
+                114,
+                165
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "order_book"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "order_book"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "order_book",
+          "docs": [
+            "three delegate CPIs (market, order_book, reveal) succeed, and the",
+            "failure happens only once the instruction itself returns, i.e.",
+            "exactly Anchor's auto-exit-write for whichever `mut` typed",
+            "accounts remained. Both had to move to `UncheckedAccount`, not",
+            "just `market`."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  100,
+                  101,
+                  114,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buffer_reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reveal"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                7,
+                141,
+                182,
+                107,
+                173,
+                54,
+                171,
+                54,
+                143,
+                248,
+                93,
+                176,
+                109,
+                110,
+                200,
+                44,
+                148,
+                90,
+                246,
+                162,
+                93,
+                169,
+                192,
+                196,
+                77,
+                68,
+                87,
+                52,
+                46,
+                114,
+                165
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reveal"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reveal"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_program",
+          "address": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "base_mint",
+          "type": "pubkey"
+        },
+        {
+          "name": "quote_mint",
+          "type": "pubkey"
+        },
+        {
+          "name": "validator",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delegate_trader_account",
+      "docs": [
+        "Delegates one trader's balance sheet after deposits have been made on",
+        "the base layer. `submit_order` writes both the shared order book and",
+        "this per-trader account, so both must live on the same ER validator."
+      ],
+      "discriminator": [
+        121,
+        60,
+        40,
+        178,
+        53,
+        10,
+        72,
+        138
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "buffer_trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader_account"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                7,
+                141,
+                182,
+                107,
+                173,
+                54,
+                171,
+                54,
+                143,
+                248,
+                93,
+                176,
+                109,
+                110,
+                200,
+                44,
+                148,
+                90,
+                246,
+                162,
+                93,
+                169,
+                192,
+                196,
+                77,
+                68,
+                87,
+                52,
+                46,
+                114,
+                165
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader_account"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "trader_account"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "trader_account",
+          "docs": [
+            "UncheckedAccount avoids Anchor trying to serialize after the",
+            "delegation CPI has transferred ownership away from this program."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_program",
+          "address": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "market",
+          "type": "pubkey"
+        },
+        {
+          "name": "validator",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "deposit_base",
+      "docs": [
+        "Moves `amount` of the base token from the trader's own token",
+        "account into the market's custody vault, crediting their",
+        "`TraderAccount` balance by the same amount so it becomes",
+        "available to back sell orders."
+      ],
+      "discriminator": [
+        213,
+        125,
+        25,
+        122,
+        8,
+        72,
+        100,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_token_account",
+          "writable": true
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit_quote",
+      "docs": [
+        "Same as `deposit_base`, for the quote token — this is what backs",
+        "buy orders."
+      ],
+      "discriminator": [
+        117,
+        189,
+        114,
+        160,
+        243,
+        50,
+        163,
+        104
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "quote_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  113,
+                  117,
+                  111,
+                  116,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_token_account",
+          "writable": true
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_trader_account",
+      "docs": [
+        "Opens a trader's balance sheet for a market — one PDA per",
+        "(market, owner), holding the base/quote balances `submit_order`",
+        "locks against and `clear_batch_callback` settles into. Required",
+        "once, before a trader's first deposit or order."
+      ],
+      "discriminator": [
+        178,
+        127,
+        32,
+        137,
+        75,
+        144,
+        78,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_market",
+      "discriminator": [
+        35,
+        35,
+        189,
+        193,
+        155,
+        48,
+        170,
+        203
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "base_mint"
+        },
+        {
+          "name": "quote_mint"
+        },
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "base_mint"
+              },
+              {
+                "kind": "account",
+                "path": "quote_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "quote_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  113,
+                  117,
+                  111,
+                  116,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  100,
+                  101,
+                  114,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reveal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "batch_period_slots",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "submit_order",
+      "docs": [
+        "Runs inside the ER. Appends a sealed order to the current batch.",
+        "Nothing about this order — side, price, size, or trader — is",
+        "visible to anyone until `clear_batch` reveals the batch's single",
+        "uniform price. That is the whole mechanism: arriving first, or",
+        "knowing more than the next trader, buys you nothing here."
+      ],
+      "discriminator": [
+        230,
+        150,
+        200,
+        53,
+        92,
+        208,
+        109,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "order_book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  100,
+                  101,
+                  114,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "side",
+          "type": {
+            "defined": {
+              "name": "Side"
+            }
+          }
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "qty",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_base",
+      "docs": [
+        "Withdraws `amount` of the base token back to the trader — only",
+        "ever from the *unlocked* balance, so funds backing an open order",
+        "can't be pulled out from under it."
+      ],
+      "discriminator": [
+        161,
+        122,
+        255,
+        170,
+        42,
+        39,
+        23,
+        120
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_token_account",
+          "writable": true
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_quote",
+      "docs": [
+        "Same as `withdraw_base`, for the quote token."
+      ],
+      "discriminator": [
+        209,
+        209,
+        177,
+        248,
+        7,
+        105,
+        157,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.base_mint",
+                "account": "Market"
+              },
+              {
+                "kind": "account",
+                "path": "market.quote_mint",
+                "account": "Market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "quote_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  113,
+                  117,
+                  111,
+                  116,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trader_token_account",
+          "writable": true
+        },
+        {
+          "name": "trader_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  97,
+                  100,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "trader"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Market",
+      "discriminator": [
+        219,
+        190,
+        213,
+        55,
+        0,
+        227,
+        198,
+        154
+      ]
+    },
+    {
+      "name": "OrderBook",
+      "discriminator": [
+        55,
+        230,
+        125,
+        218,
+        149,
+        39,
+        65,
+        248
+      ]
+    },
+    {
+      "name": "Reveal",
+      "discriminator": [
+        251,
+        170,
+        147,
+        35,
+        234,
+        108,
+        14,
+        149
+      ]
+    },
+    {
+      "name": "TraderAccount",
+      "discriminator": [
+        111,
+        222,
+        42,
+        107,
+        177,
+        76,
+        38,
+        149
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "OrderBookFull",
+      "msg": "The order book for this batch is full"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidOrderParams",
+      "msg": "Order price or quantity must be greater than zero"
+    },
+    {
+      "code": 6002,
+      "name": "BatchSealed",
+      "msg": "The current batch's submission window has already closed"
+    },
+    {
+      "code": 6003,
+      "name": "BatchStillOpen",
+      "msg": "The current batch's submission window is still open — too early to clear"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientBalance",
+      "msg": "Insufficient balance to cover this order"
+    },
+    {
+      "code": 6005,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "Market",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_mint",
+            "docs": [
+              "The base and quote mints this market trades."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "quote_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "batch_period_slots",
+            "docs": [
+              "How many sub-ticks (roughly, how many ER slots) a batch stays open",
+              "before it seals and clears. Tuned for legibility during the demo;",
+              "production would push this toward the ER's real floor."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "batch_open_slot",
+            "docs": [
+              "The slot the *current* batch's submission window opened at."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "current_batch_id",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seeds for the market's PDA and its two custody vaults."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "base_vault_bump",
+            "type": "u8"
+          },
+          {
+            "name": "quote_vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OnchainFill",
+      "docs": [
+        "A single settled fill as stored on-chain — same plain-old-data",
+        "constraint as `OnchainOrder`, for the same reason."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "qty",
+            "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OnchainOrder",
+      "docs": [
+        "A single sealed order as stored on-chain. Deliberately a plain,",
+        "fixed-layout (`bytemuck::Pod`-compatible) struct — `side` is a raw `u8`",
+        "(0 = buy, 1 = sell) rather than the ergonomic `clearing::Side` enum,",
+        "because zero-copy accounts require every field to be plain old data.",
+        "Converted to/from `clearing::Order` right at the boundary where",
+        "`clear_batch` runs the actual auction — see `lib.rs`."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "qty",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrderBook",
+      "docs": [
+        "The sealed order book for the market's current batch. While this",
+        "account is delegated into a Private ER, its contents are invisible to",
+        "everyone — including the sequencer operator — until the batch seals and",
+        "`clear_batch` runs. That invisibility is what a continuous book cannot",
+        "give you: on a normal book, resting orders are public the instant",
+        "they're submitted.",
+        "",
+        "This is `zero_copy` (accessed via `AccountLoader`, not `Account`) on",
+        "purpose: at `MAX_ORDERS_PER_BATCH` = 128, the plain struct is well over",
+        "8KB, and Anchor's normal `Account<T>` deserializes the *entire struct",
+        "onto the stack* — SBF caps a single function's stack frame at 4096",
+        "bytes, so that blew up immediately (`cargo build-sbf` reported 30KB+",
+        "frames on `initialize_market`/`clear_batch`). Zero-copy accounts hold a",
+        "reference straight into the account's own byte buffer instead of ever",
+        "materializing the whole struct as a stack value — the standard fix for",
+        "any account this shape (an order book is exactly the case zero-copy",
+        "exists for)."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "batch_id",
+            "type": "u64"
+          },
+          {
+            "name": "order_count",
+            "type": "u16"
+          },
+          {
+            "name": "awaiting_vrf",
+            "docs": [
+              "Set while a `clear_batch` VRF request is in flight, so",
+              "`submit_order` can reject new orders until the callback actually",
+              "clears the batch — otherwise an order could sneak in between the",
+              "randomness request and its fulfillment, defeating the seal."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "orders",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "OnchainOrder"
+                  }
+                },
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reveal",
+      "docs": [
+        "The public result of the most recently cleared batch — this is the only",
+        "thing anyone ever sees about a batch's orders: one price, and the fills",
+        "against it. Nothing about who bid what, or when, is ever exposed.",
+        "Zero-copy for the same reason as `OrderBook`."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "batch_id",
+            "type": "u64"
+          },
+          {
+            "name": "clearing_price",
+            "type": "u64"
+          },
+          {
+            "name": "matched_qty",
+            "type": "u64"
+          },
+          {
+            "name": "fill_count",
+            "type": "u16"
+          },
+          {
+            "name": "had_trade",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          },
+          {
+            "name": "fills",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "OnchainFill"
+                  }
+                },
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Side",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Buy"
+          },
+          {
+            "name": "Sell"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TraderAccount",
+      "docs": [
+        "Per-trader balances held in custody by the market — deposited on L1,",
+        "spent/earned inside the ER as batches clear, withdrawable on L1 after",
+        "commit + undelegate. Keeping this as its own small PDA (rather than",
+        "real token transfers per fill) is what makes clearing hundreds of",
+        "sealed orders per batch cheap: settlement is a balance write, not a",
+        "token transfer, until the trader actually withdraws. Small and",
+        "fixed-shape enough that a regular (non-zero-copy) account is fine."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_balance",
+            "type": "u64"
+          },
+          {
+            "name": "quote_balance",
+            "type": "u64"
+          },
+          {
+            "name": "base_locked",
+            "type": "u64"
+          },
+          {
+            "name": "quote_locked",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
