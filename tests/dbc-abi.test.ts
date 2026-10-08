@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 
 describe('Pinned official Meteora DBC ABI', () => {
   const idl = DynamicBondingCurveIdl;
-  const source = readFileSync('programs/tick/src/dbc_wire.rs', 'utf8');
+  const source = readFileSync('programs/teek/src/dbc_wire.rs', 'utf8');
   it('matches the production CPI discriminators and account ordering', () => {
     for (const [name,constant,accounts] of [
       ['initialize_virtual_pool_with_spl_token','INIT','config pool_authority creator base_mint quote_mint pool base_vault quote_vault mint_metadata metadata_program payer token_quote_program token_program system_program event_authority program'],

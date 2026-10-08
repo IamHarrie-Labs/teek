@@ -6,8 +6,8 @@ dist
 build
 test-ledger
 .yarn
-tick/node_modules
-tick/dist
+teek/node_modules
+teek/dist
 
 # Local validator / ephemeral-rollup state (contains a validator keypair)
 magicblock-test-storage/

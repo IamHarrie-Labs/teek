@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-tick = "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY"
+teek = "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY"
 
 [provider]
 cluster = "localnet"

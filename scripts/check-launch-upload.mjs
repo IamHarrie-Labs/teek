@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { Connection, PublicKey } from "@solana/web3.js";
 const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-const binary = readFileSync("target/deploy/tick.so");
+const binary = readFileSync("target/deploy/teek.so");
 const info = await connection.getAccountInfo(new PublicKey("E7zBofUZLRpUqfeUdEDHFTCkP5L9tcjBjC2MeN1QoBWX"));
 if (info) {
   let different = 0;

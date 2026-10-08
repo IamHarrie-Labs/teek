@@ -9,7 +9,7 @@ if (!process.env.ANCHOR_WALLET) throw new Error("Set the devnet authority wallet
 const signer = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(process.env.ANCHOR_WALLET, "utf8"))));
 if (signer.publicKey.toBase58() !== "BtiHqodafgFR34jUhTMRgdgRnEcGvYjHARYPFq5GzeG2") throw new Error("Authority mismatch");
 if (await connection.getGenesisHash() !== "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG") throw new Error("Not devnet");
-const binary = readFileSync("target/deploy/tick.so");
+const binary = readFileSync("target/deploy/teek.so");
 const info = await connection.getAccountInfo(buffer);
 if (!info?.owner.equals(loader) || info.data.readUInt32LE(0) !== 1 || info.data[4] !== 1
   || !new PublicKey(info.data.subarray(5, 37)).equals(signer.publicKey)

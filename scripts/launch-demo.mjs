@@ -41,12 +41,12 @@ if(context.setup==='funding'){
 }
 if(process.argv.includes('--setup-only')){console.log('Devnet demo mint, config and disposable bidder funding are ready; no launch window opened.');process.exit(0);}
 const proof={network:'devnet',quoteToken:'synthetic SPL test token; not USDC',privacy:'bid amounts confidential during bidding; bids and earlier edit history public after close',oracle:'production MagicBlock scoped VRF',launches:[]};
-function publish(){mkdirSync('tick/evidence',{recursive:true});writeFileSync('tick/evidence/launch-demo-devnet.json',JSON.stringify(proof,null,2));}
+function publish(){mkdirSync('teek/evidence',{recursive:true});writeFileSync('teek/evidence/launch-demo-devnet.json',JSON.stringify(proof,null,2));}
 for(let n=0;n<2;n++){
   if(!context.launches[n]){
     const opens=await time()+100,closes=opens+50,deadline=closes+300;
     const launch=await owner.initializeVenue(String(Date.now()),new PublicKey(context.quote),{dbcConfig:new PublicKey(context.config),biddingOpensAt:opens,biddingClosesAt:closes,settlementDeadline:deadline,
-      minRaise:n===0?'100000':'1000000',maxRaise:n===0?'600000':'1200000',minBid:'1000',manifestHash:new Uint8Array(32)},'1000000',{name:n===0?'Tick Opening':'Tick Refund',symbol:n===0?'OPEN':'BACK',uri:''});
+      minRaise:n===0?'100000':'1000000',maxRaise:n===0?'600000':'1200000',minBid:'1000',manifestHash:new Uint8Array(32)},'1000000',{name:n===0?'Teek Opening':'Teek Refund',symbol:n===0?'OPEN':'BACK',uri:''});
     context.launches[n]={address:launch.toBase58(),opens,closes,deadline,stage:'created',signatures:[]};save();
   }
   const entry=context.launches[n],launch=new PublicKey(entry.address);

@@ -20,7 +20,7 @@ const args = ["node_modules/mocha/bin/mocha.js", "-t", "120000", "target/launch-
   "target/launch-test-js/tests/launch.private.js", "target/launch-test-js/tests/private-transaction.test.js"];
 args.push("target/launch-test-js/tests/dbc-abi.test.js");
 // Including the original local market checks is useful after program changes.
-if (process.argv.includes("--with-market")) args.push("target/launch-test-js/tests/tick.js");
+if (process.argv.includes("--with-market")) args.push("target/launch-test-js/tests/teek.js");
 const runner = spawn(process.execPath, args, { cwd: root, stdio: "inherit", env: {
   ...process.env, RUN_TICK_PRIVATE: "0", ANCHOR_PROVIDER_URL: endpoint, ANCHOR_WALLET: walletFile,
 } });

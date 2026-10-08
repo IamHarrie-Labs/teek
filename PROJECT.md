@@ -27,12 +27,12 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 | Balance custody, locking, settlement | Verified | Devnet VRF test with funded traders |
 | Real MagicBlock VRF (async request → oracle callback) | Verified | Devnet test; hosted-ER test with ephemeral VRF queue |
 | Delegation to MagicBlock ER | Verified | Devnet delegation test (ownership moves to delegation program) |
-| Full hosted-ER lifecycle (delegate → trade → clear → commit/undelegate) | Verified | `tests/tick.hosted-er.ts` passing (~70 s) |
-| Browser demo against hosted ER (manual click-through) | Verified | Recorded in `tick/PLAN.md` |
+| Full hosted-ER lifecycle (delegate → trade → clear → commit/undelegate) | Verified | `tests/teek.hosted-er.ts` passing (~70 s) |
+| Browser demo against hosted ER (manual click-through) | Verified | Recorded in `teek/PLAN.md` |
 | One-click "Run Live Demo" button | Built | Wired up; its own end-to-end run is not recorded |
 | Private (confidential) orders/bids | **Planned** | Not implemented: the ER order book is currently readable via RPC |
 | Meteora DBC atomic pool creation + first buy | Verified (SDK spike) | Devnet tx `5ZEqA9…` |
-| Teek Launch program (escrow, settle via DBC CPI, claims, refunds) | Planned | Spec in `tick/LAUNCH_SPEC.md` |
+| Teek Launch program (escrow, settle via DBC CPI, claims, refunds) | Planned | Spec in `teek/LAUNCH_SPEC.md` |
 | Mainnet deployment | Out of scope (undecided) | Required by Solami track; costs real SOL |
 
 ---
@@ -81,7 +81,7 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 
 ## 5. Features
 
-### 5.1 On-chain program (`programs/tick`, Anchor 1.2.0)
+### 5.1 On-chain program (`programs/teek`, Anchor 1.2.0)
 
 | Instruction | What it does | Status |
 |---|---|---|
@@ -110,12 +110,12 @@ Zero-copy is required: a 128-order book exceeds SBF's 4 KB stack frame if deseri
 
 **Errors:** `OrderBookFull`, `InvalidOrderParams`, `BatchSealed`, `BatchStillOpen`, `InsufficientBalance`, `Overflow`.
 
-### 5.2 Clearing engine (`programs/tick/src/clearing.rs`, `tick/src/engine/clearing.ts`)
+### 5.2 Clearing engine (`programs/teek/src/clearing.rs`, `teek/src/engine/clearing.ts`)
 - Two independent implementations with identical behaviour, proven by a shared parity test (same orders + seed → identical fills).
 - Pure and deterministic for a given seed; no Solana dependency in the algorithm itself.
 - Properties under test: no trade without a cross; single uniform price; limit prices respected; conservation (buy fills = sell fills = matched qty); pro-rata rationing; split resistance against a rival and across wallets; token-scale exactness; determinism; empty and one-sided batches.
 
-### 5.3 Browser app (`tick/`, Vite + TypeScript)
+### 5.3 Browser app (`teek/`, Vite + TypeScript)
 **Simulation (no chain):**
 - One shared fair-value path (drift + jumps) drives two venues, so differences come only from market structure.
 - Continuous order book: a sniper picks off stale quotes after jumps; live tape and PnL chart.
@@ -127,27 +127,27 @@ Zero-copy is required: a 128-order book exceeds SBF's 4 KB stack frame if deseri
 - Demo wallet generated and stored in browser localStorage (no wallet extension needed).
 - Shows wallet, hosted ER validator, delegation status, SOL, deposited and wallet token balances.
 - Controls: refresh, deposit 100 base, deposit 1,000 quote, delegate to hosted ER, open ER batch, ER buy / ER sell (price, qty), ER clear batch, commit + undelegate, **Run Live Demo** (all steps in sequence), status log and reveal line.
-- Client library `tick/src/chain.ts`: base-layer and ER program clients, PDA helpers, balance/book/reveal readers (base and ER), deposits, delegation, ER batch open, ER order submission, ER clear, commit/undelegate, delegation-status checks.
+- Client library `teek/src/chain.ts`: base-layer and ER program clients, PDA helpers, balance/book/reveal readers (base and ER), deposits, delegation, ER batch open, ER order submission, ER clear, commit/undelegate, delegation-status checks.
 
 ### 5.4 Scripts and tooling
-- `tick/scripts/seed-demo-market.mjs <demo-wallet>` — creates or reuses the demo market, writes addresses to `tick/src/idl/demo-market.json`, funds a demo wallet with SOL and demo tokens. Idempotent by default; `TICK_FORCE_NEW_MARKET=1` forces a new market; `TICK_BATCH_PERIOD_SLOTS` sets the window.
+- `teek/scripts/seed-demo-market.mjs <demo-wallet>` — creates or reuses the demo market, writes addresses to `teek/src/idl/demo-market.json`, funds a demo wallet with SOL and demo tokens. Idempotent by default; `TEEK_FORCE_NEW_MARKET=1` forces a new market; `TEEK_BATCH_PERIOD_SLOTS` sets the window.
 
 ### 5.5 Test suites
 
 | Suite | Proves | Last result |
 |---|---|---|
-| `cargo test -p tick` | Clearing engine (12 tests incl. adversarial + parity) | 12 passed (2026-10-04) |
-| `cd tick && npx vitest run` | TS engine (12) + simulation claims (4) | 16 passed (2026-10-04) |
-| `tests/tick.ts` (local validator) | Market setup; funded orders accepted; batch seal rejects late orders | Passing (Sept build log) |
-| `tests/tick.devnet.ts` | Delegation on devnet; real VRF round trip with funded traders, one uniform price | Passing (Sept build log); local-ER test skipped by design |
-| `tests/tick.hosted-er.ts` | Full hosted-ER lifecycle incl. ephemeral VRF, uniform-price settlement, locks released, commit/undelegate | 1 passing, ~70 s |
+| `cargo test -p teek` | Clearing engine (12 tests incl. adversarial + parity) | 12 passed (2026-10-04) |
+| `cd teek && npx vitest run` | TS engine (12) + simulation claims (4) | 16 passed (2026-10-04) |
+| `tests/teek.ts` (local validator) | Market setup; funded orders accepted; batch seal rejects late orders | Passing (Sept build log) |
+| `tests/teek.devnet.ts` | Delegation on devnet; real VRF round trip with funded traders, one uniform price | Passing (Sept build log); local-ER test skipped by design |
+| `tests/teek.hosted-er.ts` | Full hosted-ER lifecycle incl. ephemeral VRF, uniform-price settlement, locks released, commit/undelegate | 1 passing, ~70 s |
 | Not yet covered by any test | `withdraw_base` / `withdraw_quote` | — |
 
 ---
 
 ## 6. Teek Launch — the event build
 
-Full spec: [`tick/LAUNCH_SPEC.md`](tick/LAUNCH_SPEC.md).
+Full spec: [`teek/LAUNCH_SPEC.md`](teek/LAUNCH_SPEC.md).
 
 ### 6.1 Flow (v1)
 1. **Terms, fixed before bidding:** token metadata; DBC config (curve, supply split, migration threshold, fee shares, vesting); bidding window; min raise; max raise (cap); min bid. The worst-case average price is known in advance from the curve and cap.
@@ -302,11 +302,11 @@ flowchart LR
 
 ### Resolved on 2026-10-06
 - **Allocation fix is live on devnet.** The deployed program (SHA-256 `2d539968…4a7b97`, 634,128 bytes) was dumped from chain and matches a fresh build of the current source byte for byte; that source contains `pro_rata_dependent_round`.
-- **No overclaimed privacy in public copy.** `tick/submission/*` and the market page now say what the market demo does: orders are batched and cleared at one price, and are publicly readable on the hosted ER. Private bids are described only for Teek Launch.
-- **Frontend dependencies are complete.** `tick/package.json` declares every package `tick/src` imports (`@magicblock-labs/ephemeral-rollups-sdk` pinned to 0.17.0 to match the root, `buffer`, `tweetnacl`). A clean-room `npm ci` at the root and in `tick/` passes 20/20 frontend tests, both type checks and the production build.
-- **Fresh clones type-check.** Tests no longer import the git-ignored `target/` folder; they use the committed, byte-identical copies in `tick/src/idl/`.
-- **Hosted ER status calls work in the browser.** The ER URL had a trailing slash, so the SDK requested `//getDelegationStatus`, which returns a 307 redirect that browsers reject during CORS preflight. Fixed in `tick/src/chain.ts` and `tests/tick.hosted-er.ts`; both pages now load with zero console errors.
-- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Teek ownership on devnet afterwards. `tick/PLAN.md` records the market history.
+- **No overclaimed privacy in public copy.** `teek/submission/*` and the market page now say what the market demo does: orders are batched and cleared at one price, and are publicly readable on the hosted ER. Private bids are described only for Teek Launch.
+- **Frontend dependencies are complete.** `teek/package.json` declares every package `teek/src` imports (`@magicblock-labs/ephemeral-rollups-sdk` pinned to 0.17.0 to match the root, `buffer`, `tweetnacl`). A clean-room `npm ci` at the root and in `teek/` passes 20/20 frontend tests, both type checks and the production build.
+- **Fresh clones type-check.** Tests no longer import the git-ignored `target/` folder; they use the committed, byte-identical copies in `teek/src/idl/`.
+- **Hosted ER status calls work in the browser.** The ER URL had a trailing slash, so the SDK requested `//getDelegationStatus`, which returns a 307 redirect that browsers reject during CORS preflight. Fixed in `teek/src/chain.ts` and `tests/teek.hosted-er.ts`; both pages now load with zero console errors.
+- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Teek ownership on devnet afterwards. `teek/PLAN.md` records the market history.
 - **Batch windows sized for the real ER clock.** The hosted ER runs at about 10 ms per slot (measured), so the hosted-ER test's old 300-slot window lasted about 3 s while it polled every 3 s. The test now requires a window of at least 3,000 slots and polls every 0.5 s. The browser demo polls every 0.5 s and, if a slow network still lets a batch close mid-submission, opens a fresh batch and resubmits (up to 3 attempts).
 - **Rate-limit resilience.** The public devnet RPC is returning HTTP 429 heavily. The market page, both older devnet tests and the seed script now use the same retrying transport as the launch client (identical request bodies, so signatures stay valid).
 
@@ -336,21 +336,21 @@ flowchart LR
 
 ```bash
 # Rust engine tests
-cargo test -p tick
+cargo test -p teek
 
-# Build the program for devnet (from programs/tick, in WSL)
+# Build the program for devnet (from programs/teek, in WSL)
 cargo build-sbf --tools-version v1.57
 
 # Deploy / upgrade on devnet
-solana program deploy target/deploy/tick.so --program-id target/deploy/tick-keypair.json --url https://api.devnet.solana.com
+solana program deploy target/deploy/teek.so --program-id target/deploy/teek-keypair.json --url https://api.devnet.solana.com
 
 # Devnet and hosted-ER integration tests (from repo root)
-ANCHOR_PROVIDER_URL=https://api.devnet.solana.com ANCHOR_WALLET=~/.config/solana/id.json npx ts-mocha -p ./tsconfig.json -t 1000000 tests/tick.devnet.ts
-ANCHOR_PROVIDER_URL=https://api.devnet.solana.com ANCHOR_WALLET=~/.config/solana/id.json npx ts-mocha -p ./tsconfig.json -t 1000000 tests/tick.hosted-er.ts
+ANCHOR_PROVIDER_URL=https://api.devnet.solana.com ANCHOR_WALLET=~/.config/solana/id.json npx ts-mocha -p ./tsconfig.json -t 1000000 tests/teek.devnet.ts
+ANCHOR_PROVIDER_URL=https://api.devnet.solana.com ANCHOR_WALLET=~/.config/solana/id.json npx ts-mocha -p ./tsconfig.json -t 1000000 tests/teek.hosted-er.ts
 
 # Frontend
-npm install && (cd tick && npm install)
-cd tick && npm run dev        # http://localhost:5173
+npm install && (cd teek && npm install)
+cd teek && npm run dev        # http://localhost:5173
 npx vitest run && npx tsc --noEmit
 
 # Fund a browser demo wallet / (re)seed the demo market
@@ -363,24 +363,24 @@ node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
 
 | Path | Contents |
 |---|---|
-| `programs/tick/src/lib.rs` | Instructions and account constraints |
-| `programs/tick/src/state.rs` | Market, OrderBook, Reveal, TraderAccount |
-| `programs/tick/src/clearing.rs` | Uniform-price clearing + fair allocation (+ tests) |
-| `programs/tick/src/errors.rs` | Error codes |
+| `programs/teek/src/lib.rs` | Instructions and account constraints |
+| `programs/teek/src/state.rs` | Market, OrderBook, Reveal, TraderAccount |
+| `programs/teek/src/clearing.rs` | Uniform-price clearing + fair allocation (+ tests) |
+| `programs/teek/src/errors.rs` | Error codes |
 | `tests/` | Local, devnet, and hosted-ER integration tests |
-| `tick/src/engine/` | TypeScript clearing engine, PRNG, types, tests |
-| `tick/src/sim/` | Fair-value path, market maker, noise traders, CLOB and batch simulators, comparison tests |
-| `tick/src/chain.ts` | On-chain + ER client used by the live panel |
-| `tick/src/main.ts`, `style.css` | Browser app |
-| `tick/src/idl/` | Program IDL and current demo-market addresses |
-| `tick/scripts/seed-demo-market.mjs` | Demo market seeding and wallet funding |
-| `tick/LAUNCH_SPEC.md` | Teek Launch v1 spec |
-| `tick/PLAN.md` | Detailed build log (Sept 2026) |
-| `tick/submission/` | Earlier submission drafts (market-era framing; to be updated) |
+| `teek/src/engine/` | TypeScript clearing engine, PRNG, types, tests |
+| `teek/src/sim/` | Fair-value path, market maker, noise traders, CLOB and batch simulators, comparison tests |
+| `teek/src/chain.ts` | On-chain + ER client used by the live panel |
+| `teek/src/main.ts`, `style.css` | Browser app |
+| `teek/src/idl/` | Program IDL and current demo-market addresses |
+| `teek/scripts/seed-demo-market.mjs` | Demo market seeding and wallet funding |
+| `teek/LAUNCH_SPEC.md` | Teek Launch v1 spec |
+| `teek/PLAN.md` | Detailed build log (Sept 2026) |
+| `teek/submission/` | Earlier submission drafts (market-era framing; to be updated) |
 
 ## 16. Private launch intake milestone (Oct 4, 2026)
 
-Implemented `programs/tick/src/launch.rs` and instruction wrappers in `lib.rs`: immutable terms, 24-entry bid registry, quote escrow funding/withdrawals, pinned TEE delegation, bidder-only ephemeral permissions, guarded private edits/cancellation, commit/undelegation, complete registry close, min-raise failure and deadline refunds. Existing Teek error codes are preserved; new launch errors append to the same enum. Larger custody contexts box the launch account to fit SBF stack limits.
+Implemented `programs/teek/src/launch.rs` and instruction wrappers in `lib.rs`: immutable terms, 24-entry bid registry, quote escrow funding/withdrawals, pinned TEE delegation, bidder-only ephemeral permissions, guarded private edits/cancellation, commit/undelegation, complete registry close, min-raise failure and deadline refunds. Existing Teek error codes are preserved; new launch errors append to the same enum. Larger custody contexts box the launch account to fit SBF stack limits.
 
 `clients/launch.ts` is a typed client with separate custody/private providers, auth expiry checks, pinned validator identity checks and no public bid fallback. IDL and frontend-compatible generated types are updated. `tests/launch.ts` checks actual SPL custody and time guards; `tests/launch.private.ts` is an opt-in hosted proof with authorized read controls for both account and transaction visibility. `scripts/test-launch.mjs` runs compiled local tests using a disposable wallet and disables hosted spending by default.
 
@@ -388,7 +388,7 @@ Validation: SBF build on platform-tools v1.57 without stack errors; IDL build su
 
 Behavior limits: fund before bidding opens, and before delegating that bid record; vault stays on L1; bids become public after close; refund access to delegated records still depends on ER return. Terms bind a DBC address/manifest but actual DBC config validation and settlement are pending. The current seeded allocation helper needs full-entropy, unbiased sampling before launch settlement uses it.
 
-Next: independent review and hosted privacy proof; DBC PDA swap/config validation; VRF-backed accepted/token allocations and claims; launch UI/two-launch demo. See `tick/PRIVATE_BIDS.md` for commands and `tick/LAUNCH_SPEC.md` for mechanism/state boundaries.
+Next: independent review and hosted privacy proof; DBC PDA swap/config validation; VRF-backed accepted/token allocations and claims; launch UI/two-launch demo. See `teek/PRIVATE_BIDS.md` for commands and `teek/LAUNCH_SPEC.md` for mechanism/state boundaries.
 
 ## 17. Reviewed devnet launch intake and hosted proof (Oct 5, 2026)
 
@@ -402,7 +402,7 @@ Validation: 16 Rust tests; 11 corrected local launch tests plus 2 original marke
 
 The privacy promise covers the tested bidding-window account/transaction surfaces. Funding and timing are public; closing permissions also reveals earlier edit transactions. Broad RPC enumeration/subscriptions, TEE attestation, third-party recovery and outages remain unverified. The harness uses synthetic devnet tokens and placeholder base/config addresses, so it proves intake/refunds rather than DBC settlement. Original staged baseline preserved; no commit or push.
 
-Next: DBC config binding and bounded PDA swap inside atomic pool creation; full-entropy VRF allocations; token/refund claims; launch UI and two-launch demo. Review evidence: `tick/PRIVATE_BID_REVIEW.md`, HTML companion and `tick/PRIVATE_BID_INDEPENDENT_REVIEW.md`.
+Next: DBC config binding and bounded PDA swap inside atomic pool creation; full-entropy VRF allocations; token/refund claims; launch UI and two-launch demo. Review evidence: `teek/PRIVATE_BID_REVIEW.md`, HTML companion and `teek/PRIVATE_BID_INDEPENDENT_REVIEW.md`.
 
 ## 18. Complete private opening purchase — October 6, 2026
 
@@ -436,4 +436,4 @@ history. 24-wallet admission, creator cancellation veto, ER/oracle availability,
 unverified privacy surfaces and a single-wallet upgrade authority remain
 limitations. Synthetic quotes are not USDC; no mainnet writes or formal audit.
 The staged baseline remains unchanged; no commit or push. Current guides:
-`tick/SETTLEMENT_SPEC.md`, `tick/SETTLEMENT_REVIEW.md`, `tick/LAUNCH_DEMO.md`.
+`teek/SETTLEMENT_SPEC.md`, `teek/SETTLEMENT_REVIEW.md`, `teek/LAUNCH_DEMO.md`.

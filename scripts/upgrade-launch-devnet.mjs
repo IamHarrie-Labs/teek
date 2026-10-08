@@ -8,15 +8,15 @@ if(!process.env.ANCHOR_WALLET)throw Error('Set devnet upgrade authority wallet')
 const signer=Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(process.env.ANCHOR_WALLET,'utf8'))));
 if(signer.publicKey.toBase58()!=='BtiHqodafgFR34jUhTMRgdgRnEcGvYjHARYPFq5GzeG2')throw Error('Unexpected authority');
 const program=new PublicKey('B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY'),loader=new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111'),programData=PublicKey.findProgramAddressSync([program.toBuffer()],loader)[0];
-const binary=readFileSync('target/deploy/tick.so'),hash=createHash('sha256').update(binary).digest('hex');
-const evidence=JSON.parse(readFileSync('tick/evidence/settlement-local.json','utf8'));
+const binary=readFileSync('target/deploy/teek.so'),hash=createHash('sha256').update(binary).digest('hex');
+const evidence=JSON.parse(readFileSync('teek/evidence/settlement-local.json','utf8'));
 if(evidence.programHash!==hash||!evidence.launches.some(x=>x.bidders===24&&x.outcome.includes('all allocations'))||!evidence.launches.some(x=>x.outcome.includes('rolled back')||x.outcome.includes('rolled')))throw Error('Exact-binary full-capacity/rollback evidence missing');
-if(!readFileSync('tick/SETTLEMENT_REVIEW.md','utf8').includes(`Reviewed binary SHA256: ${hash}`))throw Error('Exact artifact review record missing');
+if(!readFileSync('teek/SETTLEMENT_REVIEW.md','utf8').includes(`Reviewed binary SHA256: ${hash}`))throw Error('Exact artifact review record missing');
 const current=await c.getAccountInfo(programData);
 if(!current?.owner.equals(loader)||current.data.readUInt32LE(0)!==3||current.data[12]!==1||!new PublicKey(current.data.subarray(13,45)).equals(signer.publicKey))throw Error('ProgramData authority mismatch');
 if(binary.length>current.data.length-45)throw Error('This helper requires existing ProgramData capacity; no automatic rent extension');
 if(current.data.subarray(45,45+binary.length).equals(binary)){console.log('Exact reviewed binary already deployed.');process.exit(0);}
-const backup='target/deploy/tick-before-settlement.so';if(!existsSync(backup))writeFileSync(backup,current.data.subarray(45));
+const backup='target/deploy/teek-before-settlement.so';if(!existsSync(backup))writeFileSync(backup,current.data.subarray(45));
 const bufferFile='target/deploy/launch-settlement-buffer-keypair.json';
 const buffer=existsSync(bufferFile)?Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(bufferFile,'utf8')))):Keypair.generate();
 if(!existsSync(bufferFile))writeFileSync(bufferFile,JSON.stringify(Array.from(buffer.secretKey)),{mode:0o600});
@@ -39,5 +39,5 @@ info=await c.getAccountInfo(buffer.publicKey);if(!info.data.subarray(37).equals(
 const ix=new TransactionInstruction({programId:loader,keys:[{pubkey:programData,isSigner:false,isWritable:true},{pubkey:program,isSigner:false,isWritable:true},{pubkey:buffer.publicKey,isSigner:false,isWritable:true},{pubkey:signer.publicKey,isSigner:false,isWritable:true},{pubkey:SYSVAR_RENT_PUBKEY,isSigner:false,isWritable:false},{pubkey:SYSVAR_CLOCK_PUBKEY,isSigner:false,isWritable:false},{pubkey:signer.publicKey,isSigner:true,isWritable:false}],data:Buffer.from([3,0,0,0])});
 const signature=await sendAndConfirmTransaction(c,new Transaction().add(ix),[signer],{commitment:'confirmed',maxRetries:20});
 const deployed=await c.getAccountInfo(programData);if(!deployed.data.subarray(45,45+binary.length).equals(binary))throw Error('Deployed binary comparison failed');
-writeFileSync('tick/evidence/settlement-upgrade-devnet.json',JSON.stringify({network:'devnet',program:program.toBase58(),programData:programData.toBase58(),signature,sha256:hash,bytes:binary.length,slot:deployed.data.readBigUInt64LE(4).toString(),verifiedByteEquality:true},null,2));
+writeFileSync('teek/evidence/settlement-upgrade-devnet.json',JSON.stringify({network:'devnet',program:program.toBase58(),programData:programData.toBase58(),signature,sha256:hash,bytes:binary.length,slot:deployed.data.readBigUInt64LE(4).toString(),verifiedByteEquality:true},null,2));
 console.log('Reviewed devnet upgrade verified',signature);

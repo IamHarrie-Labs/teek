@@ -1,5 +1,5 @@
 //! LOCAL VALIDATOR ONLY. Controlled oracle fixture, not a VRF proof.
-//! It authenticates Tick's request PDA and signs callbacks with the same scoped
+//! It authenticates Teek's request PDA and signs callbacks with the same scoped
 //! identity as production. Production deployment never uses this binary.
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{entrypoint, entrypoint::ProgramResult,

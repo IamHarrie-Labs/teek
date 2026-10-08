@@ -23,7 +23,7 @@ const pdAddress = new PublicKey(Buffer.from(p.data[0], "base64").subarray(4, 36)
 const pd = (await rpc("getAccountInfo", [pdAddress, { encoding: "base64", commitment: "confirmed" }])).value;
 const bytes = Buffer.from(pd.data[0], "base64");
 if (bytes[12] !== 1 || new PublicKey(bytes.subarray(13, 45)).toBase58() !== authority) throw new Error("Upgrade authority mismatch");
-const binaryBytes = readFileSync("target/deploy/tick.so").length;
+const binaryBytes = readFileSync("target/deploy/teek.so").length;
 const bufferRent = await rpc("getMinimumBalanceForRentExemption", [binaryBytes + 37]);
 const programRent = await rpc("getMinimumBalanceForRentExemption", [binaryBytes + 45]);
 const balance = (await rpc("getBalance", [authority, { commitment: "confirmed" }])).value;

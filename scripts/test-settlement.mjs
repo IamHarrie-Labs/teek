@@ -9,7 +9,7 @@ const shellQuote=s=>"'"+s.replaceAll("'","'\\''")+"'";
 const linuxRoot=root.replaceAll('\\','/').replace(/^([A-Z]):/,(_,drive)=>`/mnt/${drive.toLowerCase()}`);
 function validator(ledger,fixtures){
  const command=['solana-test-validator','--ledger',ledger,'--rpc-port','8899','--gossip-port','12000','--dynamic-port-range','12000-13000','--quiet',
-  '--bpf-program','B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY','target/deploy/tick.so',
+  '--bpf-program','B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY','target/deploy/teek.so',
   '--bpf-program','dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN','target/deploy/dbc-mainnet.so',
   '--bpf-program','metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s','target/deploy/metadata-mainnet.so',
   '--bpf-program','Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz','target/deploy/tick_vrf_fixture.so',

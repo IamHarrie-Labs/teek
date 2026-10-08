@@ -11,7 +11,7 @@ import BN from "bn.js";
 import { assertPrivateTransactionHidden } from "./helpers/private-transaction";
 
 const live = process.env.RUN_TICK_PRIVATE === "1" ? describe : describe.skip;
-live("Tick Launch: hosted two-wallet confidentiality", function () {
+live("Teek Launch: hosted two-wallet confidentiality", function () {
   this.timeout(480_000);
   let owner: LaunchClient, a: LaunchClient, b: LaunchClient;
   let launch: PublicKey, aliceBid: PublicKey, bobBid: PublicKey;

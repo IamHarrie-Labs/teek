@@ -56,7 +56,7 @@ if(process.argv[2]==='prepare'){
   await reject(client(bidders[0]).register(race,sources[0],'1'),'unconfigured venue registration');
   const launches=[];
   for(const [id,count,min]of [['1',2,'1'],['2',2,'18446744073709551615'],['3',24,'1']]){
-    const launch=await owner.initializeVenue(id,quote,terms,min,{name:id==='3'?'x'.repeat(32):id==='1'?'Tick Opening':'Tick Fixture',symbol:id==='3'?'x'.repeat(10):'TICK',uri:id==='3'?'x'.repeat(200):''});
+    const launch=await owner.initializeVenue(id,quote,terms,min,{name:id==='3'?'x'.repeat(32):id==='1'?'Teek Opening':'Teek Fixture',symbol:id==='3'?'x'.repeat(10):'TICK',uri:id==='3'?'x'.repeat(200):''});
     const state=await owner.base.account.launch.fetch(launch); const addresses=[];let total=0n,funded=0n;
     for(let i=0;i<count;i++){
       const address=launchBidAddress(launch,bidders[i].publicKey),amount=BigInt(333111+i*123123),funding=amount+100000n;
@@ -80,7 +80,7 @@ if(process.argv[2]==='prepare'){
   const context=JSON.parse(readFileSync(`${root}/context.json`,'utf8')),creator=key(context.creator),owner=client(creator),dbc=new DynamicBondingCurveClient(connection,'confirmed');
   const config=new PublicKey(context.config),quote=new PublicKey(context.quote),vrf=new PublicKey('Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz');
   const identity=PublicKey.findProgramAddressSync([Buffer.from('identity'),LAUNCH_PROGRAM_ID.toBuffer()],vrf)[0];
-  const evidence={network:'local',oracle:'controlled scoped oracle fixture, not production VRF',privateBids:'closed bid genesis fixtures; live privacy tested separately',programHash:createHash('sha256').update(readFileSync('target/deploy/tick.so')).digest('hex'),dbcMainnetHash:createHash('sha256').update(readFileSync('target/deploy/dbc-mainnet.so')).digest('hex'),metadataMainnetHash:createHash('sha256').update(readFileSync('target/deploy/metadata-mainnet.so')).digest('hex'),launches:[],checks:rejectionChecks};
+  const evidence={network:'local',oracle:'controlled scoped oracle fixture, not production VRF',privateBids:'closed bid genesis fixtures; live privacy tested separately',programHash:createHash('sha256').update(readFileSync('target/deploy/teek.so')).digest('hex'),dbcMainnetHash:createHash('sha256').update(readFileSync('target/deploy/dbc-mainnet.so')).digest('hex'),metadataMainnetHash:createHash('sha256').update(readFileSync('target/deploy/metadata-mainnet.so')).digest('hex'),launches:[],checks:rejectionChecks};
   for(let n=0;n<context.launches.length;n++){
     const entry=context.launches[n],launch=new PublicKey(entry.address),settlement=launchSettlement(launch),pool=deriveDbcPoolAddress(quote,launchToken(launch),config);
     let tables=[];
@@ -126,5 +126,5 @@ if(process.argv[2]==='prepare'){
     evidence.launches.push({launch:launch.toBase58(),pool:pool.toBase58(),outcome:'settled and all allocations/refunds claimed',bidders:entry.count,quoteSpent:settled.quoteSpent.toString(),baseReceived:settled.baseReceived.toString(),computeUnits:transaction?.meta?.computeUnitsConsumed,signature,request,callback});
     console.log(`PASS atomic real DBC settlement + ${entry.count} conserved claims (${transaction?.meta?.computeUnitsConsumed} CU)`);
   }
-  mkdirSync('tick/evidence',{recursive:true});writeFileSync('tick/evidence/settlement-local.json',JSON.stringify(evidence,null,2));
+  mkdirSync('teek/evidence',{recursive:true});writeFileSync('teek/evidence/settlement-local.json',JSON.stringify(evidence,null,2));
 }else throw Error('Use prepare or verify on isolated loopback validator');

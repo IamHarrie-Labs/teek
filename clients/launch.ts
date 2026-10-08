@@ -7,8 +7,8 @@ import {
   getAuthToken, permissionPdaFromAccount, EPHEMERAL_VAULT_ID,
   MAGIC_CONTEXT_ID, MAGIC_PROGRAM_ID, PERMISSION_PROGRAM_ID,
 } from "@magicblock-labs/ephemeral-rollups-sdk";
-import idl from "../tick/src/idl/tick.json";
-import type { Tick } from "../tick/src/idl/tick";
+import idl from "../teek/src/idl/teek.json";
+import type { Teek } from "../teek/src/idl/teek";
 import { deriveDbcPoolAddress, deriveDbcPoolAuthority, deriveDbcEventAuthority,
   deriveDbcTokenVaultAddress, deriveMintMetadata, DYNAMIC_BONDING_CURVE_PROGRAM_ID, METAPLEX_PROGRAM_ID } from "@meteora-ag/dynamic-bonding-curve-sdk";
 
@@ -71,15 +71,15 @@ export const LAUNCH_ORACLE_QUEUE = new PublicKey("Cuj97ggrhhidhbu39TijNVqE74xvKJ
 /** L1 custody and authenticated Private ER bidding use separate providers.
  * There is deliberately no public-RPC fallback for bid writes or reads. */
 export class LaunchClient {
-  readonly base: Program<Tick>;
-  private privateProgram?: Program<Tick>;
+  readonly base: Program<Teek>;
+  private privateProgram?: Program<Teek>;
   private expiresAt = 0;
   private readonly lookupTables = new Map<string, AddressLookupTableAccount>();
 
   constructor(readonly connection: Connection, readonly wallet: LaunchWallet) {
     this.base = new Program(idl as Idl, new AnchorProvider(connection, wallet, {
       commitment: "confirmed", preflightCommitment: "confirmed",
-    })) as unknown as Program<Tick>;
+    })) as unknown as Program<Teek>;
   }
 
   async authenticate(): Promise<void> {
@@ -102,7 +102,7 @@ export class LaunchClient {
     });
     this.privateProgram = new Program(idl as Idl, new AnchorProvider(privateConnection, this.wallet, {
       commitment: "confirmed", preflightCommitment: "confirmed",
-    })) as unknown as Program<Tick>;
+    })) as unknown as Program<Teek>;
     // Auth deployments may return Unix seconds or JavaScript milliseconds.
     this.expiresAt = expiresAt < 1e12 ? expiresAt * 1000 : expiresAt;
     if (!Number.isFinite(this.expiresAt) || this.expiresAt <= Date.now()) {
@@ -113,7 +113,7 @@ export class LaunchClient {
 
   /** Exposes the authenticated program to the privacy verification harness.
    * Never log its connection URL: it contains the session token. */
-  get private(): Program<Tick> {
+  get private(): Program<Teek> {
     if (!this.privateProgram || Date.now() >= this.expiresAt) {
       throw new Error("Private session missing or expired; authenticate again");
     }

@@ -1,0 +1,56 @@
+[package]
+name = "teek"
+version = "0.1.0"
+description = "Teek — a sealed, uniform-price batch auction on MagicBlock Ephemeral Rollups"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "teek"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+default = []
+
+[dependencies]
+# Confirmed against the installed toolchain: the current
+# ephemeral-rollups-sdk release has moved to the solana-program 2.x line,
+# which only builds against a newer Anchor/Solana CLI pairing (1.2.0 /
+# whatever `avm install latest` resolves) — not the older 0.30.1 API this
+# scaffold was first written against. Pinning to what actually resolves
+# and builds, confirmed via `anchor build`, rather than the older
+# known-API version.
+anchor-lang = "1.2.0"
+anchor-spl = "1.2.0"
+
+# MagicBlock's Ephemeral Rollups SDK. Bumped from a loose "0.2" (resolved
+# to 0.2.12, which fails to compile at all against the solana-program 4.x
+# our toolchain resolves — its own source uses APIs solana-program 4.x
+# removed) to 0.17, the current release, which should target a current
+# solana-program API.
+#
+# `anchor` (= `anchor-modern`, confirmed by reading the SDK's own
+# Cargo.toml) pulls in the SDK's `#[delegate]`/`#[commit]` attribute
+# macros and `anchor::{DelegationProgram, MagicProgram}` Anchor `Id`
+# wrappers, built against anchor-lang 1.x — matching our anchor-lang
+# version above, not the older 0.28-1.0 "compat" line.
+#
+# `vrf` pulls in `ephemeral_vrf_sdk` — the `#[vrf]`/`#[vrf_callback]`
+# attribute macros and request/response helpers used by `clear_batch` /
+# `clear_batch_callback` below, confirmed against MagicBlock's own
+# `roll-dice` example (magicblock-labs/magicblock-engine-examples).
+ephemeral-rollups-sdk = { version = "0.17", features = ["anchor", "vrf", "access-control"] }
+
+# Required for zero-copy accounts (`OrderBook`/`Reveal` in state.rs) —
+# Anchor's own `#[account(zero_copy)]` docs call this out explicitly:
+# without it directly in this crate's own dependency graph, `Pod`/
+# `Zeroable` don't get implemented for our >32-element arrays.
+bytemuck = { version = "1.17", features = ["derive", "min_const_generics"] }
+solana-sha256-hasher = "=3.1.0"
+
+[profile.release]
+overflow-checks = true

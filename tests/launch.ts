@@ -7,7 +7,7 @@ import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.j
 import { createMint, createAccount, mintTo, getAccount, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { LaunchClient, launchBidAddress, launchQuoteVault, units } from "../clients/launch";
 
-describe("Tick Launch: L1 escrow", function () {
+describe("Teek Launch: L1 escrow", function () {
   this.timeout(120_000);
   const provider = AnchorProvider.env();
   const connection = new Connection(provider.connection.rpcEndpoint, "confirmed");

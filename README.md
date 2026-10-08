@@ -3,7 +3,7 @@
 Teek Launch is a private, pooled opening purchase for Meteora DBC on Solana.
 The original batch-market demo remains available at `/market.html`.
 
-> Naming: the project is **Teek**. The deployed Solana program, the Rust crate and the `tick/` app folder keep their original internal name `tick`; program ID `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY` is unchanged.
+> Teek was originally built under the name Tick. The Solana program keeps its original program ID `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`.
 
 The existing demo compares a continuous order book with uniform-price batches running on MagicBlock Ephemeral Rollups and MagicBlock VRF. Its hosted ER orders are public: the batch window closes, but this deployment does not provide confidential bids.
 
@@ -13,20 +13,20 @@ purchase, creator-rights transfer, token/refund claims and cancellation. The
 new default frontend reads venue state and signs real devnet transactions.
 Funding/timing are public; closing reveals bids and earlier edits. v1 shares
 one purchase on a fixed curve; it is not limit-price price discovery.
-See [settlement specification](tick/SETTLEMENT_SPEC.md),
-[independent development review](tick/SETTLEMENT_REVIEW.md) and
-[privacy validation](tick/PRIVATE_BIDS.md).
+See [settlement specification](teek/SETTLEMENT_SPEC.md),
+[independent development review](teek/SETTLEMENT_REVIEW.md) and
+[privacy validation](teek/PRIVATE_BIDS.md).
 
 ## Launch UI and hosted demo
 
 The complete launch path is deployed and verified on devnet as of October 6,
 2026. Both real hosted demos passed: one opening purchase with all claims,
 and one failed minimum raise with full refunds and no pool. See the
-[judge walkthrough](tick/LAUNCH_DEMO.md), [hosted receipts](tick/evidence/launch-demo-devnet.json)
-and [verified upgrade](tick/evidence/settlement-upgrade-devnet.json).
+[judge walkthrough](teek/LAUNCH_DEMO.md), [hosted receipts](teek/evidence/launch-demo-devnet.json)
+and [verified upgrade](teek/evidence/settlement-upgrade-devnet.json).
 The independent review is a development review; this is not mainnet-ready.
 
-Install root and `tick/` dependencies, then `cd tick && npm run dev`.
+Install root and `teek/` dependencies, then `cd teek && npm run dev`.
 Open `http://127.0.0.1:5173/`. Connect a Solana wallet or use the disposable
 browser demo wallet. Funds and launches are devnet-only synthetic test assets.
 
@@ -41,7 +41,7 @@ npm run demo:funding
 
 `demo:launch` creates two actual hosted launches: one settles and claims; one
 misses its minimum raise and refunds. It retains recovery keys only in ignored
-`target/launch-demo/` and publishes key-free evidence in `tick/evidence/`.
+`target/launch-demo/` and publishes key-free evidence in `teek/evidence/`.
 It is resumable while its on-chain windows permit continuation.
 
 `demo:funding` is a loopback-only, origin-restricted, budgeted local faucet.
@@ -89,7 +89,7 @@ The browser demo includes a one-click **Run Live Demo** button that drives the r
 From the repo root:
 
 ```bash
-cd tick
+cd teek
 npm install
 npm run dev -- --host 0.0.0.0
 ```
@@ -99,23 +99,23 @@ Open `http://localhost:5173/market.html` and click **Run Live Demo** for the ori
 The demo wallet is generated in browser localStorage. To fund it for a fresh browser profile, open the page once, copy the displayed demo wallet address, then run:
 
 ```bash
-cd tick
+cd teek
 node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
 ```
 
 To intentionally create a new public-demo market with a shorter batch period:
 
 ```bash
-cd tick
-TICK_FORCE_NEW_MARKET=1 TICK_BATCH_PERIOD_SLOTS=1200 node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
+cd teek
+TEEK_FORCE_NEW_MARKET=1 TEEK_BATCH_PERIOD_SLOTS=1200 node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
 ```
 
 ## Validation
 
 ```bash
-cd tick
+cd teek
 npx tsc --noEmit
 npm run build
 ```
 
-The Anchor program, devnet VRF, and hosted ER lifecycle have also been tested through the TypeScript test suite documented in `tick/PLAN.md`.
+The Anchor program, devnet VRF, and hosted ER lifecycle have also been tested through the TypeScript test suite documented in `teek/PLAN.md`.
