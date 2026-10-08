@@ -86,3 +86,7 @@ attestation, outages and existing mainnet trading remain unverified. Synthetic
 test quotes are not USDC. Legacy market sampler limitations remain isolated
 from the new launch path. The single-wallet devnet upgrade authority is not
 a production authority policy.
+
+## Addendum — 2026-10-08 rename rebuild
+
+The reviewed binary above (`2d539968…`) was replaced on devnet by a rebuild after the project rename from Tick to Teek (folders, crate, `#[program]` module and error enum names only; no logic changes). New SHA-256: `eac335ee1453c83486cee8747d7b2eb0edbea38ca08eb0a45676fff2d2d9503a`, upgrade `2mAXLUYUfYXmf4QG5KYpcoo1F2Z6FJ2sZ21v2jVPUKtAzga2ccY9omknX5EYpHacK2txs4MhjhbbDobbqxGTfF2Y`. All 36 instruction/account/event discriminators, error codes and account layouts are identical to the reviewed build; 20 Rust tests and 22 local launch tests pass on the rebuilt binary. The independent review was not re-run for this rename-only change.

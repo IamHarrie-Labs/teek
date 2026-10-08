@@ -301,7 +301,7 @@ flowchart LR
 ## 12. Known limitations and issues
 
 ### Resolved on 2026-10-06
-- **Allocation fix is live on devnet.** The deployed program (SHA-256 `2d539968…4a7b97`, 634,128 bytes) was dumped from chain and matches a fresh build of the current source byte for byte; that source contains `pro_rata_dependent_round`.
+- **Allocation fix is live on devnet.** The deployed program contains `pro_rata_dependent_round`. After the Teek rename it was upgraded on 2026-10-08 (tx `2mAXLU…`); the on-chain program (SHA-256 `eac335ee…2d9503a`, 634,128 bytes) matches a fresh build of the current source byte for byte. See `teek/evidence/rename-upgrade-devnet.json`.
 - **No overclaimed privacy in public copy.** `teek/submission/*` and the market page now say what the market demo does: orders are batched and cleared at one price, and are publicly readable on the hosted ER. Private bids are described only for Teek Launch.
 - **Frontend dependencies are complete.** `teek/package.json` declares every package `teek/src` imports (`@magicblock-labs/ephemeral-rollups-sdk` pinned to 0.17.0 to match the root, `buffer`, `tweetnacl`). A clean-room `npm ci` at the root and in `teek/` passes 20/20 frontend tests, both type checks and the production build.
 - **Fresh clones type-check.** Tests no longer import the git-ignored `target/` folder; they use the committed, byte-identical copies in `teek/src/idl/`.

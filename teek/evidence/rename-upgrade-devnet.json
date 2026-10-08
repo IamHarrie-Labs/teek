@@ -1,0 +1,22 @@
+{
+  "network": "devnet",
+  "date": "2026-10-08",
+  "reason": "Rebuild after the Tick -> Teek rename (folders, crate, #[program] module, error enum). No logic changes.",
+  "program": "B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY",
+  "programData": "2sBr8QDtS6vmbKX5n5aaKsTk342vjxT3Pmx3o2xFxh9b",
+  "upgradeAuthority": "BtiHqodafgFR34jUhTMRgdgRnEcGvYjHARYPFq5GzeG2",
+  "signature": "2mAXLUYUfYXmf4QG5KYpcoo1F2Z6FJ2sZ21v2jVPUKtAzga2ccY9omknX5EYpHacK2txs4MhjhbbDobbqxGTfF2Y",
+  "slot": 508878481,
+  "sha256": "eac335ee1453c83486cee8747d7b2eb0edbea38ca08eb0a45676fff2d2d9503a",
+  "bytes": 634128,
+  "verifiedByteEquality": true,
+  "stagingBufferClosed": "6ZBqaJbNCQVhoaw2Dn4JxEtmxUswkF6Lu7rE9amd6jDN",
+  "previousSha256": "2d539968f8dce06ffeea92f9eca155ece9aac925dc872ef0b175d0548d4a7b97",
+  "interfaceCompatibility": {
+    "discriminatorsCompared": 36,
+    "discriminatorDifferences": 0,
+    "errorCodesIdentical": true,
+    "accountLayoutsIdentical": true,
+    "idlNameChange": "tick -> teek"
+  }
+}

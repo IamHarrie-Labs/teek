@@ -23,7 +23,7 @@ The complete launch path is deployed and verified on devnet as of October 6,
 2026. Both real hosted demos passed: one opening purchase with all claims,
 and one failed minimum raise with full refunds and no pool. See the
 [judge walkthrough](teek/LAUNCH_DEMO.md), [hosted receipts](teek/evidence/launch-demo-devnet.json)
-and [verified upgrade](teek/evidence/settlement-upgrade-devnet.json).
+and [verified upgrade](teek/evidence/settlement-upgrade-devnet.json); the current deployment is the rename-only rebuild in [rename upgrade](teek/evidence/rename-upgrade-devnet.json).
 The independent review is a development review; this is not mainnet-ready.
 
 Install root and `teek/` dependencies, then `cd teek && npm run dev`.
