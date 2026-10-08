@@ -1,8 +1,8 @@
-# Tick Launch — v1 spec
+# Teek Launch — v1 spec
 
 **Promise:** Bid privately. Everyone pays one price. Funds move only under the launch terms you accepted.
 
-Tick is the fair-entry layer for Meteora DBC launches: a sealed, pro-rata opening purchase of the bonding curve, executed in the same transaction that creates the pool. Meteora's Alpha Vault (the closest existing tool) lists DLMM / DAMM v1 / DAMM v2 support, not DBC.
+Teek is the fair-entry layer for Meteora DBC launches: a sealed, pro-rata opening purchase of the bonding curve, executed in the same transaction that creates the pool. Meteora's Alpha Vault (the closest existing tool) lists DLMM / DAMM v1 / DAMM v2 support, not DBC.
 
 ## Mechanism
 
@@ -11,14 +11,14 @@ Tick is the fair-entry layer for Meteora DBC launches: a sealed, pro-rata openin
 3. **Close.** Bids commit back from the ER.
    - Total < min raise → refund mode: every deposit claimable in full, no pool is created.
    - Otherwise: `accepted_i = pro_rata_dependent_round(bids, min(total, cap))`, `refund_i = funded_i − accepted_i`.
-4. **Settle (one transaction, atomic).** `[compute budget, Tick settle]`. Tick CPIs DBC initialization using its mint/launch PDAs, swaps `Σ accepted` from quote escrow into the allocation vault, allocates actual output, and transfers native creator rights back to the immutable creator. The output floor is checked; any failure rolls back creation and spending. Winners share one average opening purchase, subject to indivisible-unit rounding.
+4. **Settle (one transaction, atomic).** `[compute budget, Teek settle]`. Teek CPIs DBC initialization using its mint/launch PDAs, swaps `Σ accepted` from quote escrow into the allocation vault, allocates actual output, and transfers native creator rights back to the immutable creator. The output floor is checked; any failure rolls back creation and spending. Winners share one average opening purchase, subject to indivisible-unit rounding.
 5. **Claims.** Winners claim tokens; everyone claims refunds.
-6. **After.** Public trading continues on the DBC curve; DBC migrates the quote reserve to DAMM v2 at the threshold (enforced by Meteora, not Tick).
+6. **After.** Public trading continues on the DBC curve; DBC migrates the quote reserve to DAMM v2 at the threshold (enforced by Meteora, not Teek).
 
 ## Funding and supply
 
 - **Tokens:** minted by DBC at pool creation per the config. The auction buys from the curve, so there is no separate creator tranche.
-- **Proceeds:** accepted quote pays native curve fees; the remaining quote reserve is liquidity and counts toward migration. Creator and partner income follow the fixed DBC fee and LP terms. Tick does not promise that every accepted quote unit becomes reserve.
+- **Proceeds:** accepted quote pays native curve fees; the remaining quote reserve is liquidity and counts toward migration. Creator and partner income follow the fixed DBC fee and LP terms. Teek does not promise that every accepted quote unit becomes reserve.
 - **Failure:** if settle fails, deposits stay in escrow and settle is retryable; at the settlement deadline, anyone can switch the launch to refund mode. A delegated bid record must return to L1 before its deposit can be withdrawn. This recovery still depends on the ER's commit/undelegation service being available.
 
 ## Privacy model (state this honestly in the demo)

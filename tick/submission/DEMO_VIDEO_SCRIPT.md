@@ -1,14 +1,14 @@
-# Tick Demo Video Script — under 3 minutes
+# Teek Demo Video Script — under 3 minutes
 
 ## 0:00–0:20 — Hook
 
-“Continuous order books reward speed. If a sniper bot is a few milliseconds faster, it can pick off stale quotes before normal users react. Tick shows the same market with one change: orders are grouped into batches that clear at one price, so speed stops being the edge.”
+“Continuous order books reward speed. If a sniper bot is a few milliseconds faster, it can pick off stale quotes before normal users react. Teek shows the same market with one change: orders are grouped into batches that clear at one price, so speed stops being the edge.”
 
-Show the top split-screen simulation. Point at the CLOB side where sniper PnL rises, then the Tick side where the sniper is flat or negative.
+Show the top split-screen simulation. Point at the CLOB side where sniper PnL rises, then the Teek side where the sniper is flat or negative.
 
 ## 0:20–0:40 — Product overview
 
-“Tick is a real-time uniform-price batch auction on Solana using MagicBlock Ephemeral Rollups. A batch opens, orders go into the ER, nobody gets priority from being faster, MagicBlock VRF clears the batch, and the final state commits back to Solana.”
+“Teek is a real-time uniform-price batch auction on Solana using MagicBlock Ephemeral Rollups. A batch opens, orders go into the ER, nobody gets priority from being faster, MagicBlock VRF clears the batch, and the final state commits back to Solana.”
 
 Show the architecture diagram for a few seconds.
 
@@ -38,4 +38,4 @@ Show `programs/tick/src/lib.rs` briefly at `clear_batch` and `clear_batch_callba
 
 ## 2:45–3:00 — Close
 
-“Tick is not another order book. It is a market structure demo that makes MagicBlock’s real-time state obvious in one click: the sniper is faster, but speed is worthless.”
+“Teek is not another order book. It is a market structure demo that makes MagicBlock’s real-time state obvious in one click: the sniper is faster, but speed is worthless.”

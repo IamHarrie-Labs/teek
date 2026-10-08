@@ -14,7 +14,7 @@ official SDK pinned at 1.5.13. Reviewers inspected installed scoped VRF macros.
 
 - P1 configuration race: registration could block subsequent venue binding.
   Fixed by a canonical sidecar guard in registration and top-up for every
-  settlement-capable mint. Guard validates Tick ownership, discriminator,
+  settlement-capable mint. Guard validates Teek ownership, discriminator,
   matching launch and phase 0. Atomic creation/binding is also the client
   default. Legacy placeholder intake cannot be converted into a venue.
 - Full-entropy allocation: independent review checked systematic rounding,
@@ -25,7 +25,7 @@ official SDK pinned at 1.5.13. Reviewers inspected installed scoped VRF macros.
   writable privileges, absent-referral sentinel, owners/addresses and config
   offsets matched official code. Creator rights return to the immutable
   creator. Prefunded empty System PDAs cannot squat the allocation vault.
-- One-shot VRF: complete registry validation precedes request. Tick signs its
+- One-shot VRF: complete registry validation precedes request. Teek signs its
   request identity; callback requires the scoped oracle signer and bound
   commitment. Permanent phases prevent reseeding and replay.
 - Emergency cancellation: only creator can cancel; settlement is terminal.

@@ -1,8 +1,8 @@
-# Tick
+# Teek
 
 Status: existing palette
 
-Tick uses a dark navy canvas (#0a0d14), slate surfaces (#11151f), soft white
+Teek uses a dark navy canvas (#0a0d14), slate surfaces (#11151f), soft white
 text (#e6e9ef), blue actions (#6ea8ff), and green confirmed outcomes (#35d488).
 Red means an error; amber identifies devnet and a waiting state. Secondary
 text is raised to #a7afbd for legibility. Keep colors in CSS variables.

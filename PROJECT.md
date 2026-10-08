@@ -1,4 +1,4 @@
-# Tick — Project Overview
+# Teek — Project Overview
 
 _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a test or on-chain run (evidence listed); **Built** = implemented, not yet proven end to end; **Planned** = scheduled for the event week; **Out of scope** = deliberately not doing now._
 
@@ -6,10 +6,10 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 
 ## 1. Summary
 
-**Tick** is a sealed, uniform-price batch auction engine on Solana, built on MagicBlock Ephemeral Rollups (ER) and MagicBlock VRF. Orders collected during a batch window all execute at **one clearing price**, so arriving first or reacting faster buys nothing inside a batch.
+**Teek** is a sealed, uniform-price batch auction engine on Solana, built on MagicBlock Ephemeral Rollups (ER) and MagicBlock VRF. Orders collected during a batch window all execute at **one clearing price**, so arriving first or reacting faster buys nothing inside a batch.
 
-- **What exists today (Sept 2026 build):** a deployed devnet program where traders deposit funds, submit orders into MagicBlock's hosted ER, and clear each batch at one price using real VRF randomness, then commit results back to Solana. A browser demo shows a sniper bot profiting on a continuous order book and failing on Tick, plus a live panel that drives the real devnet flow.
-- **What it is becoming (Crypto World's Fair, Oct 2026):** **Tick Launch** — the fair-entry layer for Meteora DBC token launches. Buyers bid privately during a window; at close, everyone's accepted funds make a single opening purchase of the bonding curve, in the same transaction that creates the pool, so every buyer pays the same average price and no bot can trade first.
+- **What exists today (Sept 2026 build):** a deployed devnet program where traders deposit funds, submit orders into MagicBlock's hosted ER, and clear each batch at one price using real VRF randomness, then commit results back to Solana. A browser demo shows a sniper bot profiting on a continuous order book and failing on Teek, plus a live panel that drives the real devnet flow.
+- **What it is becoming (Crypto World's Fair, Oct 2026):** **Teek Launch** — the fair-entry layer for Meteora DBC token launches. Buyers bid privately during a window; at close, everyone's accepted funds make a single opening purchase of the bonding curve, in the same transaction that creates the pool, so every buyer pays the same average price and no bot can trade first.
 
 **Customer promise (launch product):** _Bid privately. Everyone pays one price. Funds move only under the launch terms you accepted._
 
@@ -32,7 +32,7 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 | One-click "Run Live Demo" button | Built | Wired up; its own end-to-end run is not recorded |
 | Private (confidential) orders/bids | **Planned** | Not implemented: the ER order book is currently readable via RPC |
 | Meteora DBC atomic pool creation + first buy | Verified (SDK spike) | Devnet tx `5ZEqA9…` |
-| Tick Launch program (escrow, settle via DBC CPI, claims, refunds) | Planned | Spec in `tick/LAUNCH_SPEC.md` |
+| Teek Launch program (escrow, settle via DBC CPI, claims, refunds) | Planned | Spec in `tick/LAUNCH_SPEC.md` |
 | Mainnet deployment | Out of scope (undecided) | Required by Solami track; costs real SOL |
 
 ---
@@ -46,7 +46,7 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 
 ---
 
-## 4. How Tick works
+## 4. How Teek works
 
 ### 4.1 Uniform-price batch auction
 - Orders arrive during a window measured in slots; after it closes, `submit_order` rejects new orders (`BatchSealed`).
@@ -119,7 +119,7 @@ Zero-copy is required: a 128-order book exceeds SBF's 4 KB stack frame if deseri
 **Simulation (no chain):**
 - One shared fair-value path (drift + jumps) drives two venues, so differences come only from market structure.
 - Continuous order book: a sniper picks off stale quotes after jumps; live tape and PnL chart.
-- Tick: sealed batches with a metronome bar, sealed → clearing → reveal animation, uniform price, PnL chart.
+- Teek: sealed batches with a metronome bar, sealed → clearing → reveal animation, uniform price, PnL chart.
 - Scoreboard comparing the sniper's captured edge on each venue; speed and pause controls.
 - Backed by tests showing the continuous-book sniper captures a large jump-driven edge while the batch sniper's PnL is explained by the ordinary half-spread.
 
@@ -145,7 +145,7 @@ Zero-copy is required: a 128-order book exceeds SBF's 4 KB stack frame if deseri
 
 ---
 
-## 6. Tick Launch — the event build
+## 6. Teek Launch — the event build
 
 Full spec: [`tick/LAUNCH_SPEC.md`](tick/LAUNCH_SPEC.md).
 
@@ -153,31 +153,31 @@ Full spec: [`tick/LAUNCH_SPEC.md`](tick/LAUNCH_SPEC.md).
 1. **Terms, fixed before bidding:** token metadata; DBC config (curve, supply split, migration threshold, fee shares, vesting); bidding window; min raise; max raise (cap); min bid. The worst-case average price is known in advance from the curve and cap.
 2. **Bidding on MagicBlock Private ER:** fund an escrow, then place or edit a private bid ≤ funded balance until close. v1 bids are amounts only.
 3. **Close:** below min raise → full refunds, no pool. Otherwise accepted amounts are pro-rata (same fair rounding) up to the cap; the rest is refundable.
-4. **Settle in one transaction:** DBC creates the pool; Tick's program swaps the accepted total from escrow into the curve and receives the tokens into an allocation vault; tokens are split pro-rata. Everyone pays the same average price, and nobody can trade before it.
+4. **Settle in one transaction:** DBC creates the pool; Teek's program swaps the accepted total from escrow into the curve and receives the tokens into an allocation vault; tokens are split pro-rata. Everyone pays the same average price, and nobody can trade before it.
 5. **Claims and refunds.**
 6. **After:** public trading continues on the DBC curve; Meteora migrates liquidity to DAMM v2 at the threshold.
 
 ### 6.2 Where the money and tokens go
 - Tokens are minted by DBC at pool creation; the auction buys from the curve (no separate creator allocation needed).
 - Accepted funds become the pool's quote reserve, i.e. liquidity counting toward migration.
-- Creator earns DBC creator fees and migration LP share; Tick earns DBC partner fees.
+- Creator earns DBC creator fees and migration LP share; Teek earns DBC partner fees.
 - If settlement fails, funds stay in escrow and settlement can be retried; after a deadline, anyone can switch the launch to refunds.
 
 ### 6.3 Privacy model (honest version)
 Funding the escrow is a public on-chain transfer, so funded amounts are visible; bids placed inside the Private ER are not. Bidders can over-fund to hide their real bid, and total demand stays hidden until close, so nobody can watch the raise fill and herd. The demo must show another bidder failing to read a bid.
 
 ### 6.4 DBC configuration rules
-Flat base fee (no fee scheduler or rate limiter: Tick replaces the anti-sniper schedule, and DBC's min-fee first-swap check looks at top-level instructions, which Tick's CPI swap is not); no dynamic fee; no activation delay; migrate to DAMM v2 (DAMM v1 and the rate limiter are deprecated for new configs).
+Flat base fee (no fee scheduler or rate limiter: Teek replaces the anti-sniper schedule, and DBC's min-fee first-swap check looks at top-level instructions, which Teek's CPI swap is not); no dynamic fee; no activation delay; migrate to DAMM v2 (DAMM v1 and the rate limiter are deprecated for new configs).
 
 ### 6.5 Verified on Day 1 (2026-10-04)
 - DBC (`dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN`) is live on devnet; SDK `@meteora-ag/dynamic-bonding-curve-sdk` 1.5.13.
 - Pool creation + first buy in one devnet transaction, flat-fee config accepted, tokens delivered to a receiver other than the buyer: 7 instructions, 19 accounts, ~953 bytes, 172,485 compute units.
-- DBC `swap` accepts any signer as payer, so Tick's escrow PDA should be able to pay via CPI.
+- DBC `swap` accepts any signer as payer, so Teek's escrow PDA should be able to pay via CPI.
 - Fair-allocation rewrite and adversarial tests (section 4.2).
 
 ### 6.6 Open risks, in order
 1. CPI swap from the escrow PDA (expected to work; not yet exercised).
-2. Transaction size with Tick's settle (~30 accounts) → address lookup table.
+2. Transaction size with Teek's settle (~30 accounts) → address lookup table.
 3. Compute budget (~400k CU to request).
 4. Private ER permission integration (follow MagicBlock's sealed-auction example; fallback: hosted ER with privacy stated as pending).
 5. Escrow must be committed back to L1 before settlement.
@@ -193,7 +193,7 @@ Flat base fee (no fee scheduler or rate limiter: Tick replaces the anti-sniper s
 | 8 | Buffer; submit to Colosseum, Superteam Earn sidetracks, Blitz v9 |
 | All week | Customer conversations (token creators, launchpad operators, Meteora devs) |
 
-**Stretch (only if Days 1–5 land early):** sealed opening-session trading — the token's first hours trade in short sealed batches on the ER (the existing Tick engine) before graduating to Meteora.
+**Stretch (only if Days 1–5 land early):** sealed opening-session trading — the token's first hours trade in short sealed batches on the ER (the existing Teek engine) before graduating to Meteora.
 
 ---
 
@@ -201,8 +201,8 @@ Flat base fee (no fee scheduler or rate limiter: Tick replaces the anti-sniper s
 
 ```mermaid
 flowchart LR
-  subgraph Today[Tick market - built]
-    UI[Browser app] --> P[Tick program on devnet]
+  subgraph Today[Teek market - built]
+    UI[Browser app] --> P[Teek program on devnet]
     P -->|delegate| D[MagicBlock delegation program]
     D --> ER[Hosted ER]
     ER --> B[Order book + trader balances]
@@ -210,7 +210,7 @@ flowchart LR
     V -->|callback| R[Uniform-price reveal + settlement]
     R -->|commit + undelegate| P
   end
-  subgraph Launch[Tick Launch - planned]
+  subgraph Launch[Teek Launch - planned]
     T[Creator terms] --> PB[Private bids on Private ER]
     PB -->|close + commit| S[Settle tx]
     S -->|create pool + CPI swap| M[Meteora DBC]
@@ -223,7 +223,7 @@ flowchart LR
 | MagicBlock (Private) ER | Real-time order/bid handling; confidentiality once permissions land |
 | MagicBlock VRF | Unpredictable tie-breaks and rounding |
 | Clearing engine | Price discovery and fair allocation |
-| Tick program | Custody, terms, locks, settlement, claims, refunds |
+| Teek program | Custody, terms, locks, settlement, claims, refunds |
 | Meteora DBC / DAMM v2 | Public trading and enforced liquidity after the launch |
 
 ---
@@ -232,7 +232,7 @@ flowchart LR
 
 | Item | Address |
 |---|---|
-| Tick program | `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY` |
+| Teek program | `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY` |
 | Upgrade authority / test wallet | `BtiHqodafgFR34jUhTMRgdgRnEcGvYjHARYPFq5GzeG2` |
 | Demo market | `4RKcixvD42i6kLdS3LodUbcCzV67JeKfLTqnTvHP1S3b` |
 | Demo base / quote mints | `8HBnQM4dy6ZntLyxC1GaSwCaPLuvvUQGRGrnz7KRAHtd` / `DVe1YZyFdreKgATVwWdTYtkYrbPpZ4W8RyUZF1X9MLGR` |
@@ -252,15 +252,15 @@ flowchart LR
 
 ## 9. Competitive landscape
 
-| Project | What it does | How Tick differs |
+| Project | What it does | How Teek differs |
 |---|---|---|
-| Metaplex Genesis | Uniform-price auctions for launches (sealed bids supported as a config), launch pools, presales; live launches | Tick settles natively into Meteora DBC in the same transaction, with exact split-resistant allocation |
-| Crafts (Arcium) | Sealed-bid token auctions on Solana via MPC, uniform clearing price (announced May 2026) | Same core idea; Tick's angle is DBC-native settlement, MagicBlock real-time UX, enforced terms |
-| Meteora Alpha Vault | Pooled pre-launch buying, one average price, pro-rata or FCFS | Not listed for DBC; deposits public; Tick adds private bids and launch terms |
-| MetaDAO | Fixed-price pro-rata raises with refunds | Fixed price → extreme oversubscription; Tick discovers price along the curve |
+| Metaplex Genesis | Uniform-price auctions for launches (sealed bids supported as a config), launch pools, presales; live launches | Teek settles natively into Meteora DBC in the same transaction, with exact split-resistant allocation |
+| Crafts (Arcium) | Sealed-bid token auctions on Solana via MPC, uniform clearing price (announced May 2026) | Same core idea; Teek's angle is DBC-native settlement, MagicBlock real-time UX, enforced terms |
+| Meteora Alpha Vault | Pooled pre-launch buying, one average price, pro-rata or FCFS | Not listed for DBC; deposits public; Teek adds private bids and launch terms |
+| MetaDAO | Fixed-price pro-rata raises with refunds | Fixed price → extreme oversubscription; Teek discovers price along the curve |
 | Vertigo (Breakout Infra 2nd) | Penalty fees on early snipers | Taxes the race instead of removing it |
-| Uniswap Liquidity Launchpad (EVM) | Continuous clearing auction + automatic pool seeding at the discovered price | The proven pattern Tick brings to Solana, with private bids and Meteora settlement |
-| MagicBlock sealed-bid template | First-price, single-lot private auction example | Tick extends it to multi-unit, one-price, fair rationing, and DBC settlement |
+| Uniswap Liquidity Launchpad (EVM) | Continuous clearing auction + automatic pool seeding at the discovered price | The proven pattern Teek brings to Solana, with private bids and Meteora settlement |
+| MagicBlock sealed-bid template | First-price, single-lot private auction example | Teek extends it to multi-unit, one-price, fair rationing, and DBC settlement |
 
 **Positioning:** a proven category, executed better on Solana — not a claim of being first. Do not pitch the auction itself as novel; the distinct pieces are the DBC-native atomic opening, enforced terms, exact fair allocation, and (stretch) sealed trading during the opening hours.
 
@@ -291,9 +291,9 @@ flowchart LR
 ---
 
 ## 11. Business model
-- **DBC partner fees:** as the launchpad partner on each DBC config, Tick receives a share of trading, migration and pool-creation fees on every launch — no upfront fee needed from creators.
+- **DBC partner fees:** as the launchpad partner on each DBC config, Teek receives a share of trading, migration and pool-creation fees on every launch — no upfront fee needed from creators.
 - **Optional success fee** on launches that clear their min raise.
-- **Later:** a typed client / SDK so other launchpads can embed Tick's private opening and settlement.
+- **Later:** a typed client / SDK so other launchpads can embed Teek's private opening and settlement.
 - To validate: talk to creators and launchpad operators this week.
 
 ---
@@ -302,16 +302,16 @@ flowchart LR
 
 ### Resolved on 2026-10-06
 - **Allocation fix is live on devnet.** The deployed program (SHA-256 `2d539968…4a7b97`, 634,128 bytes) was dumped from chain and matches a fresh build of the current source byte for byte; that source contains `pro_rata_dependent_round`.
-- **No overclaimed privacy in public copy.** `tick/submission/*` and the market page now say what the market demo does: orders are batched and cleared at one price, and are publicly readable on the hosted ER. Private bids are described only for Tick Launch.
+- **No overclaimed privacy in public copy.** `tick/submission/*` and the market page now say what the market demo does: orders are batched and cleared at one price, and are publicly readable on the hosted ER. Private bids are described only for Teek Launch.
 - **Frontend dependencies are complete.** `tick/package.json` declares every package `tick/src` imports (`@magicblock-labs/ephemeral-rollups-sdk` pinned to 0.17.0 to match the root, `buffer`, `tweetnacl`). A clean-room `npm ci` at the root and in `tick/` passes 20/20 frontend tests, both type checks and the production build.
 - **Fresh clones type-check.** Tests no longer import the git-ignored `target/` folder; they use the committed, byte-identical copies in `tick/src/idl/`.
 - **Hosted ER status calls work in the browser.** The ER URL had a trailing slash, so the SDK requested `//getDelegationStatus`, which returns a 307 redirect that browsers reject during CORS preflight. Fixed in `tick/src/chain.ts` and `tests/tick.hosted-er.ts`; both pages now load with zero console errors.
-- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Tick ownership on devnet afterwards. `tick/PLAN.md` records the market history.
+- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Teek ownership on devnet afterwards. `tick/PLAN.md` records the market history.
 - **Batch windows sized for the real ER clock.** The hosted ER runs at about 10 ms per slot (measured), so the hosted-ER test's old 300-slot window lasted about 3 s while it polled every 3 s. The test now requires a window of at least 3,000 slots and polls every 0.5 s. The browser demo polls every 0.5 s and, if a slow network still lets a batch close mid-submission, opens a fresh batch and resubmits (up to 3 attempts).
 - **Rate-limit resilience.** The public devnet RPC is returning HTTP 429 heavily. The market page, both older devnet tests and the seed script now use the same retrying transport as the launch client (identical request bodies, so signatures stay valid).
 
 ### Remaining by design or scope (stated openly in the demo)
-- The original market demo has public orders; confidentiality applies to Tick Launch bids during the bidding window.
+- The original market demo has public orders; confidentiality applies to Teek Launch bids during the bidding window.
 - Launch funding and timing are public; closing reveals bids and earlier edit transactions.
 - v1 pools budget bids into one purchase on a fixed curve; it is not limit-price discovery.
 - Prototype limits: 24 bidders per launch, creator cancellation veto, dependence on MagicBlock ER and oracle availability, a single-wallet upgrade authority.
@@ -374,13 +374,13 @@ node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
 | `tick/src/main.ts`, `style.css` | Browser app |
 | `tick/src/idl/` | Program IDL and current demo-market addresses |
 | `tick/scripts/seed-demo-market.mjs` | Demo market seeding and wallet funding |
-| `tick/LAUNCH_SPEC.md` | Tick Launch v1 spec |
+| `tick/LAUNCH_SPEC.md` | Teek Launch v1 spec |
 | `tick/PLAN.md` | Detailed build log (Sept 2026) |
 | `tick/submission/` | Earlier submission drafts (market-era framing; to be updated) |
 
 ## 16. Private launch intake milestone (Oct 4, 2026)
 
-Implemented `programs/tick/src/launch.rs` and instruction wrappers in `lib.rs`: immutable terms, 24-entry bid registry, quote escrow funding/withdrawals, pinned TEE delegation, bidder-only ephemeral permissions, guarded private edits/cancellation, commit/undelegation, complete registry close, min-raise failure and deadline refunds. Existing Tick error codes are preserved; new launch errors append to the same enum. Larger custody contexts box the launch account to fit SBF stack limits.
+Implemented `programs/tick/src/launch.rs` and instruction wrappers in `lib.rs`: immutable terms, 24-entry bid registry, quote escrow funding/withdrawals, pinned TEE delegation, bidder-only ephemeral permissions, guarded private edits/cancellation, commit/undelegation, complete registry close, min-raise failure and deadline refunds. Existing Teek error codes are preserved; new launch errors append to the same enum. Larger custody contexts box the launch account to fit SBF stack limits.
 
 `clients/launch.ts` is a typed client with separate custody/private providers, auth expiry checks, pinned validator identity checks and no public bid fallback. IDL and frontend-compatible generated types are updated. `tests/launch.ts` checks actual SPL custody and time guards; `tests/launch.private.ts` is an opt-in hosted proof with authorized read controls for both account and transaction visibility. `scripts/test-launch.mjs` runs compiled local tests using a disposable wallet and disables hosted spending by default.
 
@@ -396,7 +396,7 @@ Independent development review is complete. Added the missing `#[ephemeral]` und
 
 The reviewed 638,680-byte binary is upgraded at the existing devnet program address. Upgrade signature: `57oroWo7XGE9pzmWRvpu6K5ESC95XR7Jvjj1s71sAVXue2GPe9vvHvdXpf3ToZUD3MXsh8jx4982MucAJbg1m7kq`. SHA-256: `cd7fbcd9e595f652d72f0ca41bce5e986568130c614b392ee3f81f2272dd16f9`. The staging buffer was closed and deployed bytes match the local binary exactly. Upload used throttled confirmed writes after public RPC bulk retries failed.
 
-Hosted tests verified private activation, editable bids, denial of Alice's account to Bob/creator, redacted transaction contents, actual return to Tick ownership, preserved deposits, the correct capped total, and full expiry refunds. Runtime transaction lookup returns public signature/timing/success with empty sensitive fields; requiring the entire result to be null was a harness error. A further independent recheck found unchecked outer-envelope/error fields in the replacement assertion; those are now whitelisted with seven regressions. Both bidders' actual encoded edits are authorized controls.
+Hosted tests verified private activation, editable bids, denial of Alice's account to Bob/creator, redacted transaction contents, actual return to Teek ownership, preserved deposits, the correct capped total, and full expiry refunds. Runtime transaction lookup returns public signature/timing/success with empty sensitive fields; requiring the entire result to be null was a harness error. A further independent recheck found unchecked outer-envelope/error fields in the replacement assertion; those are now whitelisted with seven regressions. Both bidders' actual encoded edits are authorized controls.
 
 Validation: 16 Rust tests; 11 corrected local launch tests plus 2 original market tests; 7 privacy-evidence regressions; 5 hosted checks; root/frontend type checking. Earlier negative-test results are superseded by the corrected helper. Existing frontend validation remains 16 tests and a successful production build.
 
@@ -408,7 +408,7 @@ Next: DBC config binding and bounded PDA swap inside atomic pool creation; full-
 
 The next steps in §17 are complete. New sidecar settlement state binds the
 complete supported DBC config, metadata and output floor before funding.
-Tick creates the pool and buys from escrow in one atomic instruction, returns
+Teek creates the pool and buys from escrow in one atomic instruction, returns
 creator rights, uses production scoped VRF with full-entropy dependent rounding,
 and stores bounded token/refund claims. Creator cancellation enables refunds.
 The new default launch UI supports immutable terms, private budget bidding,

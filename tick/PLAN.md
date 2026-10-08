@@ -1,4 +1,4 @@
-# Tick — build plan
+# Teek — build plan
 
 Concept: a live, spectator-legible market where a sealed order book claps shut
 every ~100ms, clears at one uniform price, and reveals — so a bot with a
@@ -62,8 +62,8 @@ If yes → ship it. If it needs a paragraph of explanation first → not done ye
       across independent seeds.
 - [x] UI: live playback (`main.ts` + `style.css`) — metronome bar, sealed →
       clearing → reveal animation, live sniper tape (CLOB) vs sealed panel
-      (Tick), two PnL charts, running scoreboard. Verified in-browser:
-      CLOB sniper PnL climbs in a visible staircase; Tick sniper PnL stays
+      (Teek), two PnL charts, running scoreboard. Verified in-browser:
+      CLOB sniper PnL climbs in a visible staircase; Teek sniper PnL stays
       flat/noisy near zero. No console errors.
 - [x] Wire sim to UI, playable end to end — **judge test passes**: open the
       URL, watch, see the sealed batch resolve against a bot with a real
@@ -506,7 +506,7 @@ simulator.
   passes their `TraderAccount` PDAs as remaining accounts, matching the
   program-side settlement design above.
 - `tick/src/main.ts` gained a "Live on devnet" panel below the existing
-  local CLOB-vs-Tick simulation (left untouched — it's still a useful,
+  local CLOB-vs-Teek simulation (left untouched — it's still a useful,
   honest "here's the intuition" demo) showing the demo wallet's real SOL/
   token/`TraderAccount` balances, buy/sell order submission, and a
   "clear batch (crank VRF)" button that polls `Reveal` afterward, same

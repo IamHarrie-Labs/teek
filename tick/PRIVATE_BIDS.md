@@ -13,7 +13,7 @@ The SPL quote vault belongs to the Launch PDA and stays on L1. Funding is public
 
 `activate_private_launch_bid` creates a private ephemeral permission with the bid PDA as signer/payer before setting `privacy_ready`. Only the bidder is a member; its flags allow reads, transaction messages, logs and balances but exclude permission-management authority. Bid amounts are not emitted in logs/events. The account is pinned to the hosted TEE validator `MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo`.
 
-After the close time, the permission is removed and the bid is committed/undelegated. **Closed bids and earlier edit transactions become public.** The live diagnostic confirmed disclosure of both the final edit and an earlier edit after permissions closed. Close must receive every registered bid exactly once, in registry order, with Tick ownership restored. Below-minimum demand enters `Refunds`; otherwise `Ready` records the capped total, awaiting DBC settlement. Never-delegated records have zero demand. A permissionless expiry switches any unsettled launch to refunds at its deadline. Owners withdraw only their credited deposit, to an account they own with the correct mint.
+After the close time, the permission is removed and the bid is committed/undelegated. **Closed bids and earlier edit transactions become public.** The live diagnostic confirmed disclosure of both the final edit and an earlier edit after permissions closed. Close must receive every registered bid exactly once, in registry order, with Teek ownership restored. Below-minimum demand enters `Refunds`; otherwise `Ready` records the capped total, awaiting DBC settlement. Never-delegated records have zero demand. A permissionless expiry switches any unsettled launch to refunds at its deadline. Owners withdraw only their credited deposit, to an account they own with the correct mint.
 
 Refund mode does not bypass delegation: an ER outage can delay access to a delegated record. No guaranteed withdrawal during a total ER outage is claimed.
 
@@ -33,7 +33,7 @@ cargo test -p tick --lib
 
 On this machine the direct Anchor binary is `/home/harrie/.avm/bin/anchor-1.2.0` if the shim fails on the workspace path containing spaces.
 
-Start an isolated local validator (do not reuse a ledger containing another version of Tick):
+Start an isolated local validator (do not reuse a ledger containing another version of Teek):
 
 ```bash
 solana-test-validator --ledger target/launch-test-ledger --rpc-port 8899 --faucet-port 9900 \
@@ -62,7 +62,7 @@ The five checks cover:
 1. Each bidder reads and edits their own funded bid.
 2. Bob and the creator cannot read Alice's account, with working authorized account reads as controls.
 3. Both bidders retrieve their own actual encoded edit instructions. Outsider transaction lookup contains no private instructions, keys, balances, logs or return data. The runtime returns a redacted receipt rather than `null`: signature, slot, timing and success remain public. Checks run before close.
-4. Commit/undelegation restores Tick ownership, preserves both funded balances, clears privacy flags, and publishes the correct total and cap on L1.
+4. Commit/undelegation restores Teek ownership, preserves both funded balances, clears privacy flags, and publishes the correct total and cap on L1.
 5. Settlement timeout permits full deposit refunds; both source balances are restored and escrow is empty.
 
 `tests/helpers/private-transaction.ts` accepts the observed redaction shape and fails on unknown fields, including outer-envelope and error payloads. Seven regression tests reject intentional leak examples. Network errors, missing transactions before an owner-visible control, and unrelated RPC errors do not count as privacy.

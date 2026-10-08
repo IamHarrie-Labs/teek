@@ -1,4 +1,4 @@
-# Tick Launch: judge walkthrough
+# Teek Launch: judge walkthrough
 
 Private budget bids. One shared opening purchase. Public Meteora trading.
 

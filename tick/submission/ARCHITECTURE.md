@@ -1,9 +1,9 @@
-# Tick Architecture
+# Teek Architecture
 
 ```mermaid
 flowchart LR
-  User[Judge / Trader Browser] --> UI[Tick UI]
-  UI --> Sim[Side-by-side CLOB vs Tick simulation]
+  User[Judge / Trader Browser] --> UI[Teek UI]
+  UI --> Sim[Side-by-side CLOB vs Teek simulation]
   UI --> Base[Solana devnet Anchor program]
   Base --> Delegate[MagicBlock delegation program]
   Delegate --> ER[MagicBlock hosted Ephemeral Rollup]
@@ -30,4 +30,4 @@ flowchart LR
 
 ## Why MagicBlock is required
 
-A normal Solana L1 demo can settle a batch, but it cannot make high-frequency batched order submission feel live. Tick needs delegated real-time state, cheap repeated writes, asynchronous VRF callbacks, and fast commit/undelegate semantics. Those are the core MagicBlock primitives, not decorative integrations.
+A normal Solana L1 demo can settle a batch, but it cannot make high-frequency batched order submission feel live. Teek needs delegated real-time state, cheap repeated writes, asynchronous VRF callbacks, and fast commit/undelegate semantics. Those are the core MagicBlock primitives, not decorative integrations.

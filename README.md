@@ -1,7 +1,9 @@
-# Tick
+# Teek
 
-Tick Launch is a private, pooled opening purchase for Meteora DBC on Solana.
+Teek Launch is a private, pooled opening purchase for Meteora DBC on Solana.
 The original batch-market demo remains available at `/market.html`.
+
+> Naming: the project is **Teek**. The deployed Solana program, the Rust crate and the `tick/` app folder keep their original internal name `tick`; program ID `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY` is unchanged.
 
 The existing demo compares a continuous order book with uniform-price batches running on MagicBlock Ephemeral Rollups and MagicBlock VRF. Its hosted ER orders are public: the batch window closes, but this deployment does not provide confidential bids.
 

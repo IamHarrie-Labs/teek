@@ -1,6 +1,6 @@
-# Tick Launch settlement
+# Teek Launch settlement
 
-Tick v1 combines sealed budget bids with one pooled opening purchase on a
+Teek v1 combines sealed budget bids with one pooled opening purchase on a
 fixed Meteora DBC curve. It does **not** discover a clearing price from limit
 orders: bidders specify quote amounts, and the configured curve determines
 the shared average purchase price. Limit-price discovery is future scope.
@@ -8,7 +8,7 @@ the shared average purchase price. Limit-price discovery is future scope.
 ## Immutable contract
 
 Create `Launch` and `SettlementState` in the same transaction. The base mint
-is a Tick PDA, not a creator-held key. The sidecar binds SHA256 of the complete
+is a Teek PDA, not a creator-held key. The sidecar binds SHA256 of the complete
 1048-byte DBC config, token metadata, and a positive minimum output at the
 raise cap. Configuration precedes any registration. Planned-mint registration
 and top-up reject without the canonical phase-0 sidecar. Legacy placeholder
@@ -34,7 +34,7 @@ DBC SDK 1.5.13; the integration suite checks offsets and discriminators.
    before issuing the request. Hash ordered bid accounts, bidder identities,
    funded and chosen amounts, terms, config, metadata, creator and launch.
    The scoped oracle callback must carry the same commitment.
-5. One Tick instruction CPIs DBC initialization (signed Tick mint and launch
+5. One Teek instruction CPIs DBC initialization (signed Teek mint and launch
    PDAs), creates the allocation vault, spends exactly the capped accepted
    quote amount on the first swap, and transfers DBC creator rights back to
    the immutable creator. There is no pool before this transaction. Every

@@ -28,7 +28,7 @@ for (const s of clob.snipes) snipeBySubTick.set(s.subTick, s);
 const app = document.getElementById("app")!;
 app.innerHTML = `
   <div class="hero">
-    <h1><span class="tick-dot"></span>Tick</h1>
+    <h1><span class="tick-dot"></span>Teek</h1>
     <p>
       Same order flow, two market structures. On the left, a continuous book —
       what every chain runs today. On the right, a sealed batch that claps shut,
@@ -59,7 +59,7 @@ app.innerHTML = `
 
     <div class="panel tick-panel">
       <div class="panel-title">
-        <h2>Tick — sealed batch</h2>
+        <h2>Teek — sealed batch</h2>
         <span class="tag tick">speed is worthless here</span>
       </div>
       <div class="state-row">
@@ -79,7 +79,7 @@ app.innerHTML = `
     </div>
     <div class="score-cell tick">
       <div class="num" id="tick-pnl">$0</div>
-      <div class="cap">sniper edge captured — Tick</div>
+      <div class="cap">sniper edge captured — Teek</div>
     </div>
   </div>
 
@@ -108,7 +108,7 @@ app.innerHTML = `
       here really lock your balance, land in a real batch order book on
       MagicBlock's hosted ER, and really clear at one price against MagicBlock's
       live VRF oracle. Orders in this market demo are publicly readable; private
-      bids are part of Tick Launch.
+      bids are part of Teek Launch.
     </p>
     <div class="onchain-grid">
       <div class="onchain-col">
