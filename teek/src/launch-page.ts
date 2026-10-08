@@ -1,10 +1,12 @@
 import './polyfills';
 import './launch-style.css';
+import './brand.css';
+import { brandHeader } from './brand';
 import { Connection, Keypair, PublicKey, Transaction, VersionedTransaction, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
-import { getMint, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } from '@solana/spl-token';
+import { getMint, unpackMint, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } from '@solana/spl-token';
 import { AnchorProvider } from '@coral-xyz/anchor';
 import nacl from 'tweetnacl';
-import { LaunchClient, type LaunchWallet, launchBidAddress } from '../../clients/launch';
+import { LaunchClient, type LaunchWallet, launchBidAddress, launchSettlement } from '../../clients/launch';
 import { parseAmount, formatAmount, averagePrice, escapeHtml as h, launchStage } from './launch-ui';
 import { retryingFetch } from '../../clients/rpc';
 
@@ -16,16 +18,18 @@ let generation = 0;
 let chainOffset = 0;
 let loading = false;
 let detailGeneration = 0;
+let discoverAll = false;
 type Venue = {publicKey:PublicKey; account:Awaited<ReturnType<LaunchClient['base']['account']['launch']['fetch']>>;
   settlement:Awaited<ReturnType<LaunchClient['base']['account']['settlementState']['fetch']>>; decimals:number; baseDecimals:number};
 let venues:Venue[] = [];
-app.innerHTML = `<header><a href="/" class="wordmark">teek<span> / launch</span></a><nav><span class="network">Solana devnet</span><button id="wallet">Connect wallet</button><button id="demo" class="quiet">Use demo wallet</button></nav></header>
-<main><section class="intro"><div class="eyebrow">PRIVATE BIDS · PUBLIC TRADING</div><h1>One opening.<br>Shared on your terms.</h1><div class="intro-aside"><p>Bid privately. Share one opening purchase.<br>Trade publicly on Meteora.</p><p class="muted">If the launch misses its terms, claim your refund.</p><button id="create" class="primary">Create a launch <span aria-hidden="true">↗</span></button></div></section>
+app.innerHTML = `${brandHeader('launch','<button id="wallet">Connect wallet</button><button id="demo" class="quiet">Use demo wallet</button>')}
+<main id="main-content"><section class="intro"><div class="eyebrow">PRIVATE BIDS · PUBLIC TRADING</div><h1>One opening.<br>On your terms.</h1><div class="intro-aside"><p>Bid privately. Share one opening purchase.<br>Trade publicly on Meteora.</p><p class="muted">If the launch misses its terms, claim your refund.</p><button id="create" class="primary">Create a launch <span aria-hidden="true">↗</span></button></div></section>
 <div class="notice">Devnet prototype · test tokens only. Funding is public. Bid amounts and edit history become public after close.</div>
-<section class="launches"><div class="section-title"><h2>Launches</h2><button id="refresh" class="quiet">Refresh</button></div><div id="list" aria-live="polite"><div class="skeleton">Loading launch terms…</div></div></section>
+<section class="demo-guide" aria-label="Start here"><div><h3>Start with a completed launch</h3><p>Inspect real terms and outcomes without a wallet. These recorded windows have closed.</p></div><div class="demo-links"><a href="?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY">Successful opening ↗</a><a href="?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X">Full refund ↗</a></div></section>
+<section class="launches"><div class="section-title"><h2 id="list-title">Featured launches</h2><div><button id="browse" class="quiet">Browse all</button> <button id="refresh" class="quiet">Refresh</button></div></div><div id="list" aria-live="polite"><div class="skeleton">Loading launch terms…</div></div></section>
 <section id="detail" hidden aria-label="Launch details"></section>
 <section class="explain"><article><span>01</span><h3>Accept the terms</h3><p>The raise cap, minimum output, curve configuration and creator are fixed before funding.</p></article><article><span>02</span><h3>Bid in private</h3><p>Fund before bidding opens. Edit your bid until close. Other bidders cannot read your bid during the window.</p></article><article><span>03</span><h3>Settle or refund</h3><p>The pool and opening purchase happen together. Winners share the actual output; unused funding is refunded.</p></article></section>
-<footer><span>Built with MagicBlock & Meteora</span><a href="/market.html">Explore the original market simulator ↗</a></footer></main>
+<footer class="page-footer"><span>Private bids. One opening. Public proof.</span><a href="/evidence.html">Explore verification & architecture ↗</a></footer></main>
 <div id="status" role="status" aria-live="polite" hidden></div>
 <dialog id="create-dialog"><form id="create-form"><div class="section-title"><h2>Create a launch</h2><button type="button" id="dismiss" aria-label="Close create launch">×</button></div><p class="muted">Terms are immutable after creation. Use a supported SPL / DAMM v2 curve with flat fees and immutable token metadata.</p>
 <div class="form-grid">${field('name','Token name','text','Teek Opening',true)}${field('symbol','Symbol','text','DEMO',true)}${field('quote','Quote mint address','text','',true)}${field('config','DBC configuration address','text','',true)}${field('minimum','Minimum raise (quote tokens)','text','0.1',true,'decimal')}${field('maximum','Raise cap (quote tokens)','text','0.6',true,'decimal')}${field('minbid','Minimum bid (quote tokens)','text','0.001',true,'decimal')}${field('minout','Minimum tokens received at cap','text','1',true,'decimal')}${field('opens','Funding closes / bids open','datetime-local','',true)}${field('closes','Bids close','datetime-local','',true)}${field('deadline','Settlement deadline','datetime-local','',true)}${field('uri','Metadata URL (optional)','url','',false)}</div>
@@ -35,7 +39,7 @@ const el = <T extends HTMLElement=HTMLElement>(id:string) => document.getElement
 function status(message:string,error=false){const box=el('status');box.hidden=false;box.className=error?'error':'';box.textContent=message;}
 function short(key:PublicKey){const s=key.toBase58();return `${s.slice(0,4)}…${s.slice(-4)}`;}
 function requireClient(){if(!client)throw Error('Connect a wallet or use a disposable devnet demo wallet first.');return client;}
-function errorText(error:unknown){const e=error as {error?:{errorMessage?:string};message?:string};return (e.error?.errorMessage??e.message??'Request failed. Try again.').replace(/https?:\/\/\S*token=\S*/g,'[private session]');}
+function errorText(error:unknown){const e=error as {error?:{errorMessage?:string};message?:string};const message=e.error?.errorMessage??e.message??'Request failed. Try again.';if(/429|rate limit/i.test(message))return 'Solana devnet is busy. Wait a moment and try again. Recorded launch receipts remain available on the Evidence page.';if(/failed to fetch|network error/i.test(message))return 'Could not reach Solana devnet. Check your connection and try again.';return message.replace(/https?:\/\/\S*token=\S*/g,'[private session]');}
 async function action(button:HTMLButtonElement,label:string,fn:()=>Promise<unknown>,refresh=true){if(button.disabled)return;const old=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent=label;status(label);try{const result=await fn();status(result&&typeof result==='object'&&'message'in result?String(result.message):'Confirmed. Your launch state is up to date.');if(typeof result==='string'&& /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(result)){const link=document.createElement('a');link.href=`https://explorer.solana.com/tx/${result}?cluster=devnet`;link.textContent=' View transaction ↗';link.target='_blank';link.rel='noreferrer';el('status').append(link);}if(refresh)await load();}catch(error){status(errorText(error),true);const inline=button.closest('form')?.querySelector('[role=alert]');if(inline)inline.textContent=errorText(error);}finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.id==='wallet'&&wallet?short(wallet.publicKey):old;}}
 function useWallet(w:LaunchWallet){wallet=w;client=new LaunchClient(connection,w);el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();}
 el<HTMLButtonElement>('demo').onclick=()=>{
@@ -53,20 +57,30 @@ el<HTMLButtonElement>('wallet').onclick=async()=>{
   await action(el('wallet'),'Connecting…',async()=>{await adapter.connect();useWallet(adapter);});
 };
 el<HTMLButtonElement>('refresh').onclick=()=>void load();
+el<HTMLButtonElement>('browse').onclick=()=>{discoverAll=!discoverAll;el('browse').textContent=discoverAll?'Show featured':'Browse all';el('list-title').textContent=discoverAll?'All launches':'Featured launches';void load();};
 async function load(quiet=false){
   if(loading)return;loading=true;
   const ticket=++generation;if(!quiet)el('list').innerHTML='<div class="skeleton">Loading launch terms…</div>';
   try{
     const reader=client??new LaunchClient(connection,{publicKey:PublicKey.default,signTransaction:async()=>{throw Error('Connect wallet');},signAllTransactions:async()=>{throw Error('Connect wallet');},signMessage:async()=>{throw Error('Connect wallet');}} as LaunchWallet);
-    const [launches,states,clock]=await Promise.all([reader.base.account.launch.all(),reader.base.account.settlementState.all(),connection.getAccountInfo(SYSVAR_CLOCK_PUBKEY)]);
+    if(!selected){const query=new URLSearchParams(location.search).get('launch');if(query)selected=new PublicKey(query);}
+    const featured=[...new Map(['4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY','B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X',...(selected?[selected.toBase58()]:[])].map(address=>[address,new PublicKey(address)])).values()];
+    // Direct linked/featured reads keep judging independent of expensive program scans.
+    const launchRead=discoverAll?reader.base.account.launch.all():reader.base.account.launch.fetchMultiple(featured).then(accounts=>accounts.flatMap((account,i)=>account?[{publicKey:featured[i],account}]:[]));
+    const stateRead=discoverAll?reader.base.account.settlementState.all():reader.base.account.settlementState.fetchMultiple(featured.map(launchSettlement)).then(accounts=>accounts.flatMap((account,i)=>account?[{publicKey:launchSettlement(featured[i]),account}]:[]));
+    const [launches,states,clock]=await Promise.all([launchRead,stateRead,connection.getAccountInfo(SYSVAR_CLOCK_PUBKEY)]);
     if(clock)chainOffset=Number(clock.data.readBigInt64LE(32))-Math.floor(Date.now()/1000);
     const map=new Map(states.map(x=>[x.account.launch.toBase58(),x.account]));const result:Venue[]=[];
+    // Batch and deduplicate shared mint/config reads instead of two RPCs per venue.
+    const keys=[...new Map(launches.filter(x=>map.has(x.publicKey.toBase58())).flatMap(x=>[x.account.quoteMint,x.account.terms.dbcConfig]).map(key=>[key.toBase58(),key])).values()];
+    const infos=new Map<string,Awaited<ReturnType<Connection['getAccountInfo']>>>();
+    for(let i=0;i<keys.length;i+=100){const chunk=keys.slice(i,i+100),accounts=await connection.getMultipleAccountsInfo(chunk);chunk.forEach((key,j)=>infos.set(key.toBase58(),accounts[j]));}
     for(const launch of launches){const settlement=map.get(launch.publicKey.toBase58());if(!settlement)continue;
-      const [mint,config]=await Promise.all([getMint(connection,launch.account.quoteMint),connection.getAccountInfo(launch.account.terms.dbcConfig)]);
-      if(!config)continue;result.push({...launch,settlement,decimals:mint.decimals,baseDecimals:config.data[8+227]});}
+      const mintInfo=infos.get(launch.account.quoteMint.toBase58()),config=infos.get(launch.account.terms.dbcConfig.toBase58());
+      if(!config||!mintInfo)continue;const mint=unpackMint(launch.account.quoteMint,mintInfo);result.push({...launch,settlement,decimals:mint.decimals,baseDecimals:config.data[8+227]});}
     if(ticket!==generation)return;venues=result.reverse();
     el('list').innerHTML=venues.length?venues.map(v=>`<button class="launch-row" data-launch="${v.publicKey}"><span class="token-symbol">${h(v.settlement.metadata.symbol.slice(0,2))}</span><span><strong>${h(v.settlement.metadata.name)}</strong><small>${h(v.settlement.metadata.symbol)} · ${short(v.publicKey)}</small></span><span class="row-terms"><strong>${formatAmount(v.account.terms.maxRaise.toString(),v.decimals)} quote tokens</strong><small>Raise cap</small></span><span class="badge">${stage(v)}</span><span aria-hidden="true">↗</span></button>`).join(''):'<div class="empty"><h3>No launch venues yet</h3><p>Create a launch with immutable terms, then invite bidders to fund before opening.</p><button id="first-create" class="primary">Create the first launch</button></div>';
-    document.querySelectorAll<HTMLButtonElement>('[data-launch]').forEach(button=>button.onclick=()=>{selected=new PublicKey(button.dataset.launch!);history.replaceState(null,'',`?launch=${selected}`);void detail();});
+    document.querySelectorAll<HTMLButtonElement>('[data-launch]').forEach(button=>button.onclick=()=>{selected=new PublicKey(button.dataset.launch!);history.replaceState(null,'',`?launch=${selected}`);void detail().catch(error=>status(errorText(error),true));});
     const first=el<HTMLButtonElement>('first-create');if(first)first.onclick=openCreate;
     if(!selected){const query=new URLSearchParams(location.search).get('launch');if(query)selected=new PublicKey(query);}
     if(selected)await detail();
@@ -76,6 +90,7 @@ function stage(v:Venue){const t=v.account.terms;return launchStage(v.account.sta
 async function detail(){
   const detailTicket=++detailGeneration;
   const v=venues.find(x=>x.publicKey.equals(selected!)),panel=el('detail');panel.hidden=false;
+  document.querySelectorAll<HTMLButtonElement>('[data-launch]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.launch===selected?.toBase58())));
   if(!v){panel.innerHTML='<div class="empty">This address is not a configured launch venue.</div>';return;}
   const t=v.account.terms,s=stage(v),count=v.account.bidCount;let own:Awaited<ReturnType<LaunchClient['readOwnBid']>>|undefined;
   // Own private state is read only after an explicit authentication action.
@@ -115,7 +130,7 @@ ${s==='Ready to settle'?`<button id="settle" class="primary">${v.settlement.phas
     }else{await c.authenticate();await c.edit(v.publicKey,value);}return undefined;
   });};}
   bind('read-bid','Authenticating…',async()=>{const c=requireClient();await c.authenticate();const bid=await c.readOwnBid(v.publicKey);return {message:`Your private bid: ${amount(bid.amount.toString())} quote tokens.`};},false);
-  bind('test-funds','Getting devnet test funds…',async()=>{const c=requireClient();const response=await fetch('http://127.0.0.1:8790/fund',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:c.wallet.publicKey.toBase58(),quoteMint:v.account.quoteMint.toBase58()})});const result=await response.json();if(!response.ok)throw Error(result.error??'Test funding unavailable. Start the local demo funding server.');return result.signature;});
+  bind('test-funds','Getting devnet test funds…',async()=>{const c=requireClient();const local=['127.0.0.1','localhost'].includes(location.hostname);const response=await fetch(local?'http://127.0.0.1:8790/fund':'/api/fund',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:c.wallet.publicKey.toBase58(),quoteMint:v.account.quoteMint.toBase58()})});const result=await response.json().catch(()=>({}));if(!response.ok)throw Error(result.error??(local?'Test funding unavailable. Start the local demo funding server.':'Test funding is unavailable right now.'));return result.signature??{message:'This wallet already has test funds.'};});
   bind('refund','Claiming refund…',async()=>{const c=requireClient();if(s==='Refund deadline reached')await c.expire(v.publicKey);const address=launchBidAddress(v.publicKey,c.wallet.publicKey),info=await connection.getAccountInfo(address);
     if(!info?.owner.equals(c.base.programId)){await c.authenticate();await c.commitBid(v.publicKey,address);await poll(async()=>!!(await connection.getAccountInfo(address))?.owner.equals(c.base.programId),'bid return for refund');}
     const bid=await c.base.account.launchBid.fetch(address);if(bid.funded.isZero())return {message:'Your deposit has already been refunded.'};const destination=await ata(v.account.quoteMint);return c.withdraw(v.publicKey,destination,bid.funded);});
@@ -138,4 +153,4 @@ el<HTMLFormElement>('create-form').onsubmit=event=>{event.preventDefault();const
   selected=await c.initializeVenue(BigInt(Date.now()),quote,terms,parseAmount(value('minout'),configInfo.data[8+227]),metadata);history.replaceState(null,'',`?launch=${selected}`);el<HTMLDialogElement>('create-dialog').close();return undefined;
 });};
 void load();
-setInterval(()=>{if(!loading&&!document.querySelector('dialog[open]')&&!document.querySelector('[aria-busy="true"]'))void load(true);},15_000);
+setInterval(()=>{if(!document.hidden&&!loading&&!document.querySelector('dialog[open]')&&!document.querySelector('[aria-busy="true"]'))void load(true);},30_000);

@@ -1,4 +1,11 @@
-# Teek — Project Overview
+# Teek — Foundation and launch design notes
+
+> Historical snapshot from October 4, 2026. The status tables below record
+> planning at that date and are not the current implementation status.
+> The launch lifecycle is now deployed and evidenced on devnet. Read
+> [README](README.md), [judge walkthrough](teek/LAUNCH_DEMO.md),
+> [settlement review](teek/SETTLEMENT_REVIEW.md) and
+> [current quality/readiness review](teek/QUALITY_REVIEW.md) for current claims.
 
 _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a test or on-chain run (evidence listed); **Built** = implemented, not yet proven end to end; **Planned** = scheduled for the event week; **Out of scope** = deliberately not doing now._
 

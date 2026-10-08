@@ -23,3 +23,6 @@ magicblock-test-storage/
 .claude/
 .superstack/
 *.log
+
+.vercel
+.env*

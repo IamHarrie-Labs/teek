@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci && npm ci --prefix teek",
+  "buildCommand": "npm run build --prefix teek",
+  "outputDirectory": "teek/dist",
+  "functions": {
+    "api/fund.ts": { "maxDuration": 60 }
+  }
+}

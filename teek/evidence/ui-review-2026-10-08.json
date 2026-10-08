@@ -1,0 +1,383 @@
+{
+  "report": [
+    {
+      "page": "home",
+      "width": 375,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#top",
+        "#product",
+        "#launches",
+        "#how",
+        "/evidence.html",
+        "/launch.html",
+        "#launches",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "#top",
+        "/launch.html",
+        "/market.html"
+      ]
+    },
+    {
+      "page": "home",
+      "width": 768,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#top",
+        "#product",
+        "#launches",
+        "#how",
+        "/evidence.html",
+        "/launch.html",
+        "#launches",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "#top",
+        "/launch.html",
+        "/market.html"
+      ]
+    },
+    {
+      "page": "home",
+      "width": 1280,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#top",
+        "#product",
+        "#launches",
+        "#how",
+        "/evidence.html",
+        "/launch.html",
+        "#launches",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "#top",
+        "/launch.html",
+        "/market.html"
+      ]
+    },
+    {
+      "page": "launch",
+      "width": 375,
+      "overflow": false,
+      "title": "One opening.\nOn your terms.",
+      "main": true,
+      "labels": true,
+      "load": "BA\nTick Refund\nBACK · B2Ps…1Y4X\nRefunds available\n↗\nOP\nTick Opening\nOPEN · 4orf…WuwY\nSettled\n↗",
+      "detail": "LAUNCH TERMS\nTick Opening\nSettled\nMinimum raise\n0.1\nRaise cap\n0.6\nMinimum output at cap\n1 OPEN\nFunding closes\n10/6/2026, 5:09:19 AM\nBids close\n10/6/2026, 5:10:09 AM\nSettlement deadline\n10/6/2026, 5:15:09 AM\nRegistered wallets\n2 / 24\nCreator\nBtiH…zeG2 · Copy\n\nQuote mint: GR5J…ADPj ↗ · View fixed curve ↗\n\nYour public funding: No funding yet. Bid amounts remain hidden until close; public funding does not equal a bid.\n\nYour participation\n\nConnect a wallet or use the demo wallet to participate.\n\nOpening purchase: 0.6 quote tokens for 1,897,418.306355 OPEN. Tokens are shared pro rata; indivisible units use VRF rounding.\n\nTerms → outcome\nCondition\tAccepted terms\tObserved on Solana\nQuote purchase\tCap 0.6\t0.6 spent\nTokens received\tAt least 1 at this raise\t1,897,418.306355\nPurchase price\tShared average; native fees included\t0.000000316219 quote per token",
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/address/GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj?cluster=devnet",
+        "https://explorer.solana.com/address/BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy?cluster=devnet",
+        "/evidence.html"
+      ]
+    },
+    {
+      "page": "launch-detail",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "page": "launch",
+      "width": 768,
+      "overflow": false,
+      "title": "One opening.\nOn your terms.",
+      "main": true,
+      "labels": true,
+      "load": "BA\nTick Refund\nBACK · B2Ps…1Y4X\nRefunds available\n↗\nOP\nTick Opening\nOPEN · 4orf…WuwY\nSettled\n↗",
+      "detail": "LAUNCH TERMS\nTick Opening\nSettled\nMinimum raise\n0.1\nRaise cap\n0.6\nMinimum output at cap\n1 OPEN\nFunding closes\n10/6/2026, 5:09:19 AM\nBids close\n10/6/2026, 5:10:09 AM\nSettlement deadline\n10/6/2026, 5:15:09 AM\nRegistered wallets\n2 / 24\nCreator\nBtiH…zeG2 · Copy\n\nQuote mint: GR5J…ADPj ↗ · View fixed curve ↗\n\nYour public funding: No funding yet. Bid amounts remain hidden until close; public funding does not equal a bid.\n\nYour participation\n\nConnect a wallet or use the demo wallet to participate.\n\nOpening purchase: 0.6 quote tokens for 1,897,418.306355 OPEN. Tokens are shared pro rata; indivisible units use VRF rounding.\n\nTerms → outcome\nCondition\tAccepted terms\tObserved on Solana\nQuote purchase\tCap 0.6\t0.6 spent\nTokens received\tAt least 1 at this raise\t1,897,418.306355\nPurchase price\tShared average; native fees included\t0.000000316219 quote per token",
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/address/GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj?cluster=devnet",
+        "https://explorer.solana.com/address/BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy?cluster=devnet",
+        "/evidence.html"
+      ]
+    },
+    {
+      "page": "launch-detail",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "launch",
+      "width": 1280,
+      "overflow": false,
+      "title": "One opening.\nOn your terms.",
+      "main": true,
+      "labels": true,
+      "load": "BA\nTick Refund\nBACK · B2Ps…1Y4X\n1.2 quote tokens\nRaise cap\nRefunds available\n↗\nOP\nTick Opening\nOPEN · 4orf…WuwY\n0.6 quote tokens\nRaise cap\nSettled\n↗",
+      "detail": "LAUNCH TERMS\nTick Opening\nSettled\nMinimum raise\n0.1\nRaise cap\n0.6\nMinimum output at cap\n1 OPEN\nFunding closes\n10/6/2026, 5:09:19 AM\nBids close\n10/6/2026, 5:10:09 AM\nSettlement deadline\n10/6/2026, 5:15:09 AM\nRegistered wallets\n2 / 24\nCreator\nBtiH…zeG2 · Copy\n\nQuote mint: GR5J…ADPj ↗ · View fixed curve ↗\n\nYour public funding: No funding yet. Bid amounts remain hidden until close; public funding does not equal a bid.\n\nYour participation\n\nConnect a wallet or use the demo wallet to participate.\n\nOpening purchase: 0.6 quote tokens for 1,897,418.306355 OPEN. Tokens are shared pro rata; indivisible units use VRF rounding.\n\nTerms → outcome\nCondition\tAccepted terms\tObserved on Solana\nQuote purchase\tCap 0.6\t0.6 spent\nTokens received\tAt least 1 at this raise\t1,897,418.306355\nPurchase price\tShared average; native fees included\t0.000000316219 quote per token",
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/address/GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj?cluster=devnet",
+        "https://explorer.solana.com/address/BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy?cluster=devnet",
+        "/evidence.html"
+      ]
+    },
+    {
+      "page": "launch-detail",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "page": "create-dialog",
+      "open": true,
+      "focus": "dismiss"
+    },
+    {
+      "page": "escape",
+      "closed": true
+    },
+    {
+      "page": "market",
+      "width": 375,
+      "overflow": false,
+      "title": "Same flow.\nDifferent outcomes.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "market",
+      "width": 768,
+      "overflow": false,
+      "title": "Same flow.\nDifferent outcomes.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "market",
+      "width": 1280,
+      "overflow": false,
+      "title": "Same flow.\nDifferent outcomes.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "pause",
+      "before": "pause",
+      "after": "resume"
+    },
+    {
+      "page": "evidence",
+      "width": 375,
+      "overflow": false,
+      "title": "A promise.\nWith receipts.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "https://explorer.solana.com/tx/4SWNrXFLhBsM8UjaNYBT97TepJnyX5PxmVEEx25y7WqcWCeMNV8VvL3WEWsMqqkTfKAJFEfBE3UaX8S4v2SzsFdf?cluster=devnet",
+        "https://explorer.solana.com/tx/4ztcbjnM1rGntfXui8D3o9cjnjYhQpQQtZmjeBp3HrzqqVEHncKozYvbbKaPXLmFDu3iaMwgUHwyVrsbktfmqCAv?cluster=devnet",
+        "https://explorer.solana.com/tx/3VJfejJ8hGWykJq7h1cShkeT2KQHHZHazCXvw23Yx5kphDkDNrREnpEpA3B9ELwaVUUYVNzACWBpfHtYJSMVZWNr?cluster=devnet",
+        "https://explorer.solana.com/tx/4o1mNtPqUFvETDCnaENH9ZWdNYao16uRoqYH2RzXDyroYbsXfsy7dy5yLEDRUGhLH6A8gr1b7ytubjdx3ogVN4jx?cluster=devnet",
+        "https://explorer.solana.com/tx/5J2r6yPGxR5RokssCcXNcT6Mwg1JdJP1yxsRirPWZLReheFYg1nMKYKaHmwwpZ4RFkJTpMbUuUiRq15RCQoEdXs5?cluster=devnet",
+        "https://explorer.solana.com/tx/4FRy5NBPKevT6UQKqJCWrZbMzganphBZL6KbLVw27xksq5jkawxv6HfKFZEqz6NjwVUqWzGV3zUJohNq6aFvRJYF?cluster=devnet",
+        "https://explorer.solana.com/tx/43TbZeCGHaR3V73i2TjDZnaP6QsNRAqtyCNDGMyxjsZPYqAxkfSksQApxCcgZqGUrvPhGWpo2dxsemq98Mk5wyKA?cluster=devnet",
+        "https://explorer.solana.com/tx/65FrAecNB5VK1vTcEZVoYh5SW9JZnLdrqekng4qouFFDz6QJ57BkrNiSwnPFxxzGCNd5juQgfqXGNctX5yiUm14n?cluster=devnet",
+        "https://explorer.solana.com/tx/5donPhsRwH7izvfJZG3szaBTLf2T6aYRNsy9E7sZjqyqwRBrbTgmtr9B5B3zMLuxBk82DYCL13of2AgsBzVckLfL?cluster=devnet",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/tx/2C2k5YWN2JoCWxmRC6hfS2v4T5aa67FaQVyt1jpsq6X1zXDvsyEETRUxE7ktZm8Wx7BwsEGybhLA2uvRHBj4yBks?cluster=devnet",
+        "https://explorer.solana.com/tx/4XgThcGDtytUb6dv4QNsUdK45eN2fgCSnFq9jsBgNtnEHNop2TsmA2ckgK6aXc6JTPvPkNTDJQVPMJzCYtdVDz3x?cluster=devnet",
+        "https://explorer.solana.com/tx/5nqxMNbxDfKEgUMyHAUfB9Z99akidKbeYovaERjux4z2a7odiwkiMMo3QDaJPdBUzxosygJEXaSmiGEZxKzsqsb5?cluster=devnet",
+        "https://explorer.solana.com/tx/4baEsM5PfvrifRTZJjKZHeTD6Qg3PTF9cVKBJpywQ4pSE2fKjwHG6UH3yr8shD6SdehKYqnMdKmdyFhD1DZCAqmz?cluster=devnet",
+        "https://explorer.solana.com/tx/5QkDm1taXJCVZH1khbodSLca4cCkvECjVKtxhz2skmUE4nj6bgSjTYdvbW4rqCDQSe7kWkYkgVpavFcj6J9juZY7?cluster=devnet",
+        "https://explorer.solana.com/tx/4rXSuuBGYs7gbLYxPyEdNRunZZSZ1W47cY16SyVUdw4wtDakY79us7rT2eNhzXx6Ffy1zWCZ2Auoe8qWnKGR9r9x?cluster=devnet",
+        "https://explorer.solana.com/tx/5iJ5WFNQD2SSSB9C3Po8fCpwk8YDTjtGSX96yjw5keJ5eDwF5qnZpZ1nYagVbne4vpEJVK4JmuYcdphRhARqKNgr?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "evidence",
+      "width": 768,
+      "overflow": false,
+      "title": "A promise.\nWith receipts.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "https://explorer.solana.com/tx/4SWNrXFLhBsM8UjaNYBT97TepJnyX5PxmVEEx25y7WqcWCeMNV8VvL3WEWsMqqkTfKAJFEfBE3UaX8S4v2SzsFdf?cluster=devnet",
+        "https://explorer.solana.com/tx/4ztcbjnM1rGntfXui8D3o9cjnjYhQpQQtZmjeBp3HrzqqVEHncKozYvbbKaPXLmFDu3iaMwgUHwyVrsbktfmqCAv?cluster=devnet",
+        "https://explorer.solana.com/tx/3VJfejJ8hGWykJq7h1cShkeT2KQHHZHazCXvw23Yx5kphDkDNrREnpEpA3B9ELwaVUUYVNzACWBpfHtYJSMVZWNr?cluster=devnet",
+        "https://explorer.solana.com/tx/4o1mNtPqUFvETDCnaENH9ZWdNYao16uRoqYH2RzXDyroYbsXfsy7dy5yLEDRUGhLH6A8gr1b7ytubjdx3ogVN4jx?cluster=devnet",
+        "https://explorer.solana.com/tx/5J2r6yPGxR5RokssCcXNcT6Mwg1JdJP1yxsRirPWZLReheFYg1nMKYKaHmwwpZ4RFkJTpMbUuUiRq15RCQoEdXs5?cluster=devnet",
+        "https://explorer.solana.com/tx/4FRy5NBPKevT6UQKqJCWrZbMzganphBZL6KbLVw27xksq5jkawxv6HfKFZEqz6NjwVUqWzGV3zUJohNq6aFvRJYF?cluster=devnet",
+        "https://explorer.solana.com/tx/43TbZeCGHaR3V73i2TjDZnaP6QsNRAqtyCNDGMyxjsZPYqAxkfSksQApxCcgZqGUrvPhGWpo2dxsemq98Mk5wyKA?cluster=devnet",
+        "https://explorer.solana.com/tx/65FrAecNB5VK1vTcEZVoYh5SW9JZnLdrqekng4qouFFDz6QJ57BkrNiSwnPFxxzGCNd5juQgfqXGNctX5yiUm14n?cluster=devnet",
+        "https://explorer.solana.com/tx/5donPhsRwH7izvfJZG3szaBTLf2T6aYRNsy9E7sZjqyqwRBrbTgmtr9B5B3zMLuxBk82DYCL13of2AgsBzVckLfL?cluster=devnet",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/tx/2C2k5YWN2JoCWxmRC6hfS2v4T5aa67FaQVyt1jpsq6X1zXDvsyEETRUxE7ktZm8Wx7BwsEGybhLA2uvRHBj4yBks?cluster=devnet",
+        "https://explorer.solana.com/tx/4XgThcGDtytUb6dv4QNsUdK45eN2fgCSnFq9jsBgNtnEHNop2TsmA2ckgK6aXc6JTPvPkNTDJQVPMJzCYtdVDz3x?cluster=devnet",
+        "https://explorer.solana.com/tx/5nqxMNbxDfKEgUMyHAUfB9Z99akidKbeYovaERjux4z2a7odiwkiMMo3QDaJPdBUzxosygJEXaSmiGEZxKzsqsb5?cluster=devnet",
+        "https://explorer.solana.com/tx/4baEsM5PfvrifRTZJjKZHeTD6Qg3PTF9cVKBJpywQ4pSE2fKjwHG6UH3yr8shD6SdehKYqnMdKmdyFhD1DZCAqmz?cluster=devnet",
+        "https://explorer.solana.com/tx/5QkDm1taXJCVZH1khbodSLca4cCkvECjVKtxhz2skmUE4nj6bgSjTYdvbW4rqCDQSe7kWkYkgVpavFcj6J9juZY7?cluster=devnet",
+        "https://explorer.solana.com/tx/4rXSuuBGYs7gbLYxPyEdNRunZZSZ1W47cY16SyVUdw4wtDakY79us7rT2eNhzXx6Ffy1zWCZ2Auoe8qWnKGR9r9x?cluster=devnet",
+        "https://explorer.solana.com/tx/5iJ5WFNQD2SSSB9C3Po8fCpwk8YDTjtGSX96yjw5keJ5eDwF5qnZpZ1nYagVbne4vpEJVK4JmuYcdphRhARqKNgr?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "evidence",
+      "width": 1280,
+      "overflow": false,
+      "title": "A promise.\nWith receipts.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY",
+        "https://explorer.solana.com/tx/4SWNrXFLhBsM8UjaNYBT97TepJnyX5PxmVEEx25y7WqcWCeMNV8VvL3WEWsMqqkTfKAJFEfBE3UaX8S4v2SzsFdf?cluster=devnet",
+        "https://explorer.solana.com/tx/4ztcbjnM1rGntfXui8D3o9cjnjYhQpQQtZmjeBp3HrzqqVEHncKozYvbbKaPXLmFDu3iaMwgUHwyVrsbktfmqCAv?cluster=devnet",
+        "https://explorer.solana.com/tx/3VJfejJ8hGWykJq7h1cShkeT2KQHHZHazCXvw23Yx5kphDkDNrREnpEpA3B9ELwaVUUYVNzACWBpfHtYJSMVZWNr?cluster=devnet",
+        "https://explorer.solana.com/tx/4o1mNtPqUFvETDCnaENH9ZWdNYao16uRoqYH2RzXDyroYbsXfsy7dy5yLEDRUGhLH6A8gr1b7ytubjdx3ogVN4jx?cluster=devnet",
+        "https://explorer.solana.com/tx/5J2r6yPGxR5RokssCcXNcT6Mwg1JdJP1yxsRirPWZLReheFYg1nMKYKaHmwwpZ4RFkJTpMbUuUiRq15RCQoEdXs5?cluster=devnet",
+        "https://explorer.solana.com/tx/4FRy5NBPKevT6UQKqJCWrZbMzganphBZL6KbLVw27xksq5jkawxv6HfKFZEqz6NjwVUqWzGV3zUJohNq6aFvRJYF?cluster=devnet",
+        "https://explorer.solana.com/tx/43TbZeCGHaR3V73i2TjDZnaP6QsNRAqtyCNDGMyxjsZPYqAxkfSksQApxCcgZqGUrvPhGWpo2dxsemq98Mk5wyKA?cluster=devnet",
+        "https://explorer.solana.com/tx/65FrAecNB5VK1vTcEZVoYh5SW9JZnLdrqekng4qouFFDz6QJ57BkrNiSwnPFxxzGCNd5juQgfqXGNctX5yiUm14n?cluster=devnet",
+        "https://explorer.solana.com/tx/5donPhsRwH7izvfJZG3szaBTLf2T6aYRNsy9E7sZjqyqwRBrbTgmtr9B5B3zMLuxBk82DYCL13of2AgsBzVckLfL?cluster=devnet",
+        "/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X",
+        "https://explorer.solana.com/tx/2C2k5YWN2JoCWxmRC6hfS2v4T5aa67FaQVyt1jpsq6X1zXDvsyEETRUxE7ktZm8Wx7BwsEGybhLA2uvRHBj4yBks?cluster=devnet",
+        "https://explorer.solana.com/tx/4XgThcGDtytUb6dv4QNsUdK45eN2fgCSnFq9jsBgNtnEHNop2TsmA2ckgK6aXc6JTPvPkNTDJQVPMJzCYtdVDz3x?cluster=devnet",
+        "https://explorer.solana.com/tx/5nqxMNbxDfKEgUMyHAUfB9Z99akidKbeYovaERjux4z2a7odiwkiMMo3QDaJPdBUzxosygJEXaSmiGEZxKzsqsb5?cluster=devnet",
+        "https://explorer.solana.com/tx/4baEsM5PfvrifRTZJjKZHeTD6Qg3PTF9cVKBJpywQ4pSE2fKjwHG6UH3yr8shD6SdehKYqnMdKmdyFhD1DZCAqmz?cluster=devnet",
+        "https://explorer.solana.com/tx/5QkDm1taXJCVZH1khbodSLca4cCkvECjVKtxhz2skmUE4nj6bgSjTYdvbW4rqCDQSe7kWkYkgVpavFcj6J9juZY7?cluster=devnet",
+        "https://explorer.solana.com/tx/4rXSuuBGYs7gbLYxPyEdNRunZZSZ1W47cY16SyVUdw4wtDakY79us7rT2eNhzXx6Ffy1zWCZ2Auoe8qWnKGR9r9x?cluster=devnet",
+        "https://explorer.solana.com/tx/5iJ5WFNQD2SSSB9C3Po8fCpwk8YDTjtGSX96yjw5keJ5eDwF5qnZpZ1nYagVbne4vpEJVK4JmuYcdphRhARqKNgr?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "submission",
+      "width": 375,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/evidence.html",
+        "https://explorer.solana.com/address/B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "submission",
+      "width": 768,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/evidence.html",
+        "https://explorer.solana.com/address/B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "submission",
+      "width": 1280,
+      "overflow": false,
+      "title": "Private bids.\nOne opening.",
+      "main": true,
+      "labels": true,
+      "links": [
+        "#main-content",
+        "/",
+        "/launch.html",
+        "/market.html",
+        "/evidence.html",
+        "/evidence.html",
+        "https://explorer.solana.com/address/B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY?cluster=devnet",
+        "https://github.com/IamHarrie-Labs/teek",
+        "/launch.html"
+      ]
+    },
+    {
+      "page": "refund-live",
+      "detail": "LAUNCH TERMS\nTick Refund\nRefunds available\nMinimum raise\n1\nRaise cap\n1.2\nMinimum output at cap\n1 BACK\nFunding closes\n10/6/2026, 5:12:12 AM\nBids close\n10/6/2026, 5:13:02 AM\nSettlement deadline\n10/6/2026, 5:18:02 AM\nRegistered wallets\n2 / 24\nCreator\nBtiH…zeG2 · Copy\n\nQuote mint: GR5J…ADPj ↗ · View fixed curve ↗\n\nYour public funding: No funding yet. Bid amounts remain hidden until close; public funding does not equal a bid.\n\nYour participation\n\nConnect a wallet or use the demo wallet to participate.\n\nTerms → outcome\nCondition\tAccepted terms\tObserved on Solana\nMinimum raise\t1\tLaunch entered refunds\nOpening purchase\tOnly when launch terms pass\t0 spent\nDeposits\tFull refunds on failure or cancellation\tRefund withdrawals enabled\n\nRefund status can also follow cancellation or expiry. Each funded wallet claims its own deposit after its bid returns to Solana."
+    }
+  ],
+  "errors": []
+}

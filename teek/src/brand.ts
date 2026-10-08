@@ -1,0 +1,5 @@
+export const teekMark = `<svg class="brand-mark" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" focusable="false"><rect x="21" y="4" width="26" height="26" rx="2" fill="currentColor"/><rect x="21" y="34" width="26" height="26" rx="2" fill="currentColor"/><rect x="19" y="24" width="16" height="16" rx="1" transform="rotate(-20 27 32)" fill="currentColor"/></svg>`;
+
+export function brandHeader(active: 'launch' | 'market' | 'evidence', actions = '') {
+  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="app-header"><a href="/" class="app-brand" aria-label="Teek home">${teekMark}<span>TEEK</span></a><nav class="app-nav" aria-label="Main navigation"><a href="/launch.html" ${active === 'launch' ? 'aria-current="page"' : ''}>Launches</a><a href="/market.html" ${active === 'market' ? 'aria-current="page"' : ''}>Simulator</a><a href="/evidence.html" ${active === 'evidence' ? 'aria-current="page"' : ''}>Evidence</a></nav><div class="app-actions"><span class="network">Solana devnet</span>${actions}</div></header>`;
+}

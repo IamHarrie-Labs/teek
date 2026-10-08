@@ -1,0 +1,10 @@
+node_modules
+teek/node_modules
+target
+test-ledger
+magicblock-test-storage
+teek/dist
+teek/reference-video
+.claude
+.superstack
+*.log

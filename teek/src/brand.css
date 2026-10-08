@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+
+/* Shared identity approved from the cinematic Teek landing page. */
+:root{color-scheme:dark;--bg:#1a1715;--panel:#25201d;--panel-border:#65554a;--border:#65554a;--text:#f5ebdc;--dim:#c5b5a5;--muted:#c5b5a5;--accent:#ff998c;--coral:#fa655b;--green:#9fd2ab;--success:#9fd2ab;--red:#ff9a9a;--error:#ff9a9a;--amber:#efc38a;--warning:#efc38a;--radius:14px;--display:'Instrument Serif',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:ui-monospace,Consolas,monospace;font-family:var(--sans);font-synthesis:none}
+body{background:var(--bg);color:var(--text)}
+.app-header{max-width:1248px;margin:auto;min-height:104px;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--border)}
+.app-brand{display:flex;align-items:center;gap:14px;color:var(--text);text-decoration:none;font:500 20px var(--sans);white-space:nowrap}
+.brand-mark{display:block;width:34px;height:34px;flex:0 0 34px}
+.app-nav{display:flex;align-items:center;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--border);border-radius:16px}
+.app-nav a{display:flex;align-items:center;min-height:44px;padding:8px 16px;color:var(--muted);text-decoration:none;font-size:13px;border-radius:12px}
+.app-nav a[aria-current],.app-nav a:hover{background:#3b3029;color:var(--text)}
+.app-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.network{font:500 12px var(--sans);color:var(--warning);white-space:nowrap}
+.network::before{content:'';display:inline-block;width:7px;height:7px;background:var(--warning);border-radius:50%;margin-right:7px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.skip-link{position:fixed;left:16px;top:-100px;z-index:20;background:var(--text);color:var(--bg);padding:14px;border-radius:8px}
+.skip-link:focus{top:16px}
+button{font-family:var(--sans);min-height:44px}
+button.primary,.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+button.primary:hover,.primary:hover{background:#eed4bb;border-color:#eed4bb}
+.page-footer{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:36px 0;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+.page-footer a{color:var(--text);text-underline-offset:4px}
+@media(max-width:1000px){.app-header{flex-wrap:wrap}.app-actions{margin-left:auto}.app-nav{order:3;width:100%;justify-content:center}}
+@media(max-width:600px){.app-header{padding:20px;gap:16px}.app-actions{gap:8px}.app-actions .network{width:100%;text-align:right}.app-actions button{font-size:12px;padding:8px 10px}.app-brand{font-size:17px;gap:8px}.app-nav a{flex:1;justify-content:center;padding:8px 12px}.page-footer{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}

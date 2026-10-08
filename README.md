@@ -27,8 +27,14 @@ and [verified upgrade](teek/evidence/settlement-upgrade-devnet.json); the curren
 The independent review is a development review; this is not mainnet-ready.
 
 Install root and `teek/` dependencies, then `cd teek && npm run dev`.
-Open `http://127.0.0.1:5173/`. Connect a Solana wallet or use the disposable
+Open `http://127.0.0.1:5173/launch.html`. Connect a Solana wallet or use the disposable
 browser demo wallet. Funds and launches are devnet-only synthetic test assets.
+
+The landing page is `/`; open `/launch.html` for the launch app,
+`/market.html` for the original simulator, `/evidence.html` for recorded proof,
+and `/submission/submission.html` for the local submission brief. Use Vite's
+printed port if 5173 is occupied. The [quality review](teek/QUALITY_REVIEW.md)
+documents checked layouts, live read results and outstanding submission work.
 
 From the repository root, with a funded devnet wallet in `ANCHOR_WALLET`:
 

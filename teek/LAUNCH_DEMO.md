@@ -13,8 +13,12 @@ The creator can cancel before settlement; returned bids can claim full refunds.
 From the repository root, install dependencies in both root and `teek/`.
 Run `cd teek && npm run dev -- --host 127.0.0.1`.
 
-- Success: `http://127.0.0.1:5173/?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY`
-- Refund: `http://127.0.0.1:5173/?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X`
+- Success: `http://127.0.0.1:5173/launch.html?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY`
+- Refund: `http://127.0.0.1:5173/launch.html?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X`
+
+Vite may select another port if 5173 is occupied; use the port printed in the terminal.
+The landing page is `/`, recorded proof is `/evidence.html`, and the local
+submission brief is `/submission/submission.html`.
 
 Both pages read real Solana account state. Their bidding windows have ended;
 new viewers can inspect terms/outcomes, but cannot enter these old launches.

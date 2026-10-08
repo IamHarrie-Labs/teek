@@ -1,5 +1,8 @@
 import "./polyfills";
 import "./style.css";
+import "./brand.css";
+import "./market-brand.css";
+import { brandHeader } from './brand';
 import { generateFairValuePath } from "./sim/fairValue";
 import { runClobSim, type ClobSnipeEvent } from "./sim/clobEngine";
 import { runBatchSim, type BatchEvent } from "./sim/batchEngine";
@@ -27,13 +30,14 @@ for (const s of clob.snipes) snipeBySubTick.set(s.subTick, s);
 // --- DOM scaffold -------------------------------------------------------
 const app = document.getElementById("app")!;
 app.innerHTML = `
+  ${brandHeader('market')}
+  <main id="main-content">
   <div class="hero">
-    <h1><span class="teek-dot"></span>Teek</h1>
+    <p class="eyebrow">THE ORIGINAL MARKET EXPERIMENT</p>
+    <h1>Same flow.<br>Different outcomes.</h1>
     <p>
-      Same order flow, two market structures. On the left, a continuous book —
-      what every chain runs today. On the right, a sealed batch that claps shut,
-      clears at one price, and reveals. Watch the sniper's real speed edge
-      survive on the left and die on the right.
+      Compare a continuous order book with uniform-price batches using the
+      same simulated demand. Watch how market structure changes the bot’s outcome.
     </p>
   </div>
 
@@ -54,13 +58,13 @@ app.innerHTML = `
         <span class="value" id="clob-value">—</span>
       </div>
       <div class="clob-tape" id="clob-tape"></div>
-      <div class="chart-wrap"><canvas id="clob-chart" width="520" height="120"></canvas></div>
+      <div class="chart-wrap"><canvas id="clob-chart" width="520" height="120" role="img" aria-label="Continuous order book simulated bot profit; current value shown below"></canvas></div>
     </div>
 
     <div class="panel teek-panel">
       <div class="panel-title">
         <h2>Teek — sealed batch</h2>
-        <span class="tag teek">speed is worthless here</span>
+        <span class="tag teek">one price per batch</span>
       </div>
       <div class="state-row">
         <span>clearing price</span>
@@ -68,7 +72,7 @@ app.innerHTML = `
       </div>
       <div class="seal-visual sealed" id="teek-seal"></div>
       <div class="fills-line" id="teek-fills">&nbsp;</div>
-      <div class="chart-wrap"><canvas id="teek-chart" width="520" height="120"></canvas></div>
+      <div class="chart-wrap"><canvas id="teek-chart" width="520" height="120" role="img" aria-label="Batch market simulated bot profit; current value shown below"></canvas></div>
     </div>
   </div>
 
@@ -84,11 +88,11 @@ app.innerHTML = `
   </div>
 
   <div class="verdict">
-    Same bot. Same size. Same fair-value path. On a continuous book it picks off
-    every stale quote the instant news moves the market — <strong>real, compounding
-    alpha from being faster</strong>. Sealed into a uniform-price batch, it can only
-    guess blind like everyone else, and pays the same spread every other trader
-    pays — <strong>no informational edge survives the seal</strong>.
+    Same bot, size and simulated fair-value path. The continuous-book strategy
+    picks off stale quotes after price jumps. In the batch model, fills execute
+    at one price. <strong>This experiment illustrates the effect of batching;</strong>
+    it does not prove that every trading strategy loses its advantage.
+    Simulation seed: ${SEED}.
   </div>
 
   <div class="controls">
@@ -131,8 +135,8 @@ app.innerHTML = `
         <div class="onchain-row"><span>batch</span><span class="mono" id="onchain-batch">—</span></div>
         <div class="onchain-row"><span>orders in current batch</span><span class="mono" id="onchain-order-count">—</span></div>
         <div class="order-form">
-          <input id="onchain-price" type="number" placeholder="price" value="100" />
-          <input id="onchain-qty" type="number" placeholder="qty" value="10" />
+          <label for="onchain-price">Price<input id="onchain-price" type="text" inputmode="numeric" autocomplete="off" value="100" /></label>
+          <label for="onchain-qty">Quantity<input id="onchain-qty" type="text" inputmode="numeric" autocomplete="off" value="10" /></label>
           <button id="onchain-buy">ER buy</button>
           <button id="onchain-sell">ER sell</button>
         </div>
@@ -146,10 +150,12 @@ app.innerHTML = `
       </div>
     </div>
   </div>
+  <footer class="page-footer"><span>Simulation results are illustrative. Hosted market orders are public.</span><a href="/launch.html">Explore private launch openings ↗</a></footer>
+  </main>
 `;
 
 // --- Playback state -------------------------------------------------
-let running = true;
+let running = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let speedMultiplier = 1;
 let subTick = 0; // how far through fairValue/clob we've revealed
 let lastPeriodShown = -1;
@@ -165,6 +171,7 @@ const clobPnlEl = document.getElementById("clob-pnl")!;
 const tickPnlEl = document.getElementById("teek-pnl")!;
 const speedBtn = document.getElementById("speed-btn")!;
 const pauseBtn = document.getElementById("pause-btn")!;
+pauseBtn.textContent = running ? 'pause' : 'resume';
 
 speedBtn.addEventListener("click", () => {
   speedMultiplier = speedMultiplier >= 4 ? 1 : speedMultiplier * 2;
@@ -700,4 +707,3 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
 
 refreshOnchainState();
 setInterval(refreshOnchainState, 15000);
-
