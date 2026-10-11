@@ -1,0 +1,24 @@
+{
+  "what": "One full launch run entirely through the live website, the way a judge would use it",
+  "site": "https://teek-navy.vercel.app",
+  "network": "devnet",
+  "date": "2026-10-11",
+  "launch": "Dh9Gfj3UyuVxT8DisDMhXhrP6LWY7kwNTRcCSfq5kTRc",
+  "creatorAndBidder": "browser demo wallet 6s1j…KPFH, funded by the hosted faucet",
+  "steps": [
+    "Used the demo wallet and pressed Get devnet test funds inside the Launch Studio",
+    "Published a launch from the Studio; the published terms matched the review screen",
+    "Deposited 0.3 test tokens and prepared a private bid before funding closed",
+    "Placed a private bid of 0.25 after bidding opened and read it back as the owner",
+    "Closed bidding, requested randomness and completed the opening purchase from the page",
+    "Claimed tokens and the unspent deposit"
+  ],
+  "result": {
+    "openingSpendQuote": "0.25",
+    "tokensReceived": "791412.170395 DEMO",
+    "averagePriceQuotePerToken": "0.000000315891",
+    "refundPaidQuote": "0.05",
+    "claimsCompleted": "1/1"
+  },
+  "openingPurchaseTransaction": "4wcLtE33DkRRVYasrmxviLjv1r2T3663bv4pgy41vJT5sV8Y5pEXXd4EuDt8SvJJhdK7kjsCDtDzBgcsCwJpBmWZ"
+}

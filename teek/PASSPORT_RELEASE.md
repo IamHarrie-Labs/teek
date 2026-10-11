@@ -35,8 +35,10 @@ No program changes or upgrades in this increment.
   identities persist until explicitly cleared, including completed drafts.
   The final review shows total supply before signing. The shared creator-config
   and publication helpers have now completed a fresh real devnet launch and a
-  same-draft retry without another spend. The browser signing flow still needs
-  a separate live UI run.
+  same-draft retry without another spend. On 2026-10-11 the browser flow was
+  run end to end on the live site with a demo wallet, from publishing through
+  bidding, settlement and claims. The record is in
+  `evidence/browser-lifecycle-devnet-2026-10-11.json`.
 
 ## Evidence
 
