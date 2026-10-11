@@ -11,8 +11,8 @@ Keep colors in CSS variables. Avoid coral-filled buttons with small ivory text.
 
 Use Instrument Serif for editorial headings, DM Sans for reading and controls,
 and system monospace for amounts and addresses. Fonts have system fallbacks.
-Use flat borders, generous space and consistent rounded surfaces. The mark is
-two stacked squares linked by a smaller square tilted left, shared from brand.ts.
+Use flat borders, generous space and consistent rounded surfaces. The approved Orbit mark uses two sweeping
+ivory arcs and a coral dot, paired with lowercase teek, shared from brand.ts.
 Copy should state the
 launch terms and next action clearly. Avoid fairness or privacy claims beyond
 the verified lifecycle: bid amounts are confidential during bidding, funding

@@ -1,0 +1,32 @@
+{
+  "report": [
+    {
+      "check": "minimum above cap rejected",
+      "error": "Use positive amounts, a cap at least equal to the minimum, and a minimum bid no greater than the cap."
+    },
+    {
+      "check": "live configuration review",
+      "text": "Studio Review REVIEW\nMinimum opening budget\n0.1\nOpening budget cap\n0.6\nMinimum bid\n0.001\nMinimum token output at cap\n1 REVIEW\nFunding ends / bids begin\n10/8/2026, 8:00:00 PM\nBidding ends\n10/8/2026, 8:10:00 PM\nSettlement deadline\n10/8/2026, 8:30:00 PM\nCreator share of native curve fee portion\n10%\nCreator / partner migrated LP allocation\n0% / 100%\nCurve migration quote threshold\n1,000\n\nThese are devnet test assets. Your launch terms become immutable when published. Publishing creates the launch escrow; the token and DBC opening purchase occur only when settlement succeeds.\n\nParticipants fund before bidding begins. Private bids can be edited until close, then bids and earlier edits become public. A missed minimum, cancellation or expiry enables refunds after bids return. Maximum 24 registered wallets.\n\nUnderlying configuration"
+    },
+    {
+      "check": "review layout",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "check": "review layout",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "check": "edit invalidates review",
+      "passed": true
+    },
+    {
+      "check": "draft restores on reload",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "transactionsSubmitted": 0
+}

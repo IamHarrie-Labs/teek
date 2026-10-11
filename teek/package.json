@@ -17,8 +17,10 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
     "@magicblock-labs/ephemeral-rollups-sdk": "^0.17.0",
+    "@meteora-ag/dynamic-bonding-curve-sdk": "1.5.13",
     "@solana/spl-token": "^0.4.15",
     "@solana/web3.js": "^1.99.0",
+    "bn.js": "^5.2.5",
     "buffer": "^6.0.3",
     "tweetnacl": "^1.0.3"
   }

@@ -1,10 +1,15 @@
-node_modules
-teek/node_modules
-target
-test-ledger
-magicblock-test-storage
-teek/dist
-teek/reference-video
-.claude
-.superstack
-*.log
+# Keep local test wallets, validator state and host credentials out of uploads.
+target/
+node_modules/
+teek/node_modules/
+teek/dist/
+.vercel/
+.env
+.env.*
+**/.env
+**/.env.*
+*-keypair.json
+**/id.json
+*.pem
+test-ledger/
+magicblock-test-storage/

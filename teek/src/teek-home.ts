@@ -7,7 +7,7 @@ const refundLaunch = 'B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X';
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <header class="site-header" aria-label="Primary navigation">
     <a class="brand" href="#top" aria-label="Teek home">
-      ${teekMark}<span>TEEK</span>
+      ${teekMark}<span>teek</span>
     </a>
     <nav class="nav-links" aria-label="Main navigation">
       <a href="#product">Product</a><a href="#launches">Launches</a><a href="#how">How it works</a><a href="/evidence.html">Evidence</a>
@@ -32,10 +32,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <div class="sun" aria-hidden="true"></div>
       <div class="product-heading">
         <p class="live-pill"><span></span> Live on devnet</p>
-        <h2 id="product-title">Launch terms that<br>execute themselves</h2>
+        <h2 id="product-title">Set the terms<br>before anyone bids.</h2>
       </div>
       <article class="browser-shell" aria-label="Teek launch dashboard preview">
-        <div class="browser-bar"><div class="traffic" aria-hidden="true"><i></i><i></i><i></i></div><div class="address"><span aria-hidden="true">◇</span> teek.app</div><span class="window-icon" aria-hidden="true">□</span></div>
+        <div class="browser-bar"><div class="traffic" aria-hidden="true"><i></i><i></i><i></i></div><div class="address"><span aria-hidden="true">◇</span> Recorded launch · devnet</div><span class="window-icon" aria-hidden="true">□</span></div>
         <div class="dashboard">
           <div class="dash-nav"><strong>TEEK</strong><span class="active">Overview</span><span>Private bids</span><span>Settlement</span><span>Evidence</span></div>
           <div class="dash-title"><div><p>OPEN · SETTLED</p><h3>Tick Opening</h3></div><a href="/launch.html?launch=${successLaunch}">View launch <span aria-hidden="true">↗</span></a></div>
@@ -45,15 +45,15 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
             <section class="metric"><p>Claims complete</p><strong>2 / 2</strong><small>Allocations + refunds</small><div class="bars" aria-label="Launch settlement stages"><i style="--h:42%"></i><i style="--h:58%"></i><i style="--h:72%"></i><i style="--h:88%"></i></div></section>
           </div>
           <div class="proof-grid">
-            <section class="proof"><span class="proof-icon" aria-hidden="true">⌁</span><div><p>Privacy proof</p><strong>Unauthorized read denied</strong><small>Bid amounts stayed confidential during the window.</small></div></section>
-            <section class="proof"><span class="proof-icon" aria-hidden="true">∞</span><div><p>Settlement proof</p><strong>Atomic pool + purchase</strong><small>The pool and opening purchase completed together.</small></div></section>
+            <section class="proof"><span class="proof-icon" aria-hidden="true">⌁</span><div><p>During bidding</p><strong>Outside read denied</strong><small>The recorded privacy check passed.</small></div></section>
+            <section class="proof"><span class="proof-icon" aria-hidden="true">∞</span><div><p>At settlement</p><strong>Pool and purchase in one transaction</strong><small>See the on-chain receipt.</small></div></section>
           </div>
         </div>
       </article>
     </section>
 
     <section class="launch-section" id="launches" aria-labelledby="launches-title">
-      <div class="section-intro"><p class="overline">Two outcomes. One contract.</p><h2 id="launches-title">The launch either executes<br>on your terms—or refunds.</h2><p>Teek keeps the promise visible from private bidding through public settlement.</p></div>
+      <div class="section-intro"><p class="overline">Recorded launches</p><h2 id="launches-title">One opened.<br>One returned the deposits.</h2><p>See both results on Solana devnet.</p></div>
       <div class="launch-cards">
         <a class="launch-card success" href="/launch.html?launch=${successLaunch}"><span class="card-index">01</span><span class="status"><i></i> Settled</span><div><p>Tick Opening</p><strong>0.6 quote</strong><small>1,897,418.306355 OPEN received</small></div><span class="card-arrow" aria-hidden="true">↗</span></a>
         <a class="launch-card refund" href="/launch.html?launch=${refundLaunch}"><span class="card-index">02</span><span class="status"><i></i> Refunded</span><div><p>Tick Refund</p><strong>0 quote spent</strong><small>Both deposits returned in full</small></div><span class="card-arrow" aria-hidden="true">↗</span></a>
@@ -61,16 +61,16 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </section>
 
     <section class="how" id="how" aria-labelledby="how-title">
-      <div class="how-heading"><p class="overline">The flight plan</p><h2 id="how-title">From hidden demand<br>to public liquidity.</h2></div>
+      <div class="how-heading"><p class="overline">How Teek works</p><h2 id="how-title">From bids<br>to open trading.</h2></div>
       <ol>
         <li><span>01</span><div><h3>Lock the terms</h3><p>The creator fixes the curve, raise limits, output floor and timing before funding.</p></div></li>
-        <li><span>02</span><div><h3>Bid in private</h3><p>MagicBlock keeps bid amounts confidential while public escrow proves funding.</p></div></li>
-        <li><span>03</span><div><h3>Settle or refund</h3><p>One atomic opening purchase creates the Meteora pool—or every bidder can exit.</p></div></li>
+        <li><span>02</span><div><h3>Choose your bid</h3><p>Your deposit is visible on Solana. Your bid stays private until bidding closes.</p></div></li>
+        <li><span>03</span><div><h3>Open or refund</h3><p>If the terms are met, the Meteora pool opens. Otherwise, participants can claim their deposits.</p></div></li>
       </ol>
     </section>
   </main>
 
-  <footer><a class="brand footer-brand" href="#top">${teekMark}<span>TEEK</span></a><p>Private bids. One opening. Public proof.</p><div><a href="/launch.html">Launch app</a><a href="/market.html">Market simulator</a></div></footer>
+  <footer><a class="brand footer-brand" href="#top">${teekMark}<span>teek</span></a><p>Devnet prototype · test assets</p><div><a href="/launch.html">Launch app</a><a href="/market.html">Market simulator</a></div></footer>
 `;
 
 const header = document.querySelector<HTMLElement>('.site-header')!;

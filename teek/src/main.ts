@@ -33,16 +33,13 @@ app.innerHTML = `
   ${brandHeader('market')}
   <main id="main-content">
   <div class="hero">
-    <p class="eyebrow">THE ORIGINAL MARKET EXPERIMENT</p>
-    <h1>Same flow.<br>Different outcomes.</h1>
-    <p>
-      Compare a continuous order book with uniform-price batches using the
-      same simulated demand. Watch how market structure changes the bot’s outcome.
-    </p>
+    <p class="eyebrow">MARKET SIMULATOR</p>
+    <h1>Speed changes<br>the trade.</h1>
+    <p>See how the same price moves play out when trades happen one by one or clear together.</p>
   </div>
 
   <div class="metronome-bar">
-    <span class="label">batch clock</span>
+    <span class="label">Next batch</span>
     <div class="metronome-track"><div class="metronome-fill" id="metronome-fill"></div></div>
     <span class="batch-counter" id="batch-counter">batch #0</span>
   </div>
@@ -51,10 +48,10 @@ app.innerHTML = `
     <div class="panel">
       <div class="panel-title">
         <h2>Continuous order book</h2>
-        <span class="tag clob">latency wins here</span>
+        <span class="tag clob">First in line</span>
       </div>
       <div class="state-row">
-        <span>fair value</span>
+        <span>Market value</span>
         <span class="value" id="clob-value">—</span>
       </div>
       <div class="clob-tape" id="clob-tape"></div>
@@ -63,11 +60,11 @@ app.innerHTML = `
 
     <div class="panel teek-panel">
       <div class="panel-title">
-        <h2>Teek — sealed batch</h2>
-        <span class="tag teek">one price per batch</span>
+        <h2>Batch market</h2>
+        <span class="tag teek">Shared price</span>
       </div>
       <div class="state-row">
-        <span>clearing price</span>
+        <span>Trade price</span>
         <span class="value" id="teek-price">—</span>
       </div>
       <div class="seal-visual sealed" id="teek-seal"></div>
@@ -79,57 +76,51 @@ app.innerHTML = `
   <div class="scoreboard" style="margin-top: 18px;">
     <div class="score-cell clob">
       <div class="num" id="clob-pnl">$0</div>
-      <div class="cap">sniper edge captured — CLOB</div>
+      <div class="cap">Fast trader's profit · order book</div>
     </div>
     <div class="score-cell teek">
       <div class="num" id="teek-pnl">$0</div>
-      <div class="cap">sniper edge captured — Teek</div>
+      <div class="cap">Fast trader's profit · batches</div>
     </div>
   </div>
 
   <div class="verdict">
-    Same bot, size and simulated fair-value path. The continuous-book strategy
-    picks off stale quotes after price jumps. In the batch model, fills execute
-    at one price. <strong>This experiment illustrates the effect of batching;</strong>
-    it does not prove that every trading strategy loses its advantage.
-    Simulation seed: ${SEED}.
+    In the order book, the fast trader can reach an old price before anyone updates it.
+    In a batch, everyone matched in that round trades at the same price.
+    This is a model, not a forecast. Simulation seed: ${SEED}.
   </div>
 
   <div class="controls">
-    <button class="primary" id="speed-btn">speed: 1×</button>
-    <button id="pause-btn">pause</button>
+    <button class="primary" id="speed-btn">Speed: 1×</button>
+    <button id="pause-btn">Pause</button>
   </div>
 
   <div class="onchain-panel">
     <div class="panel-title">
-      <h2>Live on devnet</h2>
-      <span class="tag teek">real program, real market, real VRF</span>
+      <h2>Try it on devnet</h2>
+      <span class="tag teek">Test tokens</span>
     </div>
     <p class="onchain-blurb">
-      Everything above is a local simulation for intuition. This is the real
-      thing: program <code id="onchain-program"></code> deployed on Solana
-      devnet, trading against an actual on-chain market. Orders you submit
-      here really lock your balance, land in a real batch order book on
-      MagicBlock's hosted ER, and really clear at one price against MagicBlock's
-      live VRF oracle. Orders in this market demo are publicly readable; private
-      bids are part of Teek Launch.
+      The charts above are a simulation. The controls below use program <code id="onchain-program"></code>
+      on Solana devnet and MagicBlock's hosted ER. These orders use test tokens and are public.
+      <a href="/launch.html">Launch bids</a> use a separate private flow.
     </p>
     <div class="onchain-grid">
       <div class="onchain-col">
-        <div class="onchain-row"><span>demo wallet</span><span class="mono" id="onchain-wallet">—</span></div>
-        <div class="onchain-row"><span>hosted ER validator</span><span class="mono" id="onchain-er-validator">—</span></div>
+        <div class="onchain-row"><span>Demo wallet</span><span class="mono" id="onchain-wallet">—</span></div>
+        <div class="onchain-row"><span>ER validator</span><span class="mono" id="onchain-er-validator">—</span></div>
         <div class="onchain-row"><span>delegation</span><span class="mono" id="onchain-delegation">—</span></div>
         <div class="onchain-row"><span>SOL balance</span><span class="mono" id="onchain-sol">—</span></div>
         <div class="onchain-row"><span>base balance (deposited)</span><span class="mono" id="onchain-base-bal">—</span></div>
         <div class="onchain-row"><span>quote balance (deposited)</span><span class="mono" id="onchain-quote-bal">—</span></div>
         <div class="onchain-row"><span>base in wallet</span><span class="mono" id="onchain-base-wallet">—</span></div>
         <div class="onchain-row"><span>quote in wallet</span><span class="mono" id="onchain-quote-wallet">—</span></div>
-        <button id="onchain-refresh">refresh balances</button>
-        <button id="onchain-deposit-base">deposit 100 base</button>
-        <button id="onchain-deposit-quote">deposit 1000 quote</button>
-        <button id="onchain-delegate">delegate to hosted ER</button>
-        <button id="onchain-open-er">open ER batch</button>
-        <button class="primary run-demo" id="onchain-run-demo">run live demo</button>
+        <button id="onchain-refresh">Refresh balances</button>
+        <button id="onchain-deposit-base">Deposit 100 base</button>
+        <button id="onchain-deposit-quote">Deposit 1,000 quote</button>
+        <button id="onchain-delegate">Move accounts to ER</button>
+        <button id="onchain-open-er">Open batch</button>
+        <button class="primary run-demo" id="onchain-run-demo">Run devnet demo</button>
       </div>
       <div class="onchain-col">
         <div class="onchain-row"><span>batch</span><span class="mono" id="onchain-batch">—</span></div>
@@ -137,20 +128,20 @@ app.innerHTML = `
         <div class="order-form">
           <label for="onchain-price">Price<input id="onchain-price" type="text" inputmode="numeric" autocomplete="off" value="100" /></label>
           <label for="onchain-qty">Quantity<input id="onchain-qty" type="text" inputmode="numeric" autocomplete="off" value="10" /></label>
-          <button id="onchain-buy">ER buy</button>
-          <button id="onchain-sell">ER sell</button>
+          <button id="onchain-buy">Place buy order</button>
+          <button id="onchain-sell">Place sell order</button>
         </div>
-        <button id="onchain-clear">ER clear batch</button>
-        <button id="onchain-commit">commit + undelegate</button>
-        <div id="onchain-status" class="onchain-status">idle</div>
+        <button id="onchain-clear">Clear batch</button>
+        <button id="onchain-commit">Save to Solana</button>
+        <div id="onchain-status" class="onchain-status">Ready</div>
         <ol id="onchain-demo-log" class="onchain-demo-log">
-          <li>Ready. One click will deposit, delegate, trade, clear, and commit.</li>
+          <li>Ready when you are.</li>
         </ol>
-        <div id="onchain-reveal" class="onchain-reveal">no reveal yet</div>
+        <div id="onchain-reveal" class="onchain-reveal">No trades yet</div>
       </div>
     </div>
   </div>
-  <footer class="page-footer"><span>Simulation results are illustrative. Hosted market orders are public.</span><a href="/launch.html">Explore private launch openings ↗</a></footer>
+  <footer class="page-footer"><span>Simulation above · devnet market below</span><a href="/launch.html">Browse launches ↗</a></footer>
   </main>
 `;
 
@@ -171,15 +162,15 @@ const clobPnlEl = document.getElementById("clob-pnl")!;
 const tickPnlEl = document.getElementById("teek-pnl")!;
 const speedBtn = document.getElementById("speed-btn")!;
 const pauseBtn = document.getElementById("pause-btn")!;
-pauseBtn.textContent = running ? 'pause' : 'resume';
+pauseBtn.textContent = running ? 'Pause' : 'Resume';
 
 speedBtn.addEventListener("click", () => {
   speedMultiplier = speedMultiplier >= 4 ? 1 : speedMultiplier * 2;
-  speedBtn.textContent = `speed: ${speedMultiplier}×`;
+  speedBtn.textContent = `Speed: ${speedMultiplier}×`;
 });
 pauseBtn.addEventListener("click", () => {
   running = !running;
-  pauseBtn.textContent = running ? "pause" : "resume";
+  pauseBtn.textContent = running ? "Pause" : "Resume";
 });
 
 const clobChart = (document.getElementById("clob-chart") as HTMLCanvasElement).getContext("2d")!;
@@ -228,16 +219,16 @@ function renderClobUpTo(newSubTick: number) {
   for (let i = subTick; i < newSubTick && i < fairValue.length; i++) {
     const snipe = snipeBySubTick.get(i);
     if (snipe) {
-      const dir = snipe.side === "buy" ? "bought stale ask" : "sold stale bid";
+      const dir = snipe.side === "buy" ? "bought at" : "sold at";
       clobTapeLines.push(
-        `⚡ sniper ${dir} @ ${snipe.price.toFixed(2)} (true ${snipe.trueValue.toFixed(2)}) +$${snipe.pnl.toFixed(0)}`
+        `Fast trader ${dir} ${snipe.price.toFixed(2)} before the price moved to ${snipe.trueValue.toFixed(2)} · +$${snipe.pnl.toFixed(0)}`
       );
       if (clobTapeLines.length > 5) clobTapeLines.shift();
     }
   }
   clobTapeEl.innerHTML = clobTapeLines
     .map((l) => `<div class="snipe-line">${l}</div>`)
-    .join("") || `<div>watching for stale quotes…</div>`;
+    .join("") || `<div>Waiting for a price move…</div>`;
 
   clobValueEl.textContent = fairValue[Math.min(newSubTick, fairValue.length - 1)].toFixed(2);
   clobPnlEl.textContent = `$${Math.round(clob.pnlSeries[Math.min(newSubTick, clob.pnlSeries.length - 1)]).toLocaleString()}`;
@@ -248,14 +239,14 @@ function renderBatchReveal(period: number, e: BatchEvent) {
   batchCounterEl.textContent = `batch #${period}`;
   tickSealEl.className = "seal-visual revealed";
   tickSealEl.dataset.state = "revealed";
-  const priceStr = e.clearingPrice !== null ? e.clearingPrice.toFixed(2) : "no cross";
-  tickSealEl.innerHTML = `<div class="price-big">${priceStr}</div><div class="fills-line">matched ${e.matchedQty} units, uniform price</div>`;
+  const priceStr = e.clearingPrice !== null ? e.clearingPrice.toFixed(2) : "No match";
+  tickSealEl.innerHTML = `<div class="price-big">${priceStr}</div><div class="fills-line">${e.matchedQty} units traded</div>`;
   tickPriceEl.textContent = priceStr;
   tickFillsEl.textContent = e.sniperFillQty > 0
-    ? `sniper filled ${e.sniperFillQty} on the ${e.sniperSide} side — at the exact same price as every other trader in this batch`
+    ? `Fast trader ${e.sniperSide==='buy'?'bought':'sold'} ${e.sniperFillQty} units at this price.`
     : e.jumpMissedBySeal
-      ? "a jump happened mid-batch — but it lands after the seal, next batch sees it too, for everyone"
-      : "sniper unfilled this batch";
+      ? "Price moved after the batch closed. It will affect the next one."
+      : "No trade for the fast trader this round.";
 
   const pnl = batch.pnlSeries[Math.min(period, batch.pnlSeries.length - 1)];
   tickPnlEl.textContent = `$${Math.round(pnl).toLocaleString()}`;
@@ -419,11 +410,11 @@ async function refreshOnchainState() {
     const isDelegated = statuses ? Object.values(statuses).some(Boolean) : preferHostedErReads;
     onchainDelegationEl.textContent = statuses
       ? Object.values(statuses).every(Boolean)
-        ? "all delegated"
+        ? "On ER"
         : Object.values(statuses).some(Boolean)
           ? "partial"
-          : "base"
-      : preferHostedErReads ? "hosted ER active" : "unknown";
+          : "On Solana"
+      : preferHostedErReads ? "On ER" : "Unavailable";
 
     const [traderAccount, market, orderBook] = await Promise.all([
       isDelegated ? chain.fetchErTraderAccount() : chain.fetchTraderAccount(),
@@ -435,78 +426,78 @@ async function refreshOnchainState() {
     onchainQuoteWalletEl.textContent = tokens.quote.toLocaleString();
     onchainBaseBalEl.textContent = traderAccount
       ? `${traderAccount.baseBalance.toLocaleString()} (${traderAccount.baseLocked.toLocaleString()} locked)`
-      : "no trader account yet";
+      : "No account yet";
     onchainQuoteBalEl.textContent = traderAccount
       ? `${traderAccount.quoteBalance.toLocaleString()} (${traderAccount.quoteLocked.toLocaleString()} locked)`
-      : "no trader account yet";
+      : "No account yet";
     onchainBatchEl.textContent = String(market.currentBatchId);
     onchainOrderCountEl.textContent = String(orderBook.orderCount);
 
     try {
       const reveal = isDelegated ? await chain.fetchErReveal() : await chain.fetchReveal();
       onchainRevealEl.textContent = reveal.hadTrade
-        ? `batch #${reveal.batchId}: cleared ${reveal.matchedQty} units at price ${reveal.clearingPrice} (${reveal.fillCount} fills)`
-        : `batch #${reveal.batchId}: no cross`;
+        ? `Batch ${reveal.batchId}: ${reveal.matchedQty} units traded at ${reveal.clearingPrice} (${reveal.fillCount} fills)`
+        : `Batch ${reveal.batchId}: no matching orders`;
     } catch {
-      onchainRevealEl.textContent = "no reveal yet";
+      onchainRevealEl.textContent = "No trades yet";
     }
   } catch (err: any) {
-    setOnchainStatus(`refresh failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Could not refresh: ${err.message ?? err}`, true);
   }
 }
 
 document.getElementById("onchain-refresh")!.addEventListener("click", () => {
-  setOnchainStatus("refreshing…");
-  refreshOnchainState().then(() => setOnchainStatus("idle"));
+  setOnchainStatus("Refreshing…");
+  refreshOnchainState().then(() => { if (!onchainStatusEl.classList.contains('error')) setOnchainStatus("Balances updated"); });
 });
 
 document.getElementById("onchain-deposit-base")!.addEventListener("click", async () => {
-  setOnchainStatus("depositing base…");
+  setOnchainStatus("Depositing base tokens…");
   try {
     await chain.ensureTraderAccount();
     await chain.depositBase(100);
-    setOnchainStatus("deposited 100 base");
+    setOnchainStatus("100 base tokens deposited");
   } catch (err: any) {
-    setOnchainStatus(`deposit failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Deposit failed: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 });
 
 document.getElementById("onchain-deposit-quote")!.addEventListener("click", async () => {
-  setOnchainStatus("depositing quote…");
+  setOnchainStatus("Depositing quote tokens…");
   try {
     await chain.ensureTraderAccount();
     await chain.depositQuote(1000);
-    setOnchainStatus("deposited 1000 quote");
+    setOnchainStatus("1,000 quote tokens deposited");
   } catch (err: any) {
-    setOnchainStatus(`deposit failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Deposit failed: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 });
 
 document.getElementById("onchain-delegate")!.addEventListener("click", async () => {
-  setOnchainStatus("delegating market, order book, reveal, and trader account to hosted ER…");
+  setOnchainStatus("Moving market accounts to ER…");
   try {
     await chain.ensureTraderAccount();
     await chain.delegateToHostedEr();
     preferHostedErReads = true;
     localStorage.setItem("teek-prefer-hosted-er", "1");
-    setOnchainStatus("delegated to hosted ER");
+    setOnchainStatus("Market accounts are on ER");
   } catch (err: any) {
-    setOnchainStatus(`delegation failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Could not move accounts: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 });
 
 document.getElementById("onchain-open-er")!.addEventListener("click", async () => {
-  setOnchainStatus("opening an ER-clock batch with ephemeral VRF…");
+  setOnchainStatus("Opening a batch…");
   try {
     await chain.openErSubmitWindow();
     preferHostedErReads = true;
     localStorage.setItem("teek-prefer-hosted-er", "1");
-    setOnchainStatus("ER batch opened — wait a few seconds for the callback, then submit orders");
+    setOnchainStatus("Batch requested. Wait for it to open, then place orders.");
   } catch (err: any) {
-    setOnchainStatus(`open ER batch failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Could not open batch: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 });
@@ -514,14 +505,14 @@ document.getElementById("onchain-open-er")!.addEventListener("click", async () =
 async function submitOnchainOrder(side: "buy" | "sell") {
   const price = Number(onchainPriceInput.value);
   const qty = Number(onchainQtyInput.value);
-  setOnchainStatus(`routing ${side} order through hosted ER…`);
+  setOnchainStatus(`Placing ${side} order…`);
   try {
     await chain.submitOrderOnEr(side, price, qty);
     preferHostedErReads = true;
     localStorage.setItem("teek-prefer-hosted-er", "1");
-    setOnchainStatus(`${side} order routed to ER`);
+    setOnchainStatus(`${side === 'buy' ? 'Buy' : 'Sell'} order sent to ER`);
   } catch (err: any) {
-    setOnchainStatus(`order failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Order failed: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 }
@@ -530,31 +521,31 @@ document.getElementById("onchain-buy")!.addEventListener("click", () => submitOn
 document.getElementById("onchain-sell")!.addEventListener("click", () => submitOnchainOrder("sell"));
 
 document.getElementById("onchain-clear")!.addEventListener("click", async () => {
-  setOnchainStatus("clearing on hosted ER — requesting ephemeral VRF randomness…");
+  setOnchainStatus("Clearing batch…");
   try {
     await chain.clearBatchOnEr();
-    setOnchainStatus("ER clear sent — waiting for the oracle's callback…");
+    setOnchainStatus("Waiting for the result…");
     // The oracle invokes clear_batch_callback asynchronously; poll for it
     // rather than assuming it's landed by the time this call returns.
     for (let i = 0; i < 10; i++) {
       await new Promise((r) => setTimeout(r, 3000));
       await refreshOnchainState();
     }
-    setOnchainStatus("idle");
+    setOnchainStatus("Check the batch result above");
   } catch (err: any) {
-    setOnchainStatus(`clear_batch failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Could not clear batch: ${err.message ?? err}`, true);
   }
 });
 
 document.getElementById("onchain-commit")!.addEventListener("click", async () => {
-  setOnchainStatus("scheduling commit + undelegate…");
+  setOnchainStatus("Saving the result to Solana…");
   try {
     const result = await chain.commitAndUndelegateFromEr();
     preferHostedErReads = false;
     localStorage.removeItem("teek-prefer-hosted-er");
-    setOnchainStatus(`committed: ${result.commitmentSignature.slice(0, 8)}…`);
+    setOnchainStatus(`Save requested: ${result.commitmentSignature.slice(0, 8)}…`);
   } catch (err: any) {
-    setOnchainStatus(`commit failed: ${err.message ?? err}`, true);
+    setOnchainStatus(`Could not save result: ${err.message ?? err}`, true);
   }
   refreshOnchainState();
 });
@@ -567,29 +558,29 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
     if (alreadyDelegated) {
       preferHostedErReads = true;
       localStorage.setItem("teek-prefer-hosted-er", "1");
-      addDemoLog("Hosted ER state is already active; continuing from delegated accounts.", "done");
+      addDemoLog("Market accounts are already on ER.", "done");
     } else {
-      addDemoLog("Creating or loading trader account…");
-      setOnchainStatus("creating or loading trader account…");
+      addDemoLog("Checking the demo account…");
+      setOnchainStatus("Checking demo account…");
       await chain.ensureTraderAccount();
       markLastDemoLog("done");
 
       addDemoLog("Checking demo balances…");
       let trader = await chain.fetchTraderAccount();
       if (!trader || trader.baseBalance < 100) {
-        setOnchainStatus("depositing 100 base into the market…");
+        setOnchainStatus("Depositing 100 base tokens…");
         await chain.depositBase(100);
         trader = await chain.fetchTraderAccount();
       }
       if (!trader || trader.quoteBalance < 1000) {
-        setOnchainStatus("depositing 1000 quote into the market…");
+        setOnchainStatus("Depositing 1,000 quote tokens…");
         await chain.depositQuote(1000);
         trader = await chain.fetchTraderAccount();
       }
       markLastDemoLog("done");
 
-      addDemoLog("Delegating market, order book, reveal, and trader account to hosted ER…");
-      setOnchainStatus("delegating to hosted ER…");
+      addDemoLog("Moving market accounts to ER…");
+      setOnchainStatus("Moving accounts to ER…");
       await chain.delegateToHostedEr();
       preferHostedErReads = true;
       localStorage.setItem("teek-prefer-hosted-er", "1");
@@ -610,11 +601,11 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
     for (let attempt = 1; ; attempt++) {
       addDemoLog(
         attempt === 1
-          ? "Opening a fresh ER-clock batch with ephemeral VRF…"
-          : `Batch closed before both orders landed; opening a new batch (attempt ${attempt} of ${maxAttempts})…`
+          ? "Opening a batch…"
+          : `Batch closed before both orders arrived. Trying again (${attempt}/${maxAttempts})…`
       );
       const beforeOpen = await chain.fetchErMarket();
-      setOnchainStatus("opening fresh ER batch…");
+      setOnchainStatus("Opening batch…");
       await chain.openErSubmitWindow();
       await waitFor(
         "ER VRF callback to open a fresh batch",
@@ -625,11 +616,11 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
       );
       markLastDemoLog("done");
 
-      addDemoLog("Submitting one buy and one sell through the hosted ER router…");
+      addDemoLog("Placing one buy and one sell order…");
       try {
-        setOnchainStatus("submitting buy through hosted ER…");
+        setOnchainStatus("Placing buy order…");
         await chain.submitOrderOnEr("buy", 100, 10);
-        setOnchainStatus("submitting sell through hosted ER…");
+        setOnchainStatus("Placing sell order…");
         await chain.submitOrderOnEr("sell", 100, 10);
         await waitFor(
           "both ER orders",
@@ -646,7 +637,7 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
       }
     }
 
-    addDemoLog("Waiting for the ER batch window to close…");
+    addDemoLog("Waiting for the batch to close…");
     const marketWithOrders = await chain.fetchErMarket();
     const closeSlot = marketWithOrders.batchOpenSlot + marketWithOrders.batchPeriodSlots;
     await waitFor(
@@ -658,8 +649,8 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
     );
     markLastDemoLog("done");
 
-    addDemoLog("Clearing with MagicBlock ephemeral VRF…");
-    setOnchainStatus("clearing on hosted ER…");
+    addDemoLog("Clearing the batch…");
+    setOnchainStatus("Clearing batch…");
     await chain.clearBatchOnEr();
     await waitFor(
       "oracle callback and uniform-price reveal",
@@ -670,8 +661,8 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
     );
     markLastDemoLog("done");
 
-    addDemoLog("Committing final state back and undelegating…");
-    setOnchainStatus("committing and undelegating…");
+    addDemoLog("Saving the result to Solana…");
+    setOnchainStatus("Saving result…");
     const result = await chain.commitAndUndelegateFromEr();
     preferHostedErReads = false;
     localStorage.removeItem("teek-prefer-hosted-er");
@@ -688,17 +679,17 @@ document.getElementById("onchain-run-demo")!.addEventListener("click", async () 
       // the commit was scheduled. MagicBlock's status endpoint can lag or
       // timeout after the commitment is already in flight, so a slow status
       // response should not turn a successful demo into a red failure state.
-      addDemoLog("Commitment accepted; hosted undelegation status is still catching up.", "done");
+      addDemoLog("Save accepted. The ER status may take a little longer to update.", "done");
     }
     markLastDemoLog("done");
 
     await refreshOnchainState();
-    setOnchainStatus(`live demo complete — committed ${result.commitmentSignature.slice(0, 8)}…`);
-    addDemoLog("Done: ER batch cleared at one uniform price and settled back to devnet.", "done");
+    setOnchainStatus(`Demo complete · save ${result.commitmentSignature.slice(0, 8)}…`);
+    addDemoLog("Done. The orders cleared at one price and the result was sent to devnet.", "done");
   } catch (err: any) {
     markLastDemoLog("error");
-    setOnchainStatus(`live demo failed: ${err.message ?? err}`, true);
-    addDemoLog("Stopped with an error. The current step can be retried after refreshing balances.", "error");
+    setOnchainStatus(`Demo stopped: ${err.message ?? err}`, true);
+    addDemoLog("Something went wrong. Refresh balances before trying again.", "error");
   } finally {
     setLiveControlsDisabled(false);
     refreshOnchainState();

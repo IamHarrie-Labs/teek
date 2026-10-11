@@ -1,0 +1,42 @@
+{
+  "report": [
+    {
+      "name": "success",
+      "text": "LAUNCH PASSPORT · SOLANA DEVNET\nThe terms. The outcome. The proof.\nSettled\nOpening purchase\n0.6 quote\nTokens received\n1,897,418.306355 OPEN\nRefunds paid\n0.9 quote\nClaims completed\n2 / 2\n\nShared opening price: 0.000000316219 quote per token, including native curve fees. Refunds still claimable: 0 quote.\n\nFee policy, authorities and privacy\nCopy receipt link\nDownload JSON\nDownload share card\nVerify launch ↗\n\nConfirmed account reads · 10/8/2026, 7:56:21 PM. Snapshot receipt; refresh for updates. Devnet test assets, not USDC. This record does not certify token safety or returns."
+    },
+    {
+      "name": "success",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "name": "success",
+      "width": 1280,
+      "overflow": false
+    },
+    {
+      "name": "refund",
+      "text": "LAUNCH PASSPORT · SOLANA DEVNET\nThe terms. The outcome. The proof.\nRefunds available\n\nNo opening purchase was completed. Refund entitlement remains subject to bid return and owner-authorized withdrawal.\n\nVerify refund payments\n\nOriginal deposits and payments need transaction history. Zero remaining balances alone do not prove that refunds were paid.\n\nFee policy, authorities and privacy\nCopy receipt link\nDownload JSON\nDownload share card\nVerify launch ↗\n\nConfirmed account reads · 10/8/2026, 7:56:23 PM. Snapshot receipt; refresh for updates. Devnet test assets, not USDC. This record does not certify token safety or returns."
+    },
+    {
+      "name": "refund-payment-proof",
+      "proof": "Reconciled refund history\n\n1.5 quote in observed refund payments. 0 quote remained refundable; original liability 1.5 quote.\n\nPayment snapshot checked 10/8/2026, 7:56:25 PM. Re-run verification for current payments. Available history includes initialization and reconciles every registered bid with current balances. Payments are confirmed, not a finality guarantee.\n\n0.8 quote · verify payment ↗\n0.7 quote · verify payment ↗",
+      "status": "Refund payments reconcile with the available launch history."
+    },
+    {
+      "name": "refund-audit-retained-after-refresh",
+      "passed": true
+    },
+    {
+      "name": "refund",
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "name": "refund",
+      "width": 1280,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

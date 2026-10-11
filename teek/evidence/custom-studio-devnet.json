@@ -1,0 +1,15 @@
+{
+  "network": "devnet",
+  "creator": "Fc9w5EZ7V7uFJdHdoqS3HfPRYp8gts7K9xx366S5UoDS",
+  "quoteMint": "GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj",
+  "dbcConfig": "B8auauZv1wsTdpiKA8DWJbcx7rNUeeLJat9MwxNZBvJG",
+  "launch": "3bUTJCRHCnaVjYkadx8HGqtt35sa26jhrSbeiDebraj5",
+  "launchPdaVerified": true,
+  "termsReadBack": true,
+  "minimumTokensAtCap": "1000000",
+  "configTransaction": "5qfos9WjuGFSejewuDUu4qhNRGLUbYVBGWfVLqCqxQKTKHfH9CZqGNzb2Wa8YGC2fDHMC8jb8eU1PgorATdUiouh",
+  "launchTransaction": "2o656e42UXMuidM8fWCwbyA85cEJYHMHoJSLyktduh52kHioYPRgsExcVxCtPBkMKeLSCeStBT9niaZEiZFUGNfq",
+  "retryRecoveredExistingLaunch": true,
+  "retrySpentNoAdditionalSol": true,
+  "observedAt": "2026-10-09T19:59:55.074Z"
+}
