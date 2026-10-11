@@ -1,127 +1,115 @@
 # Teek
 
-Teek Launch is a private, pooled opening purchase for Meteora DBC on Solana.
-The original batch-market demo remains available at `/market.html`.
+Teek is a fairer way to launch a new token on Solana.
 
-> Teek was originally built under the name Tick. The Solana program keeps its original program ID `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`.
+Try it live at [teek-navy.vercel.app](https://teek-navy.vercel.app). Everything runs on Solana devnet with test money, so nothing you do there costs real funds.
 
-The existing demo compares a continuous order book with uniform-price batches running on MagicBlock Ephemeral Rollups and MagicBlock VRF. Its hosted ER orders are public: the batch window closes, but this deployment does not provide confidential bids.
+## The problem Teek fixes
 
-The launch module includes immutable DBC config binding, public quote escrow,
-private budget bids, full-entropy VRF rounding, atomic pool creation and first
-purchase, creator-rights transfer, token/refund claims and cancellation. The
-new default frontend reads venue state and signs real devnet transactions.
-Funding/timing are public; closing reveals bids and earlier edits. v1 shares
-one purchase on a fixed curve; it is not limit-price price discovery.
-See [settlement specification](teek/SETTLEMENT_SPEC.md),
-[independent development review](teek/SETTLEMENT_REVIEW.md) and
-[privacy validation](teek/PRIVATE_BIDS.md).
+When a new token launches today, it usually goes on sale the moment it exists. Bots watch for new tokens and buy in the very first second, before any human can react. They get the cheapest price, then sell to everyone who arrived a few seconds later. Regular buyers end up paying more for the same token, mostly because they were slower.
 
-## Launch UI and hosted demo
+## How Teek works, in plain words
 
-The complete launch path is deployed and verified on devnet as of October 6,
-2026. Both real hosted demos passed: one opening purchase with all claims,
-and one failed minimum raise with full refunds and no pool. See the
-[judge walkthrough](teek/LAUNCH_DEMO.md), [hosted receipts](teek/evidence/launch-demo-devnet.json)
-and [verified upgrade](teek/evidence/settlement-upgrade-devnet.json); the current deployment is the rename-only rebuild in [rename upgrade](teek/evidence/rename-upgrade-devnet.json).
-The independent review is a development review; this is not mainnet-ready.
+Think of it like a sealed group order.
 
-Install root and `teek/` dependencies, then `cd teek && npm run dev`.
-Open `http://127.0.0.1:5173/launch.html`. Connect a Solana wallet or use the disposable
-browser demo wallet. Funds and launches are devnet-only synthetic test assets.
+1. A creator sets the rules before anything starts. That means the token's details, the smallest amount the launch must raise to go ahead, the most it will accept, and the dates for each step. Once published, these rules cannot be changed.
+2. People who want in send test funds into a locked account (called an escrow) that belongs to the launch, not to the creator.
+3. During the bidding window, each person decides how much of their funds to actually spend. That bid is private. It lives inside MagicBlock's private rollup, which runs on secure hardware, so other bidders and the creator cannot read it while bidding is open.
+4. When bidding closes, Teek adds up the bids. If the total is below the minimum, nobody loses anything and everyone gets a full refund.
+5. If the minimum is met, one single transaction creates the token's trading pool on Meteora and buys the opening supply with everyone's money at once. Because it is one combined purchase, every buyer pays the same average price. There is no "first second" for a bot to win, since the pool does not exist until that transaction runs.
+6. Each buyer then claims their share of tokens plus any unspent funds. A random number from MagicBlock's VRF (a verifiable random number service) settles tiny rounding leftovers fairly, so nobody can game the split by breaking one bid into many small ones.
+7. After that, the token trades normally on Meteora.
 
-The landing page is `/`; open `/launch.html` for the launch app,
-`/market.html` for the original simulator, `/evidence.html` for recorded proof,
-and `/submission/submission.html` for the local submission brief. Use Vite's
-printed port if 5173 is occupied. The [quality review](teek/QUALITY_REVIEW.md)
-documents checked layouts, live read results and outstanding submission work.
+## What you can do on the site
 
-From the repository root, with a funded devnet wallet in `ANCHOR_WALLET`:
+The home page explains the idea. The launch app at [/launch.html](https://teek-navy.vercel.app/launch.html) lists launches, lets you join one, and lets you create your own with a step by step builder.
 
-```bash
-npm run typecheck
-node node_modules/typescript/bin/tsc -p tsconfig.json --outDir target/launch-test-js
-npm run demo:launch
-npm run demo:funding
-```
+If you have no wallet, click "Use demo wallet". The site makes a throwaway wallet that lives only in your browser. Then press "Get test funds" inside a launch and you receive 0.05 test SOL plus 100 test tokens, enough to take part. A wallet that already holds the test funds won't get more, which keeps the shared budget available for others.
 
-`demo:launch` creates two actual hosted launches: one settles and claims; one
-misses its minimum raise and refunds. It retains recovery keys only in ignored
-`target/launch-demo/` and publishes key-free evidence in `teek/evidence/`.
-It is resumable while its on-chain windows permit continuation.
+Every launch has a Passport page. It shows the launch's rules in plain language, who controls what, how fees are split, and the final result, including which refunds have been paid and which are still waiting to be claimed. You can share it as a card or download it as a file.
 
-`demo:funding` is a loopback-only, origin-restricted, budgeted local faucet.
-The UI's **Get test funds** button funds up to ten demo wallets with the
-published synthetic quote mint. It never sends the authority key to a browser;
-do not expose this server publicly. Launch creation requires an existing
-supported DBC configuration. This v1 form does not create arbitrary curves.
-The walkthrough includes the public demo mint/config addresses and explains
-how to start a fresh run after the recorded bidding windows have closed.
+The evidence page at [/evidence.html](https://teek-navy.vercel.app/evidence.html) shows the real devnet launches we ran as proof. One raised enough, opened its pool and paid everyone out. The other missed its minimum and refunded everyone in full, without ever creating a pool.
 
-## Settlement validation
+The simulator at [/market.html](https://teek-navy.vercel.app/market.html) is where Teek started. It shows a speed bot making money on a normal exchange and losing that edge once orders are grouped and priced together.
 
-Build SBF with pinned platform-tools v1.57 and regenerate IDL/types first.
-`npm run test:settlement` requires WSL and real DBC/Metaplex binary dumps in
-`target/deploy/dbc-mainnet.so` and `metadata-mainnet.so`, plus the local scoped
-oracle fixture. It launches two isolated validators and stops them afterward.
-The local test uses explicit closed-bid genesis fixtures and a controlled
-oracle; only the hosted demo proves production private bidding/VRF.
+## What Teek does not do yet
 
-## Original market demo
+We would rather you hear the limits from us.
 
-## Live demo flow
+Funding the escrow is a public transaction, so anyone can see how much each wallet put in. Only the bid itself is hidden, and only while bidding is open. After bidding closes, bids and earlier edits become visible.
 
-The browser demo includes a one-click **Run Live Demo** button that drives the real devnet flow:
+A launch can have at most 24 bidders right now. This is a prototype limit.
 
-1. Create or load a demo trader account.
-2. Deposit demo base and quote tokens.
-3. Delegate market, order book, reveal, and trader state to MagicBlock hosted ER.
-4. Open a fresh ER-clock batch with ephemeral VRF.
-5. Submit a buy and sell through the hosted ER router.
-6. Wait for the batch window to close.
-7. Clear with MagicBlock VRF.
-8. Commit final state and undelegate back to devnet.
+Everyone shares one purchase on a fixed price curve. It is not an auction where each person names their own maximum price.
 
-## Verified deployment
+It runs on devnet only. The code had a development review, not a formal security audit, so it is not ready for real money.
 
-- Program: `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`
-- Network: Solana devnet
-- Hosted ER: `https://devnet-us.magicblock.app/`
-- Hosted ER validator: `MUS3hc9TCw4cGC12vHNoYcCGzJG1txjgQLZWVoeNHNd`
-- Demo market: `4RKcixvD42i6kLdS3LodUbcCzV67JeKfLTqnTvHP1S3b`
+## Where Teek came from
 
-## Run locally
+Teek started in September 2026 as a project called Tick, built for MagicBlock's Solana Blitz v8 hackathon and never submitted. Tick was the batch market you can still see in the simulator. In October we turned that idea into the launch product described above and renamed it Teek. The git history keeps the September version as its first commit so you can see exactly what was added later.
 
-From the repo root:
+## How the code is organised
+
+Each main folder has its own short README.
+
+- [programs/teek](programs/teek) is the on-chain program, written in Rust with Anchor. It holds the money rules.
+- [clients](clients) is shared TypeScript that talks to the program. The website, tests and scripts all use it.
+- [teek](teek) is the website, built with Vite and TypeScript, plus project documents and evidence.
+- [api](api) is the hosted test-funds service the website calls.
+- [tests](tests) checks the program and the full launch flow.
+- [scripts](scripts) holds tools for running demos, testing and upgrades.
+
+[PROJECT.md](PROJECT.md) is the long technical overview with every address, test result and decision.
+
+## Running it on your own computer
+
+You need Node.js 22 and npm. Building the Solana program also needs Rust, the Solana tools and Anchor, which we run inside WSL on Windows.
+
+Install the packages in the root folder and in the website folder.
 
 ```bash
-cd teek
 npm install
-npm run dev -- --host 0.0.0.0
+npm install --prefix teek
 ```
 
-Open `http://localhost:5173/market.html` and click **Run Live Demo** for the original market demo.
+Start the website, then open the address it prints.
 
-The demo wallet is generated in browser localStorage. To fund it for a fresh browser profile, open the page once, copy the displayed demo wallet address, then run:
+```bash
+npm run dev --prefix teek
+```
+
+Run the website tests and checks.
 
 ```bash
 cd teek
-node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
-```
-
-To intentionally create a new public-demo market with a shorter batch period:
-
-```bash
-cd teek
-TEEK_FORCE_NEW_MARKET=1 TEEK_BATCH_PERIOD_SLOTS=1200 node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
-```
-
-## Validation
-
-```bash
-cd teek
+npx vitest run
 npx tsc --noEmit
 npm run build
 ```
 
-The Anchor program, devnet VRF, and hosted ER lifecycle have also been tested through the TypeScript test suite documented in `teek/PLAN.md`.
+Run the program's own tests (needs Rust).
+
+```bash
+cargo test -p teek
+```
+
+Build the program the same way the deployed version was built.
+
+```bash
+cd programs/teek
+cargo build-sbf --tools-version v1.57
+```
+
+The longer local and devnet test runs are described in [tests/README.md](tests/README.md).
+
+## Key addresses on devnet
+
+The Teek program lives at `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`. The bytes on chain match a build of this repository exactly, and the record is in [teek/evidence/rename-upgrade-devnet.json](teek/evidence/rename-upgrade-devnet.json).
+
+The successful demo launch is `4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY` and the refunded one is `B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X`.
+
+The test token the faucet hands out is `GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj`. It has no value.
+
+## Built with
+
+MagicBlock's private rollup and VRF for private bidding and fair randomness, Meteora's Dynamic Bonding Curve for the token pool, and Solana for everything else.
