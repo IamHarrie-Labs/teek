@@ -1,61 +1,35 @@
-# Teek founder presentation draft
+# Pitch video script
 
-Target: 2 minutes 30 seconds. This is the business presentation, separate
-from the product-demo sequence in submission.html. Team background and actual
-customer evidence must be added from verified information before recording.
+Aim for about 2 minutes 30 seconds. This one is about the business, so keep the button clicking for the demo video. The lines in quotes are what you say. Swap in real details wherever there are square brackets, and leave out anything you can't back up.
 
-## 0:00–0:25 — Customer and problem
+## Who you are (about 15 seconds)
 
-“Teek helps token creators and launchpad operators offer a shared opening
-purchase on Solana. Today, a curve's first buyers get a different price from
-the next buyers. We give participants a defined entry window and one shared
-purchase under terms they can inspect before they fund.”
+"[Your name and one line on why you care about token launches. For example, a launch you watched go wrong, or time you spent building on Solana.]"
 
-## 0:25–0:55 — Product
+## The problem (about 25 seconds)
 
-“The creator fixes the curve, raise limits and minimum output. Buyers fund
-escrow and choose their bid privately. At close, accepted bids buy together.
-Pool creation and the purchase happen atomically on Meteora DBC. Participants
-share the output pro rata and can claim unused funds. If the minimum raise is
-missed, the launch refunds instead.”
+"New tokens on Solana usually go on sale the moment they exist. Bots buy in the first second, and real people buy a few seconds later at a worse price, often from those bots. Creators lose too, because their launch gets remembered for the dump instead of the community."
 
-## 0:55–1:20 — Insight and integrations
+## What Teek does (about 30 seconds)
 
-“Our focus is a private entry window that settles directly into a public
-Meteora market. MagicBlock protects bid amounts during the window. Solana
-enforces custody and the launch terms. Meteora supplies the opening curve.
-Public funding remains visible, and bids and earlier edits become public
-after closing. This is a shared purchase, not limit-order price discovery.”
+"Teek lets a group buy the opening together. The creator publishes fixed rules. Buyers deposit and bid privately using MagicBlock's Private Ephemeral Rollup. When bidding closes, one transaction creates the Meteora pool and buys with everyone's money at once, so everyone pays the same price. If the launch doesn't reach its minimum, everyone gets refunded."
 
-## 1:20–1:45 — Execution evidence
+## Why this is different (about 25 seconds)
 
-“The prototype is deployed on devnet. A successful launch spent 0.6 synthetic
-quote tokens, received about 1.897 million OPEN, and completed allocations
-and refunds. A second launch missed its minimum, created no pool and returned
-both deposits. We provide transaction receipts, private-read checks and an
-independent development review. We have not claimed mainnet traction.”
+"Other tools fix the sale price or sell in a presale, then hand off to a normal market where the race starts again. Teek joins the sale and the opening into one step, right inside Meteora's launch curve. It doesn't claim to discover a price. It makes the first buy shared and fair."
 
-## 1:45–2:10 — Distribution and business hypothesis
+## What's built (about 25 seconds)
 
-“We plan to start with launchpad operators and token creators who want a
-coordinated opening. Our next experiment is a pilot integration: can a creator
-configure the terms and can buyers understand the entry process without
-assistance? We will test partner-fee economics and launchpad distribution
-before treating either as a validated business model.”
+"It works end to end on devnet. One recorded launch opened and paid both buyers. Another missed its minimum and refunded every deposit without making a pool. We've also run the whole thing through the public website, from creating a launch to claiming. Everything is open source, with the proof linked from the site."
 
-## 2:10–2:30 — Roadmap and disclosure
+## Who it's for and what's next (about 20 seconds)
 
-“The October build extends our earlier batch-market foundation with private
-launch bids, atomic DBC settlement and claims. Next are customer pilots,
-operational recovery work and external security review. Teek's promise is
-private bids, one opening and public proof.”
+"We're starting with launchpads and token creators who want a fair opening. [If you've spoken to any, say what they told you here.] Next we want to run a pilot with one launchpad, see if creators can set up a launch on their own, and get an outside audit before any real money is involved."
 
-## Recording preparation
+## Close (about 10 seconds)
 
-- Add a brief, factual founder/team introduction and why this team understands
-  launchpad buyers. Do not invent customer interviews, credentials or revenue.
-- Replace business hypotheses with verified pilot/interview findings if available.
-- Show the approved Teek mark, a simple three-layer architecture and one
-  success/refund comparison; keep transaction mechanics in the product video.
-- Give real public demo, repo and video URLs in the submission form.
-- Rehearse at a natural pace and trim to the event's permitted duration.
+"Private bids, one opening. Thanks for watching."
+
+## Before recording
+
+Keep it honest. Don't mention customers, numbers or credentials you can't show. It's fine to say something is a plan rather than a result. Show the Teek logo, one simple diagram and the success and refund results side by side, and leave transaction details to the demo video.

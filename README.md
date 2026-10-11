@@ -17,7 +17,7 @@ Think of it like a sealed group order.
 3. During the bidding window, each person decides how much of their funds to actually spend. That bid is private. It lives inside MagicBlock's private rollup, which runs on secure hardware, so other bidders and the creator cannot read it while bidding is open.
 4. When bidding closes, Teek adds up the bids. If the total is below the minimum, nobody loses anything and everyone gets a full refund.
 5. If the minimum is met, one single transaction creates the token's trading pool on Meteora and buys the opening supply with everyone's money at once. Because it is one combined purchase, every buyer pays the same average price. There is no "first second" for a bot to win, since the pool does not exist until that transaction runs.
-6. Each buyer then claims their share of tokens plus any unspent funds. A random number from MagicBlock's VRF (a verifiable random number service) settles tiny rounding leftovers fairly, so nobody can game the split by breaking one bid into many small ones.
+6. Each buyer then claims their share of tokens plus any unspent funds. A random number from MagicBlock's VRF (a verifiable random number service) settles tiny rounding leftovers fairly. Breaking one bid into several small ones doesn't raise what you expect to get.
 7. After that, the token trades normally on Meteora.
 
 ## What you can do on the site
