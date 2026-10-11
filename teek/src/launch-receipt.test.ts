@@ -36,6 +36,12 @@ describe('Verified launch receipts',()=>{
     expect(passportHtml(r)).toContain('Check the payment history');
     expect(passportHtml(r)).not.toContain('quote paid');
   });
+  it('says a pending launch can only refund once its deadline has passed',()=>{
+    const input=fixture();input.account.status={ready:{}};input.settlement.phase=0;input.settlement.quoteSpent=new BN(0);input.settlement.baseReceived=new BN(0);
+    const r=buildLaunchReceipt(input);
+    expect(passportHtml(r)).toContain('has not settled yet');
+    expect(passportHtml(r,true)).toContain('can only refund');expect(passportHtml(r,true)).toContain('Deadline passed');
+  });
   it('escapes creator metadata in both the Passport and share card',()=>{
     const r=buildLaunchReceipt(fixture());expect(receiptCard(r)).not.toContain('<script>');expect(receiptCard(r)).toContain('&lt;script&gt;');
     expect(passportHtml(r)).toContain('SOLANA DEVNET');expect(receiptCard(r)).toContain(r.observedAt);

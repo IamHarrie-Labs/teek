@@ -29,6 +29,7 @@ let wallet: LaunchWallet | undefined, client: LaunchClient | undefined, selected
 let generation = 0;
 let chainOffset = 0;
 let loading = false;
+let reloadQueued = false;
 let detailGeneration = 0;
 let discoverAll = false;
 // Retain explicit payment audits across account refreshes, with their own timestamp.
@@ -79,7 +80,8 @@ el<HTMLButtonElement>('refresh').onclick=()=>void load();
 el<HTMLButtonElement>('browse').onclick=()=>{discoverAll=!discoverAll;el('browse').textContent=discoverAll?'Show featured':'Browse all';el('list-title').textContent=discoverAll?'All launches':'Featured launches';void load();};
 function readLaunchLink(){const query=new URLSearchParams(location.search).get('launch');if(!query)return;try{selected=new PublicKey(query);}catch{history.replaceState(null,'',location.pathname);status('This launch link is invalid. Choose a launch below.',true);}}
 async function load(quiet=false){
-  if(loading)return;loading=true;
+  // A refresh asked for mid-load runs once that load ends, so post-action checks are never dropped.
+  if(loading){reloadQueued=true;return;}loading=true;reloadQueued=false;
   const ticket=++generation;if(!quiet)el('list').innerHTML='<div class="skeleton">Loading launch terms…</div>';
   try{
     const reader=client??new LaunchClient(connection,{publicKey:PublicKey.default,signTransaction:async()=>{throw Error('Connect wallet');},signAllTransactions:async()=>{throw Error('Connect wallet');},signMessage:async()=>{throw Error('Connect wallet');}} as LaunchWallet);
@@ -111,7 +113,7 @@ async function load(quiet=false){
     const first=el<HTMLButtonElement>('first-create');if(first)first.onclick=openCreate;
     if(!selected)readLaunchLink();
     if(selected)await detail();
-  }catch(error){if(ticket!==generation)return;if(quiet){status(`Could not refresh launch state. ${errorText(error)}`,true);return;}el('list').innerHTML=`<div class="error"><h3>Couldn’t load launches</h3><p>${h(errorText(error))}</p><button id="retry">Try again</button></div>`;el<HTMLButtonElement>('retry').onclick=()=>void load();}finally{loading=false;}
+  }catch(error){if(ticket!==generation)return;if(quiet){status(`Could not refresh launch state. ${errorText(error)}`,true);return;}el('list').innerHTML=`<div class="error"><h3>Couldn’t load launches</h3><p>${h(errorText(error))}</p><button id="retry">Try again</button></div>`;el<HTMLButtonElement>('retry').onclick=()=>void load();}finally{loading=false;if(reloadQueued)void load(true);}
 }
 function stage(v:Venue){const t=v.account.terms;return launchStage(v.account.status,Math.floor(Date.now()/1000)+chainOffset,t.biddingOpensAt.toNumber(),t.biddingClosesAt.toNumber(),t.settlementDeadline.toNumber());}
 async function detail(){
@@ -148,7 +150,7 @@ async function detail(){
   if(s==='Refunds available'){
     panel.insertAdjacentHTML('beforeend',`<section class="outcome"><h3>What happened</h3><table><thead><tr><th scope="col">Measure</th><th scope="col">Launch terms</th><th scope="col">Result on Solana</th></tr></thead><tbody><tr><th scope="row">Minimum raise</th><td>${amount(t.minRaise.toString())} quote</td><td>Not met</td></tr><tr><th scope="row">Opening spend</th><td>Only if the terms are met</td><td>${amount(v.settlement.quoteSpent.toString())} quote</td></tr><tr><th scope="row">Deposits</th><td>Refundable</td><td>Withdrawals enabled</td></tr></tbody></table><p class="muted">A launch can also enter refunds after cancellation or expiry. Each participant claims their own deposit.</p></section>`);
   }
-  panel.insertAdjacentHTML('beforeend',passportHtml(v.receipt));
+  panel.insertAdjacentHTML('beforeend',passportHtml(v.receipt,s==="Refund deadline reached"));
   bind('share-receipt','Copying link…',async()=>{const url=new URL(location.href);url.search='';url.searchParams.set('launch',v.publicKey.toBase58());url.hash='passport';await navigator.clipboard.writeText(url.toString());return {message:'Launch receipt link copied. Anyone can inspect it without connecting a wallet.'};},false);
   bind('download-receipt','Preparing JSON…',async()=>{downloadReceipt(JSON.stringify(v.receipt,null,2),`teek-receipt-${v.publicKey}.json`,'application/json');return {message:'Receipt snapshot downloaded.'};},false);
   bind('download-receipt-card','Preparing card…',async()=>{downloadReceipt(receiptCard(v.receipt),`teek-receipt-${v.publicKey}.svg`,'image/svg+xml');return {message:'Share card downloaded. It includes the observation time and devnet label.'};},false);

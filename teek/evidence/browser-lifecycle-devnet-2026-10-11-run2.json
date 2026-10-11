@@ -1,0 +1,50 @@
+{
+  "what": "A second full run through the live website after the testing fixes, covering one launch that opens and one that refunds",
+  "site": "https://teek-navy.vercel.app",
+  "network": "devnet",
+  "date": "2026-10-11",
+  "wallet": "browser demo wallet 6s1j…KPFH, funded by the hosted faucet",
+  "openingLaunch": {
+    "launch": "HDUBMWwZcx6y7serfAiEXoxdd9iFG5CZF3aEt7u258LY",
+    "name": "Teek Success Test (TSUC), minimum 0.1, cap 0.6",
+    "steps": [
+      "Published from the Launch Studio",
+      "Deposited 0.3 and prepared the private bid; the panel updated on its own without a reload",
+      "Saved a private bid of 0.25 once bidding opened",
+      "Closed bidding, requested randomness and completed the opening purchase from the page",
+      "The first claim failed because publishing two launches had drained the wallet's test SOL; after the fix, Get test funds topped it up and the claim went through"
+    ],
+    "result": {
+      "openingSpendQuote": "0.25",
+      "tokensReceived": "791412.170395 TSUC",
+      "refundPaidQuote": "0.05",
+      "claimsCompleted": "1/1"
+    },
+    "openingPurchaseTransaction": "2AJEnG1zssa5aL8RaXaBBQX29zJSwdT6zcaZGTBKdP76hxeYnCc2qA7Tphom6ij2tFVqNFyxE96VgcDZmeBXiQA1",
+    "openingPurchaseInstructions": "SettleLaunch, InitializeVirtualPoolWithSplToken, Swap, TransferPoolCreator in one transaction",
+    "claimTransaction": "5wCXAjUBMkhyyD71N8T6hwWgjVEJR869U1aSPxKzK5SZpzcwr1mwbMPVADnMHZdoFrN2U895Sa873iAbwwhj8Ha",
+    "note": "Three failed transactions on this launch at 21:47:24 UTC were duplicate randomness callbacks sent by the MagicBlock VRF oracle. One callback landed and the program rejected the rest."
+  },
+  "refundLaunch": {
+    "launch": "GEcqerbwSoV1CxgKiUFBLJbjqHWmgH29yzZLgguSR88z",
+    "name": "Teek Refund Test (TREF), minimum 1, cap 1.2",
+    "steps": [
+      "Published from the Launch Studio",
+      "Deposited 0.2, below the minimum of 1, and saved a private bid of 0.2",
+      "Left it until the settlement deadline passed",
+      "Pressed Claim your refund once; the page expired the launch, brought the bid back from the private rollup and withdrew the deposit"
+    ],
+    "result": {
+      "status": "Refunds available",
+      "openingSpendQuote": "0",
+      "depositReturned": true
+    },
+    "expireTransaction": "4Yg1VvPiDTSruf15hfpgtRJx18touSHSyDXRg3tgY8K88Y5ndvC4nvoU9RxXyHF56rEsvzB5zg7BXpNDxUBxWXZU",
+    "withdrawTransaction": "4qeJB455ByKPGF5PiFxrz5zeKgJ3xJFkA3rgmrYUjodiRMncaLgDnj33xPaiQJhDMeAxfJg4Ajof2Fwdgjb5Qqd7"
+  },
+  "issuesFoundAndFixed": [
+    "Wallets ran out of test SOL midway; the faucet now gives 0.1 SOL and the claim and refund steps offer Get test funds",
+    "After the refund the panel kept the old state until a reload, because follow-up refreshes were dropped while a slow refresh was still running; they now queue",
+    "The record card said Opening pending after the settlement deadline; it now says the launch can only refund"
+  ]
+}
