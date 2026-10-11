@@ -35,6 +35,7 @@ describe('Verified launch receipts',()=>{
     const r=buildLaunchReceipt(input);expect(r.outcome.refundsPaid).toBeNull();expect(r.outcome.refundsAllocated).toBeNull();
     expect(passportHtml(r)).toContain('Check the payment history');
     expect(passportHtml(r)).not.toContain('quote paid');
+    expect(passportHtml(r)).not.toContain('All refunds paid');expect(passportHtml(r,false,true)).toContain('All refunds paid');
   });
   it('says a pending launch can only refund once its deadline has passed',()=>{
     const input=fixture();input.account.status={ready:{}};input.settlement.phase=0;input.settlement.quoteSpent=new BN(0);input.settlement.baseReceived=new BN(0);

@@ -6,7 +6,7 @@ import { Connection, Keypair, PublicKey, Transaction, VersionedTransaction, SYSV
 import { getMint, unpackMint, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } from '@solana/spl-token';
 import { AnchorProvider } from '@coral-xyz/anchor';
 import nacl from 'tweetnacl';
-import { LaunchClient, type LaunchWallet, launchBidAddress, launchSettlement } from '../../clients/launch';
+import { LaunchClient, type LaunchWallet, launchBidAddress, launchSettlement, launchQuoteVault } from '../../clients/launch';
 import { parseAmount, formatAmount, averagePrice, escapeHtml as h, launchStage } from './launch-ui';
 import { retryingFetch } from '../../clients/rpc';
 import { DynamicBondingCurveClient, DYNAMIC_BONDING_CURVE_PROGRAM_ID, feeNumeratorToBps, type PoolConfig } from '@meteora-ag/dynamic-bonding-curve-sdk';
@@ -35,7 +35,7 @@ let discoverAll = false;
 // Retain explicit payment audits across account refreshes, with their own timestamp.
 const refundProofs=new Map<string,RefundProof>();
 type Venue = {publicKey:PublicKey; account:Awaited<ReturnType<LaunchClient['base']['account']['launch']['fetch']>>;
-  settlement:Awaited<ReturnType<LaunchClient['base']['account']['settlementState']['fetch']>>; decimals:number; baseDecimals:number; receipt:LaunchReceipt};
+  settlement:Awaited<ReturnType<LaunchClient['base']['account']['settlementState']['fetch']>>; decimals:number; baseDecimals:number; receipt:LaunchReceipt; refundsDone:boolean};
 let venues:Venue[] = [];
 app.innerHTML = `${brandHeader('launch','<button id="wallet">Connect wallet</button><button id="demo" class="quiet">Use demo wallet</button>')}
 <main id="main-content"><section class="intro"><div class="eyebrow">PRIVATE BIDS · PUBLIC TRADING</div><h1>One opening.<br>On your terms.</h1><div class="intro-aside"><p>Set your launch terms, take bids privately, then open trading on Meteora.</p><button id="create" class="primary">Create a launch <span aria-hidden="true">↗</span></button></div></section>
@@ -94,7 +94,7 @@ async function load(quiet=false){
     if(clock)chainOffset=Number(clock.data.readBigInt64LE(32))-Math.floor(Date.now()/1000);
     const map=new Map(states.map(x=>[x.account.launch.toBase58(),x.account]));const result:Venue[]=[];
     // Batch and deduplicate shared mint/config reads instead of two RPCs per venue.
-    const keys=[...new Map(launches.filter(x=>map.has(x.publicKey.toBase58())).flatMap(x=>[x.account.quoteMint,x.account.terms.dbcConfig]).map(key=>[key.toBase58(),key])).values()];
+    const keys=[...new Map(launches.filter(x=>map.has(x.publicKey.toBase58())).flatMap(x=>[x.account.quoteMint,x.account.terms.dbcConfig,...("refunds" in x.account.status?[launchQuoteVault(x.publicKey)]:[])]).map(key=>[key.toBase58(),key])).values()];
     const infos=new Map<string,Awaited<ReturnType<Connection['getAccountInfo']>>>();
     for(let i=0;i<keys.length;i+=100){const chunk=keys.slice(i,i+100),accounts=await connection.getMultipleAccountsInfo(chunk);chunk.forEach((key,j)=>infos.set(key.toBase58(),accounts[j]));}
     for(const launch of launches){const settlement=map.get(launch.publicKey.toBase58());if(!settlement)continue;
@@ -106,15 +106,19 @@ async function load(quiet=false){
       const policy:CurvePolicy={creatorTradingFeePercentage:decoded.creatorTradingFeePercentage,feeClaimer:decoded.feeClaimer.toBase58(),leftoverReceiver:decoded.leftoverReceiver.toBase58(),creatorLiquidityPercentage:decoded.creatorLiquidityPercentage,creatorLockedLpPercentage:decoded.creatorPermanentLockedLiquidityPercentage,partnerLiquidityPercentage:decoded.partnerLiquidityPercentage,partnerLockedLpPercentage:decoded.partnerPermanentLockedLiquidityPercentage,migrationQuoteThreshold:decoded.migrationQuoteThreshold.toString()};
       const receipt=buildLaunchReceipt({launch:launch.publicKey.toBase58(),program:reader.base.programId.toBase58(),account:launch.account,settlement,quoteDecimals:mint.decimals,baseDecimals:decoded.tokenDecimal,policy,configHashMatches:digest.every((byte,i)=>byte===settlement.configHash[i]),observedAt:new Date().toISOString()});
       if(receipt.status==='Refunds available')receipt.refundHistory=refundProofs.get(receipt.launch);
-      result.push({...launch,settlement,decimals:mint.decimals,baseDecimals:decoded.tokenDecimal,receipt});}
+      // An empty escrow during refunds means every deposit has been paid back.
+      const vault="refunds" in launch.account.status?infos.get(launchQuoteVault(launch.publicKey).toBase58()):undefined;
+      const refundsDone=!!vault&&vault.data.length>=72&&vault.data.readBigUInt64LE(64)===0n;
+      result.push({...launch,settlement,decimals:mint.decimals,baseDecimals:decoded.tokenDecimal,receipt,refundsDone});}
     if(ticket!==generation)return;venues=result.reverse();
-    el('list').innerHTML=venues.length?venues.map(v=>`<button class="launch-row" data-launch="${v.publicKey}"><span class="token-symbol">${h(v.settlement.metadata.symbol.slice(0,2))}</span><span><strong>${h(v.settlement.metadata.name)}</strong><small>${h(v.settlement.metadata.symbol)} · ${short(v.publicKey)}</small></span><span class="row-terms"><strong>${formatAmount(v.account.terms.maxRaise.toString(),v.decimals)} quote tokens</strong><small>Raise cap</small></span><span class="badge">${stage(v)}</span><span aria-hidden="true">↗</span></button>`).join(''):'<div class="empty"><h3>No launch venues yet</h3><p>Create a launch with immutable terms, then invite bidders to fund before opening.</p><button id="first-create" class="primary">Create the first launch</button></div>';
+    el('list').innerHTML=venues.length?venues.map(v=>`<button class="launch-row" data-launch="${v.publicKey}"><span class="token-symbol">${h(v.settlement.metadata.symbol.slice(0,2))}</span><span><strong>${h(v.settlement.metadata.name)}</strong><small>${h(v.settlement.metadata.symbol)} · ${short(v.publicKey)}</small></span><span class="row-terms"><strong>${formatAmount(v.account.terms.maxRaise.toString(),v.decimals)} quote tokens</strong><small>Raise cap</small></span><span class="badge">${badge(v)}</span><span aria-hidden="true">↗</span></button>`).join(''):'<div class="empty"><h3>No launch venues yet</h3><p>Create a launch with immutable terms, then invite bidders to fund before opening.</p><button id="first-create" class="primary">Create the first launch</button></div>';
     document.querySelectorAll<HTMLButtonElement>('[data-launch]').forEach(button=>button.onclick=()=>{selected=new PublicKey(button.dataset.launch!);history.replaceState(null,'',`?launch=${selected}`);void detail().catch(error=>status(errorText(error),true));});
     const first=el<HTMLButtonElement>('first-create');if(first)first.onclick=openCreate;
     if(!selected)readLaunchLink();
     if(selected)await detail();
   }catch(error){if(ticket!==generation)return;if(quiet){status(`Could not refresh launch state. ${errorText(error)}`,true);return;}el('list').innerHTML=`<div class="error"><h3>Couldn’t load launches</h3><p>${h(errorText(error))}</p><button id="retry">Try again</button></div>`;el<HTMLButtonElement>('retry').onclick=()=>void load();}finally{loading=false;if(reloadQueued)void load(true);}
 }
+function badge(v:Venue){const s=stage(v);return s==="Refunds available"&&v.refundsDone?"All refunds paid":s;}
 function stage(v:Venue){const t=v.account.terms;return launchStage(v.account.status,Math.floor(Date.now()/1000)+chainOffset,t.biddingOpensAt.toNumber(),t.biddingClosesAt.toNumber(),t.settlementDeadline.toNumber());}
 async function detail(){
   const detailTicket=++detailGeneration;
@@ -141,7 +145,7 @@ async function detail(){
   else if(['Refunds available','Refund deadline reached'].includes(s)&&wallet&&index>=0)participation=own?.funded.isZero()?'<p>Your refund has been claimed.</p>':'<button id="refund" class="primary">Claim your refund</button><button id="test-funds" class="quiet">Get test funds</button>';
   else if(s==='Ready to close'&&wallet)participation='<button id="close" class="primary">Close bidding</button>';
   else if(s==='Ready to settle'&&wallet)participation=v.settlement.phase===1?'<p>Waiting for the randomness result. Refresh shortly.</p>':`<button id="settle" class="primary">${v.settlement.phase===0?'Request randomness':'Complete opening purchase'}</button>`;
-  panel.innerHTML=`<div class="section-title"><div><div class="eyebrow">LAUNCH TERMS</div><h2>${h(v.settlement.metadata.name)}</h2></div><span class="badge">${s}</span></div><div class="detail-grid${participation?'':' solo'}"><div><dl class="terms"><div><dt>Minimum raise</dt><dd>${amount(t.minRaise.toString())}</dd></div><div><dt>Raise cap</dt><dd>${amount(t.maxRaise.toString())}</dd></div><div><dt>Minimum output at cap</dt><dd>${formatAmount(v.settlement.minTokensAtCap.toString(),v.baseDecimals)} ${h(v.settlement.metadata.symbol)}</dd></div><div><dt>Funding closes</dt><dd>${new Date(t.biddingOpensAt.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Bids close</dt><dd>${new Date(t.biddingClosesAt.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Settlement deadline</dt><dd>${new Date(t.settlementDeadline.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Registered wallets</dt><dd>${count} / 24</dd></div><div><dt>Creator</dt><dd><button id="copy-creator" class="quiet">${short(v.account.creator)} · Copy</button></dd></div></dl><p class="muted">Quote mint: <a target="_blank" rel="noreferrer" href="https://explorer.solana.com/address/${v.account.quoteMint}?cluster=devnet">${short(v.account.quoteMint)} ↗</a> · <a target="_blank" rel="noreferrer" href="https://explorer.solana.com/address/${t.dbcConfig}?cluster=devnet">View curve ↗</a></p>${depositNote}</div>${participation?`<div class="participate"><h3>${active?'Join this launch':'Your next step'}</h3>${participation}</div>`:''}</div>`;
+  panel.innerHTML=`<div class="section-title"><div><div class="eyebrow">LAUNCH TERMS</div><h2>${h(v.settlement.metadata.name)}</h2></div><span class="badge">${badge(v)}</span></div><div class="detail-grid${participation?'':' solo'}"><div><dl class="terms"><div><dt>Minimum raise</dt><dd>${amount(t.minRaise.toString())}</dd></div><div><dt>Raise cap</dt><dd>${amount(t.maxRaise.toString())}</dd></div><div><dt>Minimum output at cap</dt><dd>${formatAmount(v.settlement.minTokensAtCap.toString(),v.baseDecimals)} ${h(v.settlement.metadata.symbol)}</dd></div><div><dt>Funding closes</dt><dd>${new Date(t.biddingOpensAt.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Bids close</dt><dd>${new Date(t.biddingClosesAt.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Settlement deadline</dt><dd>${new Date(t.settlementDeadline.toNumber()*1000).toLocaleString()}</dd></div><div><dt>Registered wallets</dt><dd>${count} / 24</dd></div><div><dt>Creator</dt><dd><button id="copy-creator" class="quiet">${short(v.account.creator)} · Copy</button></dd></div></dl><p class="muted">Quote mint: <a target="_blank" rel="noreferrer" href="https://explorer.solana.com/address/${v.account.quoteMint}?cluster=devnet">${short(v.account.quoteMint)} ↗</a> · <a target="_blank" rel="noreferrer" href="https://explorer.solana.com/address/${t.dbcConfig}?cluster=devnet">View curve ↗</a></p>${depositNote}</div>${participation?`<div class="participate"><h3>${active?'Join this launch':'Your next step'}</h3>${participation}</div>`:''}</div>`;
   if(s==='Settled'){
     const spent=BigInt(v.settlement.quoteSpent.toString()),cap=BigInt(t.maxRaise.toString());
     const floor=(BigInt(v.settlement.minTokensAtCap.toString())*spent+cap-1n)/cap;
@@ -150,7 +154,7 @@ async function detail(){
   if(s==='Refunds available'){
     panel.insertAdjacentHTML('beforeend',`<section class="outcome"><h3>What happened</h3><table><thead><tr><th scope="col">Measure</th><th scope="col">Launch terms</th><th scope="col">Result on Solana</th></tr></thead><tbody><tr><th scope="row">Minimum raise</th><td>${amount(t.minRaise.toString())} quote</td><td>Not met</td></tr><tr><th scope="row">Opening spend</th><td>Only if the terms are met</td><td>${amount(v.settlement.quoteSpent.toString())} quote</td></tr><tr><th scope="row">Deposits</th><td>Refundable</td><td>Withdrawals enabled</td></tr></tbody></table><p class="muted">A launch can also enter refunds after cancellation or expiry. Each participant claims their own deposit.</p></section>`);
   }
-  panel.insertAdjacentHTML('beforeend',passportHtml(v.receipt,s==="Refund deadline reached"));
+  panel.insertAdjacentHTML('beforeend',passportHtml(v.receipt,s==="Refund deadline reached",v.refundsDone));
   bind('share-receipt','Copying link…',async()=>{const url=new URL(location.href);url.search='';url.searchParams.set('launch',v.publicKey.toBase58());url.hash='passport';await navigator.clipboard.writeText(url.toString());return {message:'Launch receipt link copied. Anyone can inspect it without connecting a wallet.'};},false);
   bind('download-receipt','Preparing JSON…',async()=>{downloadReceipt(JSON.stringify(v.receipt,null,2),`teek-receipt-${v.publicKey}.json`,'application/json');return {message:'Receipt snapshot downloaded.'};},false);
   bind('download-receipt-card','Preparing card…',async()=>{downloadReceipt(receiptCard(v.receipt),`teek-receipt-${v.publicKey}.svg`,'image/svg+xml');return {message:'Share card downloaded. It includes the observation time and devnet label.'};},false);

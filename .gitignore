@@ -26,3 +26,6 @@ magicblock-test-storage/
 
 .vercel
 .env*
+
+# Design reference frames from another site, kept local only
+teek/reference-video/
