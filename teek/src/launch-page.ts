@@ -59,7 +59,7 @@ async function getTestFunds(quote:PublicKey){const c=requireClient(),local=['127
   const result=await response.json().catch(()=>({}));if(!response.ok)throw Error(result.error??(local?'Test funding unavailable. Start the local demo funding server.':'Test funding is unavailable right now.'));
   return result.signature??{message:'This wallet already has test funds.'};}
 function errorText(error:unknown){const e=error as {error?:{errorMessage?:string};message?:string};const message=e.error?.errorMessage??e.message??'Request failed. Try again.';if(/429|rate limit/i.test(message))return 'Solana devnet is busy. Wait a moment and try again. Recorded launch receipts remain available on the Evidence page.';if(/failed to fetch|network error/i.test(message))return 'Could not reach Solana devnet. Check your connection and try again.';return message.replace(/https?:\/\/\S*token=\S*/g,'[private session]');}
-async function action(button:HTMLButtonElement,label:string,fn:()=>Promise<unknown>,refresh=true){if(button.disabled)return;const old=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent=label;status(label);try{const result=await fn();status(result&&typeof result==='object'&&'message'in result?String(result.message):typeof result==='string'?'Confirmed on devnet.':'Done.');if(typeof result==='string'&& /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(result)){const link=document.createElement('a');link.href=`https://explorer.solana.com/tx/${result}?cluster=devnet`;link.textContent=' View transaction ↗';link.target='_blank';link.rel='noreferrer';el('status').append(link);}if(refresh)await load();}catch(error){status(errorText(error),true);const inline=button.closest('form')?.querySelector('[role=alert]');if(inline)inline.textContent=errorText(error);}finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.id==='wallet'&&wallet?short(wallet.publicKey):old;}}
+async function action(button:HTMLButtonElement,label:string,fn:()=>Promise<unknown>,refresh=true){if(button.disabled)return;const old=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent=label;status(label);try{const result=await fn();status(result&&typeof result==='object'&&'message'in result?String(result.message):typeof result==='string'?'Confirmed on devnet.':'Done.');if(typeof result==='string'&& /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(result)){const link=document.createElement('a');link.href=`https://explorer.solana.com/tx/${result}?cluster=devnet`;link.textContent=' View transaction ↗';link.target='_blank';link.rel='noreferrer';el('status').append(link);}if(refresh){await load(true);for(const delay of [2500,6000])setTimeout(()=>void load(true),delay);}}catch(error){status(errorText(error),true);const inline=button.closest('form')?.querySelector('[role=alert]');if(inline)inline.textContent=errorText(error);}finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.id==='wallet'&&wallet?short(wallet.publicKey):old;}}
 function useWallet(w:LaunchWallet){wallet=w;client=new LaunchClient(connection,w);el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();}
 el<HTMLButtonElement>('demo').onclick=()=>{
   try{const stored=localStorage.getItem(storage),key=stored?Keypair.fromSecretKey(Uint8Array.from(JSON.parse(stored))):Keypair.generate();if(!stored)localStorage.setItem(storage,JSON.stringify(Array.from(key.secretKey)));
@@ -131,7 +131,7 @@ async function detail(){
   const depositNote=wallet&&active&&index>=0?`<p class="muted">${own?`You deposited ${amount(own.funded.toString())} quote tokens.`:'Your deposit is in the private bidding window.'}</p>`:'';
   let participation='';
   if(active&&!wallet)participation='<p>Connect a wallet or use a demo wallet to join this launch.</p>';
-  else if(s==='Funding open'&&wallet&&index>=0)participation='<button id="finish-private" class="primary">Prepare private bid</button>';
+  else if(s==='Funding open'&&wallet&&index>=0)participation=own?'<button id="finish-private" class="primary">Prepare private bid</button>':`<p>Your private bid is set up. Bidding opens ${new Date(t.biddingOpensAt.toNumber()*1000).toLocaleString()}.</p><button id="finish-private" class="quiet">Re-check my setup</button>`;
   else if(s==='Funding open'&&wallet)participation=`<button id="test-funds" class="quiet">Get test funds</button><form id="bid-form">${field('bid-amount','Deposit (quote tokens)','text','',true,'decimal')}<button class="primary" type="submit">Deposit and prepare to bid</button><p id="bid-error" role="alert"></p></form>`;
   else if(s==='Private bidding'&&wallet&&index>=0)participation=`<form id="bid-form">${field('bid-amount','Your bid (quote tokens)','text','',true,'decimal')}<button class="primary" type="submit">Save bid</button><p id="bid-error" role="alert"></p></form><button id="read-bid" class="quiet">Check my bid</button>`;
   else if(s==='Private bidding'&&wallet)participation='<p>Deposits closed before bidding began. This wallet did not join this launch.</p>';
@@ -182,7 +182,7 @@ async function detail(){
     if(s==='Funding open'){
       if(index<0)await c.register(v.publicKey,source,value);
       await preparePrivateBid(c);
-    }else{await preparePrivateBid(c);await c.edit(v.publicKey,value);}return undefined;
+    }else{await preparePrivateBid(c);await c.edit(v.publicKey,value);}return {message:s==="Funding open"?"Deposit saved and your private bid is set up. Choose your bid once bidding opens.":"Bid saved privately. Only you can read it until bidding closes."};
   });};}
   bind('read-bid','Checking bid…',async()=>{const c=requireClient();await c.authenticate();const bid=await c.readOwnBid(v.publicKey);return {message:`Your bid is ${amount(bid.amount.toString())} quote tokens.`};},false);
   bind('test-funds','Getting devnet test funds…',()=>getTestFunds(v.account.quoteMint));
@@ -262,8 +262,12 @@ el<HTMLFormElement>('create-form').onsubmit=event=>{event.preventDefault();const
   if(reviewedFingerprint!==draftFingerprint(el<HTMLFormElement>('create-form')))throw Error('The draft changed during preparation. Review it again before publishing.');
   try{selected=await publishLaunchOnce({client:c,storage:localStorage,fingerprint:reviewedFingerprint!,quote,terms,minimumTokensAtCap,metadata});}
   catch(error){if(custom)throw Error(`Curve ${config.toBase58()} is saved on devnet. Launch publication failed: ${errorText(error)} Retry this draft to reuse the same curve and launch address.`);throw error;}
-  history.replaceState(null,'',`?launch=${selected}`);studio.resetAfterPublish();el<HTMLDialogElement>('create-dialog').close();return undefined;
+  history.replaceState(null,'',`?launch=${selected}`);studio.resetAfterPublish();el<HTMLDialogElement>('create-dialog').close();return {message:"Your launch is live on devnet. Share this page so people can join."};
   });
 }).finally(()=>{editable.forEach(input=>input.disabled=false);applyCurveMode();});};
-void load();
+// Reconnect a demo wallet this browser already made, so a reload does not look like being signed out.
+// useWallet() loads the page itself, so only load here when no wallet was restored.
+let restored=false;
+try{if(localStorage.getItem(storage)){el<HTMLButtonElement>('demo').click();restored=true;}}catch{/* storage blocked: stay signed out */}
+if(!restored)void load();
 setInterval(()=>{if(!document.hidden&&!loading&&!document.querySelector('dialog[open]')&&!document.querySelector('[aria-busy="true"]'))void load(true);},30_000);

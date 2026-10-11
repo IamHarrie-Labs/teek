@@ -345,11 +345,25 @@ function setOnchainStatus(msg: string, isError = false) {
   onchainStatusEl.classList.toggle("error", isError);
 }
 
+// The live market run needs funded test accounts on one shared demo market,
+// so on the public site only the read-only refresh stays available.
+const liveMarketEnabled = ["localhost", "127.0.0.1"].includes(location.hostname);
+
 function setLiveControlsDisabled(disabled: boolean) {
   liveActionButtons.forEach((button) => {
-    button.disabled = disabled;
+    const readOnly = button.id === "onchain-refresh";
+    button.disabled = disabled || (!liveMarketEnabled && !readOnly);
     button.setAttribute("aria-busy", disabled ? "true" : "false");
   });
+}
+
+if (!liveMarketEnabled) {
+  setLiveControlsDisabled(false);
+  const note = document.createElement("p");
+  note.className = "onchain-blurb";
+  note.innerHTML =
+    "On the public site these buttons are switched off. The live market run needs funded test accounts on one shared demo market, so it runs on your own computer instead. The steps are in the <a href=\"https://github.com/IamHarrie-Labs/teek#readme\" target=\"_blank\" rel=\"noreferrer\">README on GitHub</a>. The charts above still show the full comparison.";
+  document.querySelector(".onchain-blurb")?.after(note);
 }
 
 function resetDemoLog() {

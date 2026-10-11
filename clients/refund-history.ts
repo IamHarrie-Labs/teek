@@ -62,7 +62,7 @@ export function reconcileRefundEvents(events: MoneyEvent[], current: Map<string,
   const paid = payments.reduce((n, p) => n + BigInt(p.amount), 0n), remaining = [...current.values()].reduce((a, b) => a + b, 0n);
   return { coverage: valid ? 'complete' : 'partial', observedAt: new Date().toISOString(), originalLiability: valid ? original!.toString() : null,
     paid: paid.toString(), remaining: valid ? remaining.toString() : null, payments,
-    note: valid ? 'Registered deposits match confirmed payment history. Finality is still pending.' : 'Only part of the payment history is available. Full repayment cannot yet be confirmed.' };
+    note: valid ? 'Registered deposits match the confirmed payment history on Solana.' : 'Only part of the payment history is available. Full repayment cannot yet be confirmed.' };
 }
 
 export async function verifyRefundHistory(connection: Connection, launch: PublicKey, bids: PublicKey[], belowMinimum: boolean, readBalances: () => Promise<Map<string, bigint>>): Promise<RefundProof> {

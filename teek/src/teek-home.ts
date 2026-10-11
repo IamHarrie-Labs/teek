@@ -53,7 +53,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </section>
 
     <section class="launch-section" id="launches" aria-labelledby="launches-title">
-      <div class="section-intro"><p class="overline">Recorded launches</p><h2 id="launches-title">One opened.<br>One returned the deposits.</h2><p>See both results on Solana devnet.</p></div>
+      <div class="section-intro"><p class="overline">Recorded launches</p><h2 id="launches-title">One opened.<br>One returned the deposits.</h2><p>See both results on Solana devnet. They were recorded before the project was renamed from Tick to Teek, and token names cannot change once they are on chain.</p></div>
       <div class="launch-cards">
         <a class="launch-card success" href="/launch.html?launch=${successLaunch}"><span class="card-index">01</span><span class="status"><i></i> Settled</span><div><p>Tick Opening</p><strong>0.6 quote</strong><small>1,897,418.306355 OPEN received</small></div><span class="card-arrow" aria-hidden="true">↗</span></a>
         <a class="launch-card refund" href="/launch.html?launch=${refundLaunch}"><span class="card-index">02</span><span class="status"><i></i> Refunded</span><div><p>Tick Refund</p><strong>0 quote spent</strong><small>Both deposits returned in full</small></div><span class="card-arrow" aria-hidden="true">↗</span></a>

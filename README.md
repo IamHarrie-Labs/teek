@@ -30,7 +30,7 @@ Every launch has a Passport page. It shows the launch's rules in plain language,
 
 The evidence page at [/evidence.html](https://teek-navy.vercel.app/evidence.html) shows the real devnet launches we ran as proof. One raised enough, opened its pool and paid everyone out. The other missed its minimum and refunded everyone in full, without ever creating a pool.
 
-The simulator at [/market.html](https://teek-navy.vercel.app/market.html) is where Teek started. It shows a speed bot making money on a normal exchange and losing that edge once orders are grouped and priced together.
+The simulator at [/market.html](https://teek-navy.vercel.app/market.html) is where Teek started. It shows a speed bot making money on a normal exchange and losing that edge once orders are grouped and priced together. Its live devnet buttons are switched off on the public site, because they need funded test accounts on one shared market, but they work when you run the site on your own computer.
 
 ## What Teek does not do yet
 
