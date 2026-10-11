@@ -1,4 +1,4 @@
-// Hosted devnet faucet for judges: 0.05 test SOL plus 100 synthetic quote tokens per wallet.
+// Hosted devnet faucet for judges: 0.1 test SOL plus 100 synthetic quote tokens per wallet.
 // Spends only from a dedicated faucet wallet (its balances are the hard budget); the secret
 // lives in the FAUCET_SECRET_KEY environment variable and never reaches the browser.
 import {
@@ -20,7 +20,7 @@ const DEVNET_GENESIS = "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG";
 const QUOTE_MINT = new PublicKey(process.env.FAUCET_QUOTE_MINT ?? "GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj");
 const QUOTE_DECIMALS = 6;
 const QUOTE_AMOUNT = 100_000_000n;
-const SOL_TOP_UP = 50_000_000;
+const SOL_TOP_UP = 100_000_000;
 const SOL_FLOOR = 20_000_000;
 const FAUCET_SOL_RESERVE = 10_000_000;
 const PER_IP_LIMIT = 5;
