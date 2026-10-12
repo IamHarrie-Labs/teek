@@ -18,7 +18,7 @@ export const Zero: React.FC = () => {
     <Room>
       <Clock ms={0} />
       <svg width={W} height={H} style={{ position: 'absolute' }}>
-        <line x1={W * 0.56} y1={H * 0.1} x2={W * 0.56} y2={H * 0.1 + H * 0.8 * line} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
+        <line x1={AX.x} y1={AX.top} x2={AX.x} y2={AX.top + (AX.y - AX.top) * line} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
       </svg>
       <Statement text="A token goes live." from={24} to={240} x={120} y={430} size={128} />
     </Room>
@@ -28,7 +28,12 @@ export const Zero: React.FC = () => {
 // ---------- 02 The race (also played backwards in 03) ----------
 const crowd = dots(34, 7);
 const ranks = crowd.map((d, i) => ({ d, i })).sort((a, b) => a.d.d - b.d.d).map((x, rank) => ({ ...x, rank }));
-export const raceCurve = (s: number): [number, number] => [W * 0.58 + s * W * 0.37, H * 0.88 - s * s * H * 0.6];
+// The price chart. The line drawn in shot 01 becomes its price axis.
+const AX = { x: W * 0.58, y: H * 0.88, top: H * 0.24, right: W * 0.96 };
+export const raceCurve = (s: number): [number, number] => [AX.x + s * W * 0.37, AX.y - s * s * H * 0.6];
+const axisText = (text: string, x: number, y: number, opacity: number, align: 'left' | 'right' | 'center' = 'left', color = C.muted) => (
+  <div style={{ position: 'absolute', left: align === 'left' ? x : align === 'right' ? x - 700 : x - 350, width: 700, top: y, textAlign: align, fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color, opacity }}>{text}</div>
+);
 export const arrivalFrame = (d: { d: number }) => 120 + d.d * 150;
 
 export const RaceField: React.FC<{ f: number; rewinding?: boolean }> = ({ f, rewinding }) => {
@@ -38,12 +43,23 @@ export const RaceField: React.FC<{ f: number; rewinding?: boolean }> = ({ f, rew
   const [bx1, by1] = raceCurve(0.02);
   const bt = prog(f, 50, 54);
   const path = Array.from({ length: 51 }, (_, i) => raceCurve(i / 50)).map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
+  const [, topY] = raceCurve(0.1 + ((crowd.length - 1) / crowd.length) * 0.86);
+  const [topX] = raceCurve(0.1 + ((crowd.length - 1) / crowd.length) * 0.86);
+  const guides = settle(prog(f, 280, 310));
   return (
     <>
       <Clock ms={ms} hot={!rewinding && f >= 54 && f < 74 && Math.floor(f / 4) % 2 === 0} rewind={rewinding} />
       <svg width={W} height={H} style={{ position: 'absolute' }}>
-        <line x1={W * 0.56} y1={H * 0.1} x2={W * 0.56} y2={H * 0.9} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
+        <line x1={AX.x} y1={AX.top} x2={AX.x} y2={AX.y} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
+        <line x1={AX.x} y1={AX.y} x2={AX.x + (AX.right - AX.x) * curveOn} y2={AX.y} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
         <path d={path} fill="none" stroke={C.line} strokeWidth={3} opacity={curveOn} />
+        {guides > 0 && (
+          <g opacity={guides}>
+            <line x1={AX.x} x2={topX} y1={topY} y2={topY} stroke={C.ivory} strokeOpacity={0.5} strokeWidth={2} strokeDasharray="8 10" />
+            <line x1={AX.x - 14} x2={AX.x} y1={topY} y2={topY} stroke={C.ivory} strokeWidth={2} />
+            <line x1={AX.x - 14} x2={AX.x} y1={by1} y2={by1} stroke={C.steel} strokeWidth={2} />
+          </g>
+        )}
         {ranks.map(({ d, rank, i }) => {
           const sx = W * (0.05 + d.x * 0.3), sy = H * (0.46 + d.y * 0.44);
           const t = settle(prog(f, 70 + d.d * 150, 120 + d.d * 150));
@@ -52,8 +68,11 @@ export const RaceField: React.FC<{ f: number; rewinding?: boolean }> = ({ f, rew
         })}
         <rect x={bx0 + (bx1 - bx0) * bt - 17} y={by0 + (by1 - by0) * bt - 17} width={34} height={34} fill={C.steel} />
       </svg>
-      {f >= 56 && <div style={{ position: 'absolute', left: bx1 - 40, top: by1 + 34, fontFamily: MONO, fontSize: 26, color: C.steel, letterSpacing: '0.06em', opacity: settle(prog(f, 56, 72)) }}>bot bought first</div>}
-      {f >= 230 && <div style={{ position: 'absolute', left: W * 0.95 - 600, width: 600, textAlign: 'right', top: H * 0.2, fontFamily: MONO, fontSize: 26, color: C.muted, letterSpacing: '0.06em', opacity: settle(prog(f, 230, 250)) }}>everyone else, higher</div>}
+      {axisText('PRICE PER TOKEN ↑', AX.x + 18, AX.top - 8, curveOn)}
+      {axisText('BUYERS, IN THE ORDER THEY BOUGHT →', AX.right, AX.y + 22, curveOn, 'right')}
+      {f >= 56 && f < 130 && axisText('the bot', bx1 + 26, by1 - 54, settle(prog(f, 56, 72)) * (1 - prog(f, 110, 130)), 'left', C.steel)}
+      {guides > 0 && axisText("the bot's price", AX.x - 26, by1 - 14, guides, 'right', C.steel)}
+      {guides > 0 && axisText("the last person's price", AX.x - 26, topY - 14, guides, 'right', C.ivory)}
     </>
   );
 };
@@ -63,8 +82,8 @@ export const Race: React.FC = () => {
   return (
     <Room>
       <RaceField f={f} />
-      <Statement text={'0.4 seconds later,\na bot already bought it.'} from={62} to={232} x={120} y={170} size={92} em={['bot']} />
-      <Statement text="Everyone else pays more." from={240} to={420} x={120} y={170} size={92} em={['more.']} />
+      <Statement text={'0.4 seconds later,\na bot already bought it.'} from={62} to={232} x={120} y={160} size={84} em={['bot']} />
+      <Statement text={'Everyone after it\npays more.'} from={240} to={420} x={120} y={160} size={84} em={['more.']} />
     </Room>
   );
 };
@@ -153,23 +172,37 @@ export const Private: React.FC = () => {
         <rect x={botX - 17} y={H * 0.56 - 17} width={34} height={34} fill={C.steel} />
         {f >= 276 && f < 370 && <line x1={PANE.x0 + 6} x2={PANE.x1 - 6} y1={scanY} y2={scanY} stroke={C.steel} strokeWidth={2} opacity={0.75} />}
       </svg>
-      <Label text="sees only blur" from={372} to={440} x={W * 0.68 + 30} y={H * 0.56 - 70} align="center" color={C.steel} />
+      <Label text="the bot sees only blur" from={372} to={440} x={W * 0.68 - 17} y={H * 0.56 - 70} align="left" color={C.steel} />
       <Statement text="Everyone bids in private." from={18} to={436} x={120} y={110} size={104} em={['private.']} />
-      <Label text="Kept private in MagicBlock's Private Ephemeral Rollup while bidding is open" from={70} to={440} x={W / 2} y={H - 96} align="center" size={26} />
+      <Label text="Bids stay private inside MagicBlock's Private Ephemeral Rollup until bidding closes" from={70} to={440} x={W / 2} y={H - 96} align="center" size={26} />
     </Room>
   );
 };
 
 export const Opening: React.FC = () => {
   const f = useCurrentFrame();
-  const cx = W * 0.42, cy = H * 0.6;
+  // Everything merges at (cx, cy), then the coral dot settles onto the chart's origin.
+  const cx = W * 0.44, cy = H * 0.58;
+  const O = { x: W * 0.44, y: H * 0.84, top: H * 0.2, right: W * 0.95 };
+  const curve = (s: number): [number, number] => [O.x + s * W * 0.47, O.y - s * s * H * 0.6];
   const m = glide(prog(f, 18, 90));
   const merged = f >= 90;
   const push = f < 90 ? 1 + 0.07 * glide(prog(f, 18, 90)) : 1.07 - 0.07 * settle(prog(f, 90, 160));
   const b = prog(f, 90, 150);
-  const draw = glide(prog(f, 110, 290));
+  const settleDot = glide(prog(f, 112, 150));
+  const dotX = cx + (O.x - cx) * settleDot, dotY = cy + (O.y - cy) * settleDot;
+  const axes = settle(prog(f, 136, 170));
+  const draw = glide(prog(f, 156, 300));
   const steps = Math.max(2, Math.round(draw * 120));
-  const curvePts = Array.from({ length: steps }, (_, i) => { const s = (i / (steps - 1)) * draw; return `${i ? 'L' : 'M'}${cx + s * W * 0.46} ${cy - s * s * H * 0.5}`; }).join(' ');
+  const curvePts = Array.from({ length: steps }, (_, i) => { const [x, y] = curve((i / (steps - 1)) * draw); return `${i ? 'L' : 'M'}${x} ${y}`; }).join(' ');
+  // The group's purchase covers the first part of the curve in one go, and everyone pays its average.
+  const A = 0.55, fill = settle(prog(f, 320, 370)), avg = settle(prog(f, 390, 430));
+  const areaPts = Array.from({ length: 60 }, (_, i) => curve((i / 59) * A)).map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ') + ` L${curve(A)[0]} ${O.y} L${O.x} ${O.y} Z`;
+  const avgY = O.y - ((A * A) / 3) * H * 0.6;
+  const [aX] = curve(A);
+  const chartText = (text: string, x: number, y: number, o: number, align: 'left' | 'right' | 'center' = 'left', color: string = C.muted) => (
+    <div style={{ position: 'absolute', left: align === 'left' ? x : align === 'right' ? x - 800 : x - 400, width: 800, top: y, textAlign: align, fontFamily: MONO, fontSize: 22, letterSpacing: '0.1em', color, opacity: o }}>{text}</div>
+  );
   const points = [
     ...bidders.map((d) => { const [x, y] = glowAt(d); return { x, y, r: 12, glow: true }; }),
     ...extra.map((d) => { const a = d.x * Math.PI * 2, r = (0.34 + d.y * 0.3) * W; return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.62, r: 6 + d.s * 6, glow: false }; }),
@@ -192,39 +225,48 @@ export const Opening: React.FC = () => {
           })}
           {merged && (
             <>
-              <circle cx={cx} cy={cy} r={180 + 220 * settle(b)} fill="url(#coralGlow)" opacity={1 - prog(f, 300, 560) * 0.6} />
+              <circle cx={dotX} cy={dotY} r={180 + 220 * settle(b)} fill="url(#coralGlow)" opacity={(1 - prog(f, 140, 220)) * 0.9 + 0.1} />
               <circle cx={cx} cy={cy} r={30 + 900 * settle(prog(f, 90, 170))} fill="none" stroke={C.coral} strokeWidth={4} opacity={1 - prog(f, 90, 170)} />
+              <line x1={O.x} y1={O.y} x2={O.x} y2={O.y - (O.y - O.top) * axes} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
+              <line x1={O.x} y1={O.y} x2={O.x + (O.right - O.x) * axes} y2={O.y} stroke={C.ivory} strokeOpacity={0.55} strokeWidth={2} />
+              {fill > 0 && <path d={areaPts} fill={C.coral} opacity={0.24 * fill} />}
+              {fill > 0 && <line x1={aX} x2={aX} y1={O.y} y2={curve(A)[1]} stroke={C.coral} strokeWidth={2} opacity={fill} />}
               <path d={curvePts} fill="none" stroke={C.coral} strokeWidth={7} strokeLinecap="round" />
-              <circle cx={cx} cy={cy} r={8 + 18 * bloom(prog(f, 90, 116))} fill={C.coral} />
+              {avg > 0 && <line x1={O.x} x2={O.x + (aX - O.x) * avg} y1={avgY} y2={avgY} stroke={C.ivory} strokeWidth={3} strokeDasharray="12 10" />}
+              <circle cx={dotX} cy={dotY} r={(8 + 18 * bloom(prog(f, 90, 116))) * (1 - 0.45 * settleDot)} fill={C.coral} />
             </>
           )}
         </svg>
       </AbsoluteFill>
       {merged && <AbsoluteFill style={{ background: C.coral, opacity: 0.2 * (1 - prog(f, 90, 97)) }} />}
-      <Label text="one transaction · one price" from={170} to={560} x={cx + 60} y={cy + 56} color={C.ivory} />
-      <Statement text={'Then everyone\nbuys together.'} from={104} to={300} x={120} y={140} size={104} em={['together.']} emColor={C.coral} />
-      <Statement text={'One transaction.\nOne price.'} from={310} to={566} x={120} y={140} size={104} em={['price.']} emColor={C.coral} />
+      {chartText('PRICE PER TOKEN ↑', O.x + 18, O.top - 8, axes)}
+      {chartText('TOKENS SOLD →', O.right, O.y + 22, axes, 'right')}
+      {chartText("Meteora's price curve", curve(0.72)[0] + 34, curve(0.72)[1] + 18, settle(prog(f, 270, 300)), 'left', C.coral)}
+      {chartText('bought together, in one go', (O.x + aX) / 2, O.y + 22, fill, 'center', C.coral)}
+      {chartText('everyone pays this one price', aX + 28, avgY - 14, avg, 'left', C.ivory)}
+      <Statement text={'Then everyone\nbuys together.'} from={104} to={300} x={120} y={140} size={96} em={['together.']} emColor={C.coral} />
+      <Statement text={'One transaction.\nOne price.'} from={310} to={566} x={120} y={140} size={96} em={['price.']} emColor={C.coral} />
     </Room>
   );
 };
 
 // ---------- 07 Proof ----------
-const instructions = ['SettleLaunch', 'InitializeVirtualPoolWithSplToken', 'Swap', 'TransferPoolCreator'];
+const instructions: [string, string][] = [['SettleLaunch', 'closes the sale'], ['InitializeVirtualPoolWithSplToken', 'creates the Meteora pool'], ['Swap', 'makes the opening buy'], ['TransferPoolCreator', 'hands the pool to the creator']];
 export const Proof: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <Room>
-      <Label text="SOLANA DEVNET · THE OPENING TRANSACTION" from={0} to={300} x={120} y={110} spacing={0.14} size={24} />
-      <Statement text={'The pool and the first buy,\ntogether.'} from={10} to={292} x={120} y={170} size={92} em={['together.']} emColor={C.coral} />
+      <Label text="ONE REAL TRANSACTION ON SOLANA DEVNET" from={0} to={300} x={120} y={110} spacing={0.14} size={24} />
+      <Statement text={'The pool and the first buy\nhappen together.'} from={10} to={292} x={120} y={170} size={92} em={['together.']} emColor={C.coral} />
       <div style={{ position: 'absolute', left: 120, top: 470, width: 1680 }}>
-        {instructions.map((name, i) => {
+        {instructions.map(([name, plain], i) => {
           const start = 40 + i * 22, o = settle(prog(f, start, start + 22));
           const hot = i === 1 || i === 2;
           return (
             <div key={name} style={{ display: 'flex', gap: 40, alignItems: 'baseline', padding: '20px 0', borderTop: `1px solid ${C.line}`, opacity: o, transform: `translateY(${(1 - o) * 26}px)` }}>
               <span style={{ fontFamily: MONO, fontSize: 30, color: C.muted, width: 40 }}>{i + 1}</span>
-              <span style={{ fontFamily: MONO, fontSize: 46, color: hot ? C.coral : C.ivory }}>{name}</span>
-              {hot && <span style={{ fontFamily: SANS, fontSize: 26, color: C.muted, marginLeft: 'auto' }}>{i === 1 ? 'Meteora pool created' : 'opening buy'}</span>}
+              <span style={{ fontFamily: MONO, fontSize: 40, color: hot ? C.coral : C.ivory }}>{name}</span>
+              <span style={{ fontFamily: SANS, fontSize: 30, color: hot ? C.ivory : C.muted, marginLeft: 'auto' }}>{plain}</span>
             </div>
           );
         })}
@@ -260,7 +302,7 @@ export const Shares: React.FC = () => {
       </svg>
       <Statement text="Everyone gets their exact share," from={10} to={160} x={120} y={110} size={84} em={['exact']} />
       <Statement text="plus whatever they didn't spend." from={166} to={300} x={120} y={110} size={84} />
-      <Label text="Leftover units settled fairly with MagicBlock VRF" from={180} to={300} x={W / 2} y={H - 80} align="center" />
+      <Label text="A random number from MagicBlock VRF shares out the last crumbs fairly" from={180} to={300} x={W / 2} y={H - 80} align="center" />
     </Room>
   );
 };
@@ -286,8 +328,8 @@ export const Refund: React.FC = () => {
           return <circle key={i} cx={ix + (hx - ix) * t} cy={iy + (hy - iy) * t} r={11} fill={C.ivory} />;
         })}
       </svg>
-      <Label text="minimum 1.0" from={0} to={250} x={W * 0.7} y={box.y - 84} align="right" size={24} />
-      <Label text={`refunds paid ${(1.5 * open).toFixed(2)}`} from={110} to={360} x={W / 2} y={H - 110} align="center" color={C.ivory} size={30} />
+      <Label text="the minimum it needed to open" from={0} to={250} x={W * 0.7} y={box.y - 84} align="right" size={24} />
+      <Label text={`deposits returned ${(1.5 * open).toFixed(2)} of 1.50`} from={110} to={360} x={W / 2} y={H - 110} align="center" color={C.ivory} size={30} />
       {f >= 240 && (
         <div style={{ position: 'absolute', left: W / 2 - 230, width: 460, top: H * 0.58, textAlign: 'center', padding: '20px 0', border: `2px solid ${C.ivory}`, borderRadius: 999, fontFamily: SANS, fontSize: 38, color: C.ivory, opacity: settle(prog(f, 240, 258)), transform: `scale(${1.2 - 0.2 * bloom(prog(f, 240, 266))})` }}>All refunds paid</div>
       )}
