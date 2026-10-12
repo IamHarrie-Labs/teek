@@ -2,7 +2,7 @@
 
 Teek is a fairer way to launch a new token on Solana.
 
-Try it live at [teek-navy.vercel.app](https://teek-navy.vercel.app). Everything runs on Solana devnet with test money, so nothing you do there costs real funds.
+Try it live at [useteek.xyz](https://useteek.xyz). Everything runs on Solana devnet with test money, so nothing you do there costs real funds. Follow along on X at [@useteekapp](https://x.com/useteekapp).
 
 ## The problem Teek fixes
 
@@ -22,15 +22,15 @@ Think of it like a sealed group order.
 
 ## What you can do on the site
 
-The home page explains the idea. The launch app at [/launch.html](https://teek-navy.vercel.app/launch.html) lists launches, lets you join one, and lets you create your own with a step by step builder.
+The home page explains the idea. The launch app at [/launch.html](https://useteek.xyz/launch.html) lists launches, lets you join one, and lets you create your own with a step by step builder.
 
 If you have no wallet, click "Use demo wallet". The site makes a throwaway wallet that lives only in your browser. Then press "Get test funds" inside a launch and you receive 0.1 test SOL plus 100 test tokens, enough to take part. A wallet that already holds the test funds won't get more, which keeps the shared budget available for others.
 
 Every launch has a Passport page. It shows the launch's rules in plain language, who controls what, how fees are split, and the final result, including which refunds have been paid and which are still waiting to be claimed. You can share it as a card or download it as a file.
 
-The evidence page at [/evidence.html](https://teek-navy.vercel.app/evidence.html) shows the real devnet launches we ran as proof. One raised enough, opened its pool and paid everyone out. The other missed its minimum and refunded everyone in full, without ever creating a pool.
+The evidence page at [/evidence.html](https://useteek.xyz/evidence.html) shows the real devnet launches we ran as proof. One raised enough, opened its pool and paid everyone out. The other missed its minimum and refunded everyone in full, without ever creating a pool.
 
-The simulator at [/market.html](https://teek-navy.vercel.app/market.html) is where Teek started. It shows a speed bot making money on a normal exchange and losing that edge once orders are grouped and priced together. Its live devnet buttons are switched off on the public site, because they need funded test accounts on one shared market, but they work when you run the site on your own computer.
+The simulator at [/market.html](https://useteek.xyz/market.html) is where Teek started. It shows a speed bot making money on a normal exchange and losing that edge once orders are grouped and priced together. Its live devnet buttons are switched off on the public site, because they need funded test accounts on one shared market, but they work when you run the site on your own computer.
 
 ## What Teek does not do yet
 

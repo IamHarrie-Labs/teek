@@ -11,14 +11,14 @@ Everything you need to set up the account and post the first few times. The two 
 Name
 Teek
 
-Handle ideas, in the order I'd try them. X only tells you which are free once you're signed in.
-@teekfi, @useteek, @teeklaunch, @teek_sol
+Handle
+@useteekapp
 
 Bio (under X's 160 character limit)
 Private bids, one opening. Fair token launches on Solana, built with MagicBlock and Meteora. Live on devnet.
 
 Website
-The new domain once it's set up, or https://teek-navy.vercel.app until then.
+https://useteek.xyz
 
 Location
 Your city, or leave it empty.
@@ -43,7 +43,7 @@ If the launch doesn't reach its minimum, there's no pool and everyone takes thei
 
 5/
 Try it yourself with a demo wallet and free test tokens. No real money involved.
-[your domain]
+https://useteek.xyz
 
 Built for the Colosseum Crypto World's Fair. The code is open source.
 https://github.com/IamHarrie-Labs/teek

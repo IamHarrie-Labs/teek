@@ -1,6 +1,6 @@
 # The Teek website
 
-This folder is everything you see at [teek-navy.vercel.app](https://teek-navy.vercel.app), built with Vite and plain TypeScript. It also holds the project's written documents and the proof from our devnet runs.
+This folder is everything you see at [useteek.xyz](https://useteek.xyz), built with Vite and plain TypeScript. It also holds the project's written documents and the proof from our devnet runs.
 
 ## The pages
 

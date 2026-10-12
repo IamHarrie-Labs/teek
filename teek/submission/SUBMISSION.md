@@ -4,9 +4,10 @@ Everything here is written to be pasted into the submission forms. Each form ask
 
 Links you'll need again and again
 
-- Live site https://teek-navy.vercel.app
+- Live site https://useteek.xyz
 - Source code https://github.com/IamHarrie-Labs/teek
-- Proof of the devnet runs https://teek-navy.vercel.app/evidence.html
+- X https://x.com/useteekapp
+- Proof of the devnet runs https://useteek.xyz/evidence.html
 - Program on devnet `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`
 - Demo video [paste the link once it's uploaded]
 
@@ -82,6 +83,6 @@ Teek holds other people's money in escrow, so an outside audit is the most impor
 
 ## Draft tweet for Adevar
 
-Token launches on Solana are a speed race, and bots win it. Teek lets a group bid privately and buy the opening together at one shared price, in the same transaction that creates the Meteora pool. If the minimum isn't met, everyone gets refunded. Live on devnet https://teek-navy.vercel.app
+Token launches on Solana are a speed race, and bots win it. Teek lets a group bid privately and buy the opening together at one shared price, in the same transaction that creates the Meteora pool. If the minimum isn't met, everyone gets refunded. Live on devnet https://useteek.xyz
 
 [Tag the accounts the Adevar brief asks for.]

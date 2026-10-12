@@ -6,7 +6,7 @@ A launch takes a few minutes of real waiting between steps, so record a fresh la
 
 ## Before you record
 
-Open https://teek-navy.vercel.app/launch.html, press Use demo wallet and then Get test funds, so the wallet has SOL. In the Studio, publish a launch with short times, like deposits closing in 3 minutes and bidding closing 3 minutes after that. Keep the evidence page open in another tab.
+Open https://useteek.xyz/launch.html, press Use demo wallet and then Get test funds, so the wallet has SOL. In the Studio, publish a launch with short times, like deposits closing in 3 minutes and bidding closing 3 minutes after that. Keep the evidence page open in another tab.
 
 ## The problem (about 20 seconds)
 
@@ -46,4 +46,4 @@ Show Claim tokens and refund, then switch to the refunded launch on the evidence
 
 ## Honest limits and close (about 10 seconds)
 
-"Deposits are public and bids are only hidden until bidding closes. It's on devnet and hasn't been audited yet. Teek gives private bids and one fair opening, and you can try it yourself at teek-navy.vercel.app."
+"Deposits are public and bids are only hidden until bidding closes. It's on devnet and hasn't been audited yet. Teek gives private bids and one fair opening, and you can try it yourself at useteek.xyz."
