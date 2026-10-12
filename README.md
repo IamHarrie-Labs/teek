@@ -4,6 +4,8 @@ Teek is a fairer way to launch a new token on Solana.
 
 Try it live at [useteek.xyz](https://useteek.xyz). Everything runs on Solana devnet with test money, so nothing you do there costs real funds. Follow along on X at [@useteekapp](https://x.com/useteekapp).
 
+New here? Watch the [60 second film](https://drive.google.com/file/d/1SteukTND5wlHnbGc_e6WA0dRNSmsmta9/view) first. It shows the whole idea with no jargon.
+
 ## The problem Teek fixes
 
 When a new token launches today, it usually goes on sale the moment it exists. Bots watch for new tokens and buy in the very first second, before any human can react. They get the cheapest price, then sell to everyone who arrived a few seconds later. Regular buyers end up paying more for the same token, mostly because they were slower.

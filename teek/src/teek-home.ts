@@ -70,7 +70,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </section>
   </main>
 
-  <footer><a class="brand footer-brand" href="#top">${teekMark}<span>teek</span></a><p>Devnet prototype · test assets</p><div><a href="/launch.html">Launch app</a><a href="/market.html">Market simulator</a><a href="https://x.com/useteekapp" target="_blank" rel="noreferrer">@useteekapp on X ↗</a></div></footer>
+  <footer><a class="brand footer-brand" href="#top">${teekMark}<span>teek</span></a><p>Devnet prototype · test assets</p><div><a href="/launch.html">Launch app</a><a href="/market.html">Market simulator</a><a href="https://drive.google.com/file/d/1SteukTND5wlHnbGc_e6WA0dRNSmsmta9/view" target="_blank" rel="noreferrer">Watch the film ↗</a><a href="https://x.com/useteekapp" target="_blank" rel="noreferrer">@useteekapp on X ↗</a></div></footer>
 `;
 
 const header = document.querySelector<HTMLElement>('.site-header')!;

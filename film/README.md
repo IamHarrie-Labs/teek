@@ -2,7 +2,9 @@
 
 This is Teek's 60 second launch film, built in code with [Remotion](https://www.remotion.dev). Every frame is drawn from React components, so the dots, words and numbers move exactly the way the motion treatment describes, and nothing has to be animated by hand.
 
-The finished video lands in `out/teek-launch-film.mp4`. It's 1920 by 1080 at 60 frames per second with sound.
+You can watch the finished film [here](https://drive.google.com/file/d/1SteukTND5wlHnbGc_e6WA0dRNSmsmta9/view).
+
+When you render it yourself, the video lands in `out/teek-launch-film.mp4`. It's 1920 by 1080 at 60 frames per second with sound.
 
 ## What's in here
 
