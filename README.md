@@ -26,7 +26,7 @@ Think of it like a sealed group order.
 
 The home page explains the idea. The launch app at [/launch.html](https://useteek.xyz/launch.html) lists launches, lets you join one, and lets you create your own with a step by step builder.
 
-If you have no wallet, click "Use demo wallet". The site makes a throwaway wallet that lives only in your browser. Then press "Get test funds" inside a launch and you receive 0.1 test SOL plus 100 test tokens, enough to take part. A wallet that already holds the test funds won't get more, which keeps the shared budget available for others.
+To use your own wallet, press "Connect wallet" and pick Phantom, Solflare, Backpack or any other Solana wallet you have installed. Set it to devnet first so its previews match what you sign. If you have no wallet, click "Use demo wallet". The site makes a throwaway wallet that lives only in your browser. Then press "Get test funds" inside a launch and you receive 0.1 test SOL plus 100 test tokens, enough to take part. A wallet that already holds the test funds won't get more, which keeps the shared budget available for others.
 
 Every launch has a Passport page. It shows the launch's rules in plain language, who controls what, how fees are split, and the final result, including which refunds have been paid and which are still waiting to be claimed. You can share it as a card or download it as a file.
 

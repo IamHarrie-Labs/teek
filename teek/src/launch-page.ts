@@ -19,6 +19,7 @@ import { rehearseLaunch } from '../../clients/launch-rehearsal';
 import { creatorCurve, type CreatorCurveInput } from '../../clients/dbc-config';
 import { createOrReuseCreatorConfig } from '../../clients/creator-config';
 import { publishLaunchOnce } from '../../clients/publish-draft';
+import { connectWallet, detectedWallets, onWalletsChanged, lastWallet, rememberWallet, INSTALL_LINKS, DEMO, SIGNED_OUT } from './wallets';
 import { withPublicationLock } from '../../clients/publication-lock';
 
 const connection = new Connection('https://api.devnet.solana.com', {commitment:'confirmed', disableRetryOnRateLimit:true, fetch:retryingFetch});
@@ -61,21 +62,40 @@ async function getTestFunds(quote:PublicKey){const c=requireClient(),local=['127
   return result.signature??{message:'This wallet already has test funds.'};}
 function errorText(error:unknown){const e=error as {error?:{errorMessage?:string};message?:string};const message=e.error?.errorMessage??e.message??'Request failed. Try again.';if(/429|rate limit/i.test(message))return 'Solana devnet is busy. Wait a moment and try again. Recorded launch receipts remain available on the Evidence page.';if(/failed to fetch|network error/i.test(message))return 'Could not reach Solana devnet. Check your connection and try again.';if(/insufficient funds for rent|insufficient lamports|no record of a prior credit|insufficient funds for fee/i.test(message))return 'Your wallet is out of test SOL, which pays the small network fee. Press “Get test funds” and try again.';return message.replace(/https?:\/\/\S*token=\S*/g,'[private session]');}
 async function action(button:HTMLButtonElement,label:string,fn:()=>Promise<unknown>,refresh=true){if(button.disabled)return;const old=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent=label;status(label);try{const result=await fn();status(result&&typeof result==='object'&&'message'in result?String(result.message):typeof result==='string'?'Confirmed on devnet.':'Done.');if(typeof result==='string'&& /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(result)){const link=document.createElement('a');link.href=`https://explorer.solana.com/tx/${result}?cluster=devnet`;link.textContent=' View transaction ↗';link.target='_blank';link.rel='noreferrer';el('status').append(link);}if(refresh){await load(true);for(const delay of [2500,6000])setTimeout(()=>void load(true),delay);}}catch(error){status(errorText(error),true);const inline=button.closest('form')?.querySelector('[role=alert]');if(inline)inline.textContent=errorText(error);}finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.id==='wallet'&&wallet?short(wallet.publicKey):old;}}
-function useWallet(w:LaunchWallet){wallet=w;client=new LaunchClient(connection,w);el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();}
+// How the current wallet was connected, so the account menu can show its name and disconnect it.
+let connected:{name:string;disconnect():Promise<void>}|undefined;
+function useWallet(w:LaunchWallet,name='Wallet',disconnect:()=>Promise<void>=async()=>{}){wallet=w;client=new LaunchClient(connection,w);connected={name,disconnect};el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();}
+function signOut(message?:string){wallet=undefined;client=undefined;connected=undefined;el('wallet').textContent='Connect wallet';el('demo').hidden=false;if(message)status(message);void load();}
+// An account switch or lock inside the wallet updates the page instead of leaving it signing for the old account.
+function walletChanged(name:string){return (w:LaunchWallet|undefined)=>{if(!w){signOut(`${name} disconnected.`);return;}if(wallet?.publicKey.equals(w.publicKey))return;useWallet(w,name,connected?.disconnect);status(`Switched to ${short(w.publicKey)} in ${name}.`);};}
+const walletDialog=document.createElement('dialog');walletDialog.id='wallet-dialog';walletDialog.setAttribute('aria-labelledby','wallet-dialog-title');document.body.append(walletDialog);
+walletDialog.addEventListener('click',e=>{if(e.target===walletDialog)walletDialog.close();});
+function renderWalletDialog(){
+  if(wallet&&connected){
+    walletDialog.innerHTML=`<div class="section-title"><h2 id="wallet-dialog-title">${h(connected.name)}</h2><button type="button" data-close aria-label="Close">×</button></div><p class="wallet-address">${wallet.publicKey.toBase58()}</p><div class="wallet-actions"><button type="button" id="wallet-copy">Copy address</button><button type="button" id="wallet-disconnect" class="quiet">Disconnect</button></div>`;
+    el<HTMLButtonElement>('wallet-copy').onclick=async()=>{try{await navigator.clipboard.writeText(wallet!.publicKey.toBase58());status('Wallet address copied.');}catch{status('Copy the address shown in the wallet panel.',true);}walletDialog.close();};
+    el<HTMLButtonElement>('wallet-disconnect').onclick=async()=>{const leaving=connected;walletDialog.close();if(leaving?.name==='Demo wallet')rememberWallet(SIGNED_OUT);await leaving?.disconnect();signOut('Disconnected.');};
+  }else{
+    const found=detectedWallets();
+    const list=found.length?`<ul class="wallet-list">${found.map((w,i)=>`<li><button type="button" data-wallet="${i}"><img src="${h(w.icon)}" alt="" width="28" height="28">${h(w.name)}</button></li>`).join('')}</ul><p class="muted">Teek runs on Solana devnet. Switch your wallet to devnet so its previews match what you sign.</p>`
+      :`<p>No Solana wallet was found in this browser. Install one, then reload this page.</p><ul class="wallet-install">${INSTALL_LINKS.map(l=>`<li><a href="${l.url}" target="_blank" rel="noreferrer">Get ${h(l.name)} ↗</a></li>`).join('')}</ul>`;
+    walletDialog.innerHTML=`<div class="section-title"><h2 id="wallet-dialog-title">Connect a wallet</h2><button type="button" data-close aria-label="Close">×</button></div>${list}<button type="button" id="wallet-use-demo" class="quiet">Use a demo wallet instead</button>`;
+    walletDialog.querySelectorAll<HTMLButtonElement>('[data-wallet]').forEach(b=>b.onclick=()=>{const w=found[Number(b.dataset.wallet)];walletDialog.close();void action(el('wallet'),`Opening ${w.name}…`,async()=>{const c=await connectWallet(w,walletChanged(w.name));useWallet(c.wallet,c.name,c.disconnect);return {message:`Connected to ${c.name}.`};},false);});
+    el<HTMLButtonElement>('wallet-use-demo').onclick=()=>{walletDialog.close();el<HTMLButtonElement>('demo').click();};
+  }
+  walletDialog.querySelector<HTMLButtonElement>('[data-close]')!.onclick=()=>walletDialog.close();
+}
+// Wallet extensions can register after the page loads, so refresh an open picker when they do.
+onWalletsChanged(()=>{if(walletDialog.open&&!wallet)renderWalletDialog();});
 el<HTMLButtonElement>('demo').onclick=()=>{
   try{const stored=localStorage.getItem(storage),key=stored?Keypair.fromSecretKey(Uint8Array.from(JSON.parse(stored))):Keypair.generate();if(!stored)localStorage.setItem(storage,JSON.stringify(Array.from(key.secretKey)));
     const sign=async<T extends Transaction|VersionedTransaction>(tx:T):Promise<T>=>{if('version' in tx)(tx as VersionedTransaction).sign([key]);else (tx as Transaction).partialSign(key);return tx;};
-    useWallet({publicKey:key.publicKey,signTransaction:sign,signAllTransactions:async txs=>Promise.all(txs.map(sign)),signMessage:async message=>nacl.sign.detached(message,key.secretKey)} as LaunchWallet);
+    useWallet({publicKey:key.publicKey,signTransaction:sign,signAllTransactions:async txs=>Promise.all(txs.map(sign)),signMessage:async message=>nacl.sign.detached(message,key.secretKey)} as LaunchWallet,'Demo wallet');
+    rememberWallet(DEMO);
     status('Disposable devnet wallet ready. Use “Get test funds” in a launch. This wallet is stored only in this browser.');
   }catch(error){status(errorText(error),true);}
 };
-el<HTMLButtonElement>('wallet').onclick=async()=>{
-  if(wallet){await navigator.clipboard.writeText(wallet.publicKey.toBase58());status('Wallet address copied.');return;}
-  const injected=(window as unknown as {solana?:LaunchWallet&{connect():Promise<unknown>};phantom?:{solana:LaunchWallet&{connect():Promise<unknown>}}});
-  const adapter=injected.phantom?.solana??injected.solana;
-  if(!adapter){status('No Solana wallet found. Use the disposable demo wallet or install a Solana wallet.',true);return;}
-  await action(el('wallet'),'Connecting…',async()=>{await adapter.connect();useWallet(adapter);});
-};
+el<HTMLButtonElement>('wallet').onclick=()=>{renderWalletDialog();walletDialog.showModal();};
 el<HTMLButtonElement>('refresh').onclick=()=>void load();
 el<HTMLButtonElement>('browse').onclick=()=>{discoverAll=!discoverAll;el('browse').textContent=discoverAll?'Show featured':'Browse all';el('list-title').textContent=discoverAll?'All launches':'Featured launches';void load();};
 function readLaunchLink(){const query=new URLSearchParams(location.search).get('launch');if(!query)return;try{selected=new PublicKey(query);}catch{history.replaceState(null,'',location.pathname);status('This launch link is invalid. Choose a launch below.',true);}}
@@ -273,9 +293,18 @@ el<HTMLFormElement>('create-form').onsubmit=event=>{event.preventDefault();const
 }).finally(()=>{editable.forEach(input=>input.disabled=false);applyCurveMode();});};
 // Reconnect a demo wallet this browser already made, so a reload does not look like being signed out.
 // useWallet() loads the page itself, so only load here when no wallet was restored.
+// The last choice wins. Older visits only stored the demo key, so a key with no recorded choice still means the demo wallet.
 let restored=false;
-try{if(localStorage.getItem(storage)){el<HTMLButtonElement>('demo').click();restored=true;}}catch{/* storage blocked: stay signed out */}
+const last=lastWallet();
+try{if((last===DEMO||last===null)&&localStorage.getItem(storage)){el<HTMLButtonElement>('demo').click();restored=true;}}catch{/* storage blocked: stay signed out */}
 if(!restored)void load();
+// Reconnect a real wallet quietly, only if it already trusts this site. It may register a moment after the page loads.
+if(last&&last!==DEMO&&last!==SIGNED_OUT){
+  let tried=false;
+  const tryReconnect=()=>{const w=detectedWallets().find(x=>x.name===last);if(!w||tried||wallet)return;tried=true;
+    void connectWallet(w,walletChanged(w.name),true).then(c=>{useWallet(c.wallet,c.name,c.disconnect);}).catch(()=>{/* needs approval again: stay signed out until the visitor connects */});};
+  tryReconnect();const stop=onWalletsChanged(()=>{tryReconnect();if(tried)stop();});setTimeout(stop,10_000);
+}
 // The 30 second refresh pauses in hidden tabs, so catch up as soon as someone comes back.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!loading&&!document.querySelector('dialog[open]')&&!document.querySelector('[aria-busy="true"]'))void load(true);});
 setInterval(()=>{if(!document.hidden&&!loading&&!document.querySelector('dialog[open]')&&!document.querySelector('[aria-busy="true"]'))void load(true);},30_000);
