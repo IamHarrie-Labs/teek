@@ -1,0 +1,35 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            teek/package-lock.json
+      - name: Install packages
+        run: npm ci && npm ci --prefix teek
+      - name: Type check the shared code
+        run: npm run typecheck
+      - name: Type check the website
+        run: npx tsc --noEmit
+        working-directory: teek
+      - name: Run the website tests
+        run: npx vitest run
+        working-directory: teek
+      - name: Build the website
+        run: npm run build
+        working-directory: teek

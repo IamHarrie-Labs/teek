@@ -26,10 +26,10 @@ If you only read one, read [LAUNCH_DEMO.md](LAUNCH_DEMO.md). It walks through th
 
 [LAUNCH_SPEC.md](LAUNCH_SPEC.md) and [SETTLEMENT_SPEC.md](SETTLEMENT_SPEC.md) explain exactly how a launch works and how the end of a launch is settled. [PRIVATE_BIDS.md](PRIVATE_BIDS.md) explains how bids stay private and what is still public.
 
-[SETTLEMENT_REVIEW.md](SETTLEMENT_REVIEW.md), [PRIVATE_BID_REVIEW.md](PRIVATE_BID_REVIEW.md) and [PRIVATE_BID_INDEPENDENT_REVIEW.md](PRIVATE_BID_INDEPENDENT_REVIEW.md) are the development reviews, including the problems they found and how each was fixed. [QUALITY_REVIEW.md](QUALITY_REVIEW.md) is the website quality check.
+[SETTLEMENT_REVIEW.md](SETTLEMENT_REVIEW.md), [PRIVATE_BID_REVIEW.md](PRIVATE_BID_REVIEW.md) and [PRIVATE_BID_INDEPENDENT_REVIEW.md](PRIVATE_BID_INDEPENDENT_REVIEW.md) are the development reviews, including the problems they found and how each was fixed.
 
-[PASSPORT_RELEASE.md](PASSPORT_RELEASE.md) describes the Passport and Launch Studio, and [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) is the plan for what comes after the hackathon.
+[PASSPORT_RELEASE.md](PASSPORT_RELEASE.md) describes the Passport and Launch Studio.
 
-[PLAN.md](PLAN.md) is the original build diary from September, back when the project was called Tick.
+The `evidence` folder holds the records and screenshots from real devnet runs. Its README says what each file proves.
 
-The `evidence` folder holds transaction records and screenshots from real devnet runs, and `design` holds logo explorations.
+Older planning documents, including the September build diary and the post-hackathon roadmap, now live in [docs](../docs).

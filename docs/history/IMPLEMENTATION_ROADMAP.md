@@ -318,9 +318,8 @@ useful improvement and establishes the data contract for later screens.
   `programs/teek/src/{launch,launch_settlement,launch_allocation,dbc_wire}.rs`,
   `teek/src/launch-page.ts` and `teek/src/launch-ui.ts` (paths relative to repo
   root except this document's links).
-- [Settlement spec](SETTLEMENT_SPEC.md), [private bids](PRIVATE_BIDS.md),
-  [demo guide](LAUNCH_DEMO.md), [quality review](QUALITY_REVIEW.md).
-- [Feature opportunity brief](design/feature-opportunities-2026-10-08.html).
+- [Settlement spec](../../teek/SETTLEMENT_SPEC.md), [private bids](../../teek/PRIVATE_BIDS.md),
+  [demo guide](../../teek/LAUNCH_DEMO.md), [quality review](QUALITY_REVIEW.md).
 - [Official Meteora DBC source and configuration](https://github.com/MeteoraAg/dynamic-bonding-curve/blob/main/README.md).
 - [Official Solana Actions and Blinks specification](https://solana.com/docs/tools/actions).
 

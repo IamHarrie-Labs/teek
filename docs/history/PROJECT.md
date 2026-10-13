@@ -3,9 +3,9 @@
 > Historical snapshot from October 4, 2026. The status tables below record
 > planning at that date and are not the current implementation status.
 > The launch lifecycle is now deployed and evidenced on devnet. Read
-> [README](README.md), [judge walkthrough](teek/LAUNCH_DEMO.md),
-> [settlement review](teek/SETTLEMENT_REVIEW.md) and
-> [current quality/readiness review](teek/QUALITY_REVIEW.md) for current claims.
+> [README](../../README.md), [judge walkthrough](../../teek/LAUNCH_DEMO.md),
+> [settlement review](../../teek/SETTLEMENT_REVIEW.md) and
+> [current quality/readiness review](QUALITY_REVIEW.md) for current claims.
 
 _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a test or on-chain run (evidence listed); **Built** = implemented, not yet proven end to end; **Planned** = scheduled for the event week; **Out of scope** = deliberately not doing now._
 
@@ -35,7 +35,7 @@ _Last updated: 2026-10-04. Status labels: **Verified** = built and proven by a t
 | Real MagicBlock VRF (async request → oracle callback) | Verified | Devnet test; hosted-ER test with ephemeral VRF queue |
 | Delegation to MagicBlock ER | Verified | Devnet delegation test (ownership moves to delegation program) |
 | Full hosted-ER lifecycle (delegate → trade → clear → commit/undelegate) | Verified | `tests/teek.hosted-er.ts` passing (~70 s) |
-| Browser demo against hosted ER (manual click-through) | Verified | Recorded in `teek/PLAN.md` |
+| Browser demo against hosted ER (manual click-through) | Verified | Recorded in `docs/history/PLAN.md` |
 | One-click "Run Live Demo" button | Built | Wired up; its own end-to-end run is not recorded |
 | Private (confidential) orders/bids | **Planned** | Not implemented: the ER order book is currently readable via RPC |
 | Meteora DBC atomic pool creation + first buy | Verified (SDK spike) | Devnet tx `5ZEqA9…` |
@@ -154,7 +154,7 @@ Zero-copy is required: a 128-order book exceeds SBF's 4 KB stack frame if deseri
 
 ## 6. Teek Launch — the event build
 
-Full spec: [`teek/LAUNCH_SPEC.md`](teek/LAUNCH_SPEC.md).
+Full spec: [`teek/LAUNCH_SPEC.md`](../../teek/LAUNCH_SPEC.md).
 
 ### 6.1 Flow (v1)
 1. **Terms, fixed before bidding:** token metadata; DBC config (curve, supply split, migration threshold, fee shares, vesting); bidding window; min raise; max raise (cap); min bid. The worst-case average price is known in advance from the curve and cap.
@@ -313,7 +313,7 @@ flowchart LR
 - **Frontend dependencies are complete.** `teek/package.json` declares every package `teek/src` imports (`@magicblock-labs/ephemeral-rollups-sdk` pinned to 0.17.0 to match the root, `buffer`, `tweetnacl`). A clean-room `npm ci` at the root and in `teek/` passes 20/20 frontend tests, both type checks and the production build.
 - **Fresh clones type-check.** Tests no longer import the git-ignored `target/` folder; they use the committed, byte-identical copies in `teek/src/idl/`.
 - **Hosted ER status calls work in the browser.** The ER URL had a trailing slash, so the SDK requested `//getDelegationStatus`, which returns a 307 redirect that browsers reject during CORS preflight. Fixed in `teek/src/chain.ts` and `tests/teek.hosted-er.ts`; both pages now load with zero console errors.
-- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Teek ownership on devnet afterwards. `teek/PLAN.md` records the market history.
+- **Stranded demo market replaced.** Market `A5TD7z…` had been undelegated before the program had its `process_undelegation` callback, so its accounts stayed owned by the delegation program and no new wallet could join. A fresh market `4RKcix…` (1,200-slot window, about 12 s on the hosted ER) replaced it. Verified with a brand-new browser wallet: **Run Live Demo** completed every step (account, deposits, delegation, VRF-opened batch, buy and sell, uniform-price clear of 10 units at 100 with 2 fills, commit and undelegate), and all four accounts returned to Teek ownership on devnet afterwards. `docs/history/PLAN.md` records the market history.
 - **Batch windows sized for the real ER clock.** The hosted ER runs at about 10 ms per slot (measured), so the hosted-ER test's old 300-slot window lasted about 3 s while it polled every 3 s. The test now requires a window of at least 3,000 slots and polls every 0.5 s. The browser demo polls every 0.5 s and, if a slow network still lets a batch close mid-submission, opens a fresh batch and resubmits (up to 3 attempts).
 - **Rate-limit resilience.** The public devnet RPC is returning HTTP 429 heavily. The market page, both older devnet tests and the seed script now use the same retrying transport as the launch client (identical request bodies, so signatures stay valid).
 
@@ -382,7 +382,7 @@ node scripts/seed-demo-market.mjs <demo-wallet-pubkey>
 | `teek/src/idl/` | Program IDL and current demo-market addresses |
 | `teek/scripts/seed-demo-market.mjs` | Demo market seeding and wallet funding |
 | `teek/LAUNCH_SPEC.md` | Teek Launch v1 spec |
-| `teek/PLAN.md` | Detailed build log (Sept 2026) |
+| `docs/history/PLAN.md` | Detailed build log (Sept 2026) |
 | `teek/submission/` | Earlier submission drafts (market-era framing; to be updated) |
 
 ## 16. Private launch intake milestone (Oct 4, 2026)

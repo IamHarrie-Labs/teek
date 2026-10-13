@@ -6,7 +6,6 @@
     "node": "22.x"
   },
   "scripts": {
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "test": "anchor test",
     "test:launch": "node scripts/test-launch.mjs",
     "test:launch-private": "node scripts/test-launch-private.mjs",

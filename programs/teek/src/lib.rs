@@ -1,5 +1,5 @@
 //! Teek — a sealed, uniform-price batch auction on MagicBlock Ephemeral
-//! Rollups. See `PLAN.md` at the workspace root for the full design and
+//! Rollups. See `docs/history/PLAN.md` for the full design and
 //! build order. The clearing algorithm itself lives in `clearing.rs` and
 //! is fully ported and tested (`cargo test`); this file wires it into
 //! Anchor accounts and instructions, including real `ephemeral-rollups-sdk`
@@ -49,8 +49,6 @@ const SIDE_SELL: u8 = 1;
 use errors::TeekError;
 use state::*;
 
-// TODO(toolchain): replace with the real program keypair's pubkey (see
-// Anchor.toml) once `solana-keygen new` + `anchor keys sync` have run.
 declare_id!("B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY");
 
 #[ephemeral]

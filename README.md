@@ -2,6 +2,8 @@
 
 Teek is a fairer way to launch a new token on Solana.
 
+[![The Teek launch app, showing two finished launches](docs/images/launch-app.png)](https://useteek.xyz/launch.html)
+
 Try it live at [useteek.xyz](https://useteek.xyz). Everything runs on Solana devnet with test money, so nothing you do there costs real funds. Follow along on X at [@useteekapp](https://x.com/useteekapp).
 
 New here? Watch the [60 second film](https://drive.google.com/file/d/1SteukTND5wlHnbGc_e6WA0dRNSmsmta9/view) first. It shows the whole idea with no jargon.
@@ -61,7 +63,8 @@ Each main folder has its own short README.
 - [tests](tests) checks the program and the full launch flow.
 - [scripts](scripts) holds tools for running demos, testing and upgrades.
 
-[PROJECT.md](PROJECT.md) is the long technical overview with every address, test result and decision.
+- [film](film) is the 60 second launch film, built in code with Remotion.
+- [docs](docs) holds the brand notes and the older planning documents, including the long technical overview from early October.
 
 ## Running it on your own computer
 
@@ -115,3 +118,7 @@ The test token the faucet hands out is `GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2Lg
 ## Built with
 
 MagicBlock's private rollup and VRF for private bidding and fair randomness, Meteora's Dynamic Bonding Curve for the token pool, and Solana for everything else.
+
+## License and security
+
+Teek is open source under the [MIT License](LICENSE). It runs on devnet only and hasn't had a professional audit yet. If you find a security problem, [SECURITY.md](SECURITY.md) explains how to tell us privately.
