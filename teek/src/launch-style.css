@@ -34,6 +34,7 @@ dialog{max-height:min(90dvh,900px);overscroll-behavior:contain}
 .artwork-preview{display:flex;align-items:center;gap:18px;margin-top:14px}
 .artwork-preview img{width:76px;height:76px;object-fit:cover;border-radius:16px;border:1px solid var(--border);flex:none}
 .artwork-preview p{margin:8px 0 0;max-width:48ch}
+.artwork-field.upload-unavailable input,.artwork-field.upload-unavailable img,.artwork-field.upload-unavailable button{display:none}
 .token-symbol img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 #status{display:flex;align-items:center;gap:12px;justify-content:space-between;box-shadow:0 12px 40px rgba(0,0,0,.3)}#status[hidden]{display:none}.status-dismiss{flex:none;min-width:40px;min-height:40px;padding:0 8px;background:transparent;border:0;color:inherit;font-size:22px;line-height:1}
 @media(max-width:600px){dialog{width:calc(100% - 16px);max-height:calc(100dvh - 24px);padding:20px}.artwork-preview{align-items:flex-start}.studio-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.studio-steps li{padding:9px 2px;text-align:center;font-size:10px;white-space:nowrap}.studio-controls{position:sticky;bottom:-20px;z-index:2;margin:20px -20px -20px;padding:14px 20px 18px;background:var(--panel);border-top:1px solid var(--border)}}

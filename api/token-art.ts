@@ -25,9 +25,11 @@ function imageType(bytes: Buffer): 'image/png' | 'image/jpeg' | 'image/webp' | u
 
 export default async function handler(req: UploadRequest, res: UploadResponse) {
   res.setHeader('Cache-Control', 'no-store');
+  const configured=!!(process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_OIDC_TOKEN);
+  if (req.method === 'GET') return res.status(200).json({ available: configured });
   if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
   if (!allowedOrigins.has(String(req.headers.origin || ''))) return res.status(403).json({ error: 'Upload from the Teek app.' });
-  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.VERCEL_OIDC_TOKEN) return res.status(503).json({ error: 'Logo upload is not configured yet. You can use your own hosted metadata URL.' });
+  if (!configured) return res.status(503).json({ error: 'Logo upload is not configured yet. You can use your own hosted metadata URL.' });
   try {
     const { wallet, name, symbol, timestamp, image, signature } = req.body ?? {};
     if (![wallet, name, symbol, image, signature].every(x => typeof x === 'string') || !Number.isSafeInteger(timestamp)) throw Error('Upload details are incomplete.');
