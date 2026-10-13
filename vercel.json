@@ -1,6 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
+  "cleanUrls": true,
+  "redirects": [{ "source": "/submission/submission", "destination": "/submission", "permanent": true }],
   "installCommand": "npm ci && npm ci --prefix teek",
   "buildCommand": "npm run build --prefix teek",
   "outputDirectory": "teek/dist",

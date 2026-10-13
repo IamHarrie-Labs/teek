@@ -31,7 +31,7 @@ for (const s of clob.snipes) snipeBySubTick.set(s.subTick, s);
 const app = document.getElementById("app")!;
 app.innerHTML = `
   ${brandHeader('market')}
-  <main id="main-content">
+  <main id="main-content" tabindex="-1">
   <div class="hero">
     <p class="eyebrow">MARKET SIMULATOR</p>
     <h1>Speed changes<br>the trade.</h1>
@@ -103,7 +103,7 @@ app.innerHTML = `
     <p class="onchain-blurb">
       The charts above are a simulation. The controls below use program <code id="onchain-program"></code>
       on Solana devnet and MagicBlock's hosted ER. These orders use test tokens and are public.
-      <a href="/launch.html">Launch bids</a> use a separate private flow.
+      <a href="/launch">Launch bids</a> use a separate private flow.
     </p>
     <div class="onchain-grid">
       <div class="onchain-col">
@@ -141,7 +141,7 @@ app.innerHTML = `
       </div>
     </div>
   </div>
-  <footer class="page-footer"><span>Simulation above · devnet market below</span><a href="/launch.html">Browse launches ↗</a></footer>
+  <footer class="page-footer"><span>Simulation above · devnet market below</span><a href="/launch">Browse launches ↗</a></footer>
   </main>
 `;
 
@@ -362,7 +362,7 @@ if (!liveMarketEnabled) {
   const note = document.createElement("p");
   note.className = "onchain-blurb";
   note.innerHTML =
-    "On the public site these buttons are switched off. The live market run needs funded test accounts on one shared demo market, so it runs on your own computer instead. The steps are in the <a href=\"https://github.com/IamHarrie-Labs/teek#readme\" target=\"_blank\" rel=\"noreferrer\">README on GitHub</a>. The charts above still show the full comparison.";
+    "On the public site these buttons are switched off. The live market run needs funded test accounts on one shared demo market, so it runs on your own computer instead. The steps are in the <a href=\"https://github.com/IamHarrie-Labs/teek\" target=\"_blank\" rel=\"noreferrer\">README on GitHub</a>. The charts above still show the full comparison.";
   document.querySelector(".onchain-blurb")?.after(note);
 }
 

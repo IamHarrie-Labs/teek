@@ -38,22 +38,36 @@ const refundProofs=new Map<string,RefundProof>();
 type Venue = {publicKey:PublicKey; account:Awaited<ReturnType<LaunchClient['base']['account']['launch']['fetch']>>;
   settlement:Awaited<ReturnType<LaunchClient['base']['account']['settlementState']['fetch']>>; decimals:number; baseDecimals:number; receipt:LaunchReceipt; refundsDone:boolean};
 let venues:Venue[] = [];
+const logoCache=new Map<string,Promise<string|undefined>>();
+function safeHttps(value:string){try{const url=new URL(value);return url.protocol==='https:'?url.toString():undefined;}catch{return undefined;}}
+function logoFor(uri:string){
+  if(!logoCache.has(uri))logoCache.set(uri,(async()=>{const source=safeHttps(uri);if(!source)return;
+    try{const response=await fetch(source,{signal:AbortSignal.timeout(4500)});if(!response.ok||Number(response.headers.get('content-length')||0)>32_000)return;const body=await response.text();if(body.length>32_000)return;const image=JSON.parse(body)?.image;return typeof image==='string'?safeHttps(image):undefined;}catch{return undefined;}
+  })());
+  return logoCache.get(uri)!;
+}
+async function hydrateLogo(v:Venue){const uri=v.settlement.metadata.uri;if(!uri)return;const image=await logoFor(uri);if(!image)return;
+  const row=Array.from(document.querySelectorAll<HTMLButtonElement>('[data-launch]')).find(button=>button.dataset.launch===v.publicKey.toBase58());
+  const mark=row?.querySelector<HTMLElement>('.token-symbol');if(!mark)return;
+  const img=document.createElement('img');img.src=image;img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>{img.remove();mark.textContent=v.settlement.metadata.symbol.slice(0,2);};mark.replaceChildren(img);
+}
 app.innerHTML = `${brandHeader('launch','<button id="wallet">Connect wallet</button><button id="demo" class="quiet">Use demo wallet</button>')}
-<main id="main-content"><section class="intro"><div class="eyebrow">PRIVATE BIDS · PUBLIC TRADING</div><h1>One opening.<br>On your terms.</h1><div class="intro-aside"><p>Set your launch terms, take bids privately, then open trading on Meteora.</p><button id="create" class="primary">Create a launch <span aria-hidden="true">↗</span></button></div></section>
+<main id="main-content" tabindex="-1"><section class="intro"><div class="eyebrow">PRIVATE BIDS · PUBLIC TRADING</div><h1>One opening.<br>On your terms.</h1><div class="intro-aside"><p>Set your launch terms, take bids privately, then open trading on Meteora.</p><button id="create" class="primary">Create a launch <span aria-hidden="true">↗</span></button></div></section>
 <div class="notice">Devnet test assets. Deposits are public. Bids and edits become public after bidding closes.</div>
 <section class="demo-guide" aria-label="Start here"><div><h3>See a finished launch</h3><p>These two examples have closed. You can inspect them without a wallet.</p></div><div class="demo-links"><a href="?launch=4orftfqsHc92GJVrFSuvqZKab3LsL4txyNm7BjUYWuwY">Opening purchase ↗</a><a href="?launch=B2PstiXkcw81SDafJrzQ8eB4YbcG3eYS33hH1Jjq1Y4X">Full refund ↗</a></div></section>
 <section class="launches"><div class="section-title"><h2 id="list-title">Featured launches</h2><div><button id="browse" class="quiet">Browse all</button> <button id="refresh" class="quiet">Refresh</button></div></div><div id="list" aria-live="polite"><div class="skeleton">Loading launch terms…</div></div></section>
 <section id="detail" hidden aria-label="Launch details"></section>
 <section class="explain"><article><span>01</span><h3>Check the terms</h3><p>See the raise limits, token minimum and curve before you deposit.</p></article><article><span>02</span><h3>Place your bid</h3><p>Fund your wallet, then choose how much to bid. You can change it until bidding closes.</p></article><article><span>03</span><h3>Open or refund</h3><p>If the launch meets its terms, everyone shares one purchase. Otherwise, deposits can be claimed back.</p></article></section>
-<footer class="page-footer"><span>Teek · Solana devnet · <a href="https://x.com/useteekapp" target="_blank" rel="noreferrer">@useteekapp on X ↗</a></span><a href="/evidence.html">How it works and proof ↗</a></footer></main>
+<footer class="page-footer"><span>Teek · Solana devnet · <a href="https://x.com/useteekapp" target="_blank" rel="noreferrer">@useteekapp on X ↗</a></span><a href="/evidence">How it works and proof ↗</a></footer></main>
 <div id="status" role="status" aria-live="polite" hidden></div>
 <dialog id="create-dialog"><form id="create-form"><div class="section-title"><h2>Launch Studio</h2><button type="button" id="dismiss" aria-label="Close create launch">×</button></div><ol class="studio-steps" aria-label="Creation progress"><li data-step-label>01 · Identity</li><li data-step-label>02 · Launch terms</li><li data-step-label>03 · Review</li></ol>
-<section data-studio-step><h3>Name your token.</h3><p class="muted">Your draft stays in this browser until you publish.</p><div class="form-grid">${field('name','Token name','text','Teek Opening',true)}${field('symbol','Symbol','text','DEMO',true)}${field('uri','Metadata URL (optional)','url','',false)}</div><p class="muted">Teek does not upload artwork yet. If you use your own metadata URL, you control the content behind it.</p></section>
+<section data-studio-step><h3>Name your token.</h3><p class="muted">Your draft stays in this browser until you publish.</p><div class="form-grid">${field('name','Token name','text','Teek Opening',true)}${field('symbol','Symbol','text','DEMO',true)}</div><div class="artwork-field"><label for="logo-file">Token logo <span class="muted">(optional · PNG, JPEG or WebP · 512 KB max)</span><input id="logo-file" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="artwork-preview"><img id="logo-preview" alt="Selected token logo preview" hidden><div><button id="logo-upload" class="quiet" type="button" disabled>Upload logo</button><button id="logo-clear" class="quiet" type="button" hidden>Remove</button><p id="logo-status" class="muted" role="status">Choose an image to preview it. Uploading creates a public metadata URL for your token.</p></div></div></div>${field('uri','Metadata URL (optional, if hosting your own)','url','',false)}<p class="muted">Artwork is public. The metadata URL is fixed when the token opens, so keep the image hosted. You can also use your own metadata URL.</p></section>
 <section data-studio-step hidden><h3>Choose the opening terms.</h3><div class="notice">Devnet · synthetic quote tokens, not USDC. The curve and its fee and liquidity policies are locked before participants fund.</div><div class="form-grid">${field('minimum','Minimum raise (quote tokens)','text','0.1',true,'decimal')}${field('maximum','Raise cap (quote tokens)','text','0.6',true,'decimal')}${field('minbid','Minimum bid (quote tokens)','text','0.001',true,'decimal')}${field('minout','Minimum tokens received at cap','text','1',true,'decimal')}${field('opens','Funding closes / bids open','datetime-local','',true)}${field('closes','Bids close','datetime-local','',true)}${field('deadline','Settlement deadline','datetime-local','',true)}${field('quote','Quote mint address','text','GR5J9vsRr4WauZMaj6NvqYJHxRQjVjzcsTuwv2LgADPj',true)}</div><label for="curve-mode">Curve source<select id="curve-mode" name="curve-mode"><option value="existing">Use an existing supported curve</option><option value="custom">Create my own supported curve</option></select></label><div id="custom-fields" class="studio-advanced" hidden><p class="muted">Your wallet receives the partner fee and leftover rights. Unlocked creator LP and permanently locked partner LP add to 100%.</p><div class="form-grid">${field('curve-supply','Total token supply','text','1000000000',false,'numeric')}${field('curve-fee','Flat trading fee (basis points)','text','100',false,'numeric')}${field('curve-creator-fee','Creator share of native fee portion (%)','text','10',false,'numeric')}${field('curve-creator-lp','Unlocked creator migrated LP (%)','text','0',false,'numeric')}${field('curve-threshold','Curve migration threshold (quote tokens)','text','1000',false,'numeric')}</div><p class="muted">A new curve requires one devnet configuration transaction before Teek can publish immutable launch terms. The browser saves the one-use signer until the curve is confirmed.</p></div><details id="existing-curve-details" class="studio-advanced"><summary>Advanced: use another supported devnet configuration</summary>${field('config','DBC configuration address','text','BbfNG9UKRkbKnrv17BBUVXZASFUuSpt1CnEDNWukhDiy',true)}<p class="muted">Use standard SPL assets, DAMM v2 migration, flat fees and immutable token metadata.</p></details><details class="studio-advanced"><summary>Rehearse hypothetical total bids</summary>${field('scenario','Example total bids (quote tokens)','text','0.9',true,'decimal')}<p class="muted">This is only an example. It is never read from live private demand and does not become a launch term.</p></details></section>
 <section data-studio-step hidden><h3>Review your launch.</h3><div id="studio-review"></div><p class="muted">If less than the cap is accepted, the token minimum scales with it. Participants share the actual opening price, including curve fees.</p></section><p id="studio-draft-note" class="muted"></p><p id="create-error" role="alert"></p><div class="studio-controls"><button id="studio-back" type="button" class="quiet" hidden>Back</button><button id="studio-next" type="button" class="primary">Continue to launch terms</button><button class="primary" type="submit" hidden>Publish launch</button></div></form></dialog>`;
 function field(id:string,label:string,type:string,value:string,required:boolean,mode?:string) {return `<label for="${id}">${label}${required?' *':''}<input id="${id}" name="${id}" type="${type}" value="${value}" ${required?'required':''} ${mode?`inputmode="${mode}"`:''} autocomplete="off" spellcheck="false"></label>`;}
 const el = <T extends HTMLElement=HTMLElement>(id:string) => document.getElementById(id) as T;
-function status(message:string,error=false){const box=el('status');box.hidden=false;box.className=error?'error':'';box.textContent=message;}
+let statusTimer:ReturnType<typeof setTimeout>|undefined;
+function status(message:string,error=false){const box=el('status');if(statusTimer)clearTimeout(statusTimer);box.hidden=false;box.className=error?'error':'';box.textContent=message;const close=document.createElement('button');close.type='button';close.className='status-dismiss';close.setAttribute('aria-label','Dismiss message');close.textContent='×';close.onclick=()=>{box.hidden=true;if(statusTimer)clearTimeout(statusTimer);};box.append(close);statusTimer=setTimeout(()=>{box.hidden=true;},error?14000:7000);}
 function short(key:PublicKey){const s=key.toBase58();return `${s.slice(0,4)}…${s.slice(-4)}`;}
 function requireClient(){if(!client)throw Error('Connect a wallet or use a disposable devnet demo wallet first.');return client;}
 async function getTestFunds(quote:PublicKey){const c=requireClient(),local=['127.0.0.1','localhost'].includes(location.hostname);
@@ -61,14 +75,54 @@ async function getTestFunds(quote:PublicKey){const c=requireClient(),local=['127
   const result=await response.json().catch(()=>({}));if(!response.ok)throw Error(result.error??(local?'Test funding unavailable. Start the local demo funding server.':'Test funding is unavailable right now.'));
   return result.signature??{message:'This wallet already has test funds.'};}
 function errorText(error:unknown){const e=error as {error?:{errorMessage?:string};message?:string};const message=e.error?.errorMessage??e.message??'Request failed. Try again.';if(/429|rate limit/i.test(message))return 'Solana devnet is busy. Wait a moment and try again. Recorded launch receipts remain available on the Evidence page.';if(/failed to fetch|network error/i.test(message))return 'Could not reach Solana devnet. Check your connection and try again.';if(/insufficient funds for rent|insufficient lamports|no record of a prior credit|insufficient funds for fee/i.test(message))return 'Your wallet is out of test SOL, which pays the small network fee. Press “Get test funds” and try again.';return message.replace(/https?:\/\/\S*token=\S*/g,'[private session]');}
+const logoFile=el<HTMLInputElement>('logo-file'), logoPreview=el<HTMLImageElement>('logo-preview'), logoStatus=el('logo-status'), logoUpload=el<HTMLButtonElement>('logo-upload'),logoClear=el<HTMLButtonElement>('logo-clear');
+let previewUrl:string|undefined;
+logoFile.addEventListener('change',()=>{
+  if(previewUrl)URL.revokeObjectURL(previewUrl);
+  const uri=el<HTMLInputElement>('uri');
+  if(uri.dataset.logoUri&&uri.value===uri.dataset.logoUri){uri.value='';delete uri.dataset.logoUri;uri.dispatchEvent(new Event('input',{bubbles:true}));}
+  const file=logoFile.files?.[0];
+  logoPreview.hidden=!file;logoUpload.disabled=!file;logoClear.hidden=!file;
+  if(!file){logoStatus.textContent='Choose an image to preview it.';return;}
+  if(file.size>512*1024 || !['image/png','image/jpeg','image/webp'].includes(file.type)){logoFile.value='';logoPreview.hidden=true;logoUpload.disabled=true;logoClear.hidden=true;logoStatus.textContent='Choose a PNG, JPEG or WebP image under 512 KB.';return;}
+  previewUrl=URL.createObjectURL(file);logoPreview.src=previewUrl;logoStatus.textContent='Preview only. Press Upload logo to save it with the token metadata.';
+});
+logoClear.addEventListener('click',()=>{logoFile.value='';logoFile.dispatchEvent(new Event('change'));});
+for(const id of ['name','symbol'])el<HTMLInputElement>(id).addEventListener('input',()=>{
+  const uri=el<HTMLInputElement>('uri');
+  if(uri.dataset.logoUri&&uri.value===uri.dataset.logoUri){uri.value='';delete uri.dataset.logoUri;uri.dispatchEvent(new Event('input',{bubbles:true}));logoStatus.textContent='Name or symbol changed. Upload the logo again to update its metadata.';}
+});
+logoUpload.addEventListener('click',async()=>{
+  const file=logoFile.files?.[0];if(!file)return;
+  if(!wallet){logoStatus.textContent='Connect a wallet or use the demo wallet first.';return;}
+  const name=el<HTMLInputElement>('name').value.trim(),symbol=el<HTMLInputElement>('symbol').value.trim();
+  if(!name||!symbol){logoStatus.textContent='Enter a token name and symbol first.';return;}
+  logoUpload.disabled=true;logoUpload.textContent='Uploading…';logoStatus.textContent='Approve the wallet signature to upload your logo.';
+  try{
+    const bytes=new Uint8Array(await file.arrayBuffer());
+    const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),n=>n.toString(16).padStart(2,'0')).join('');
+    const timestamp=Date.now(),address=wallet.publicKey.toBase58();
+    const message=`Teek token artwork\n${address}\n${timestamp}\n${name}\n${symbol}\n${digest}`;
+    const signature=await wallet.signMessage(new TextEncoder().encode(message));
+    const base64=(data:Uint8Array)=>{let value='';for(let i=0;i<data.length;i+=8192)value+=String.fromCharCode(...data.subarray(i,i+8192));return btoa(value);};
+    const response=await fetch('/api/token-art',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:address,name,symbol,timestamp,image:base64(bytes),signature:base64(signature)})});
+    const result=await response.json().catch(()=>({error:'Logo upload is available on the deployed app once its image store is connected.'}));if(!response.ok)throw Error(result.error||'Logo upload failed.');
+    const uri=el<HTMLInputElement>('uri');uri.value=result.uri;uri.dataset.logoUri=result.uri;uri.dispatchEvent(new Event('input',{bubbles:true}));
+    logoStatus.textContent='Logo uploaded. Its metadata URL is ready to publish with this launch.';
+  }catch(error){logoStatus.textContent=errorText(error);}
+  finally{logoUpload.disabled=false;logoUpload.textContent='Upload logo';}
+});
 async function action(button:HTMLButtonElement,label:string,fn:()=>Promise<unknown>,refresh=true){if(button.disabled)return;const old=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent=label;status(label);try{const result=await fn();status(result&&typeof result==='object'&&'message'in result?String(result.message):typeof result==='string'?'Confirmed on devnet.':'Done.');if(typeof result==='string'&& /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(result)){const link=document.createElement('a');link.href=`https://explorer.solana.com/tx/${result}?cluster=devnet`;link.textContent=' View transaction ↗';link.target='_blank';link.rel='noreferrer';el('status').append(link);}if(refresh){await load(true);for(const delay of [2500,6000])setTimeout(()=>void load(true),delay);}}catch(error){status(errorText(error),true);const inline=button.closest('form')?.querySelector('[role=alert]');if(inline)inline.textContent=errorText(error);}finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=button.id==='wallet'&&wallet?short(wallet.publicKey):old;}}
 // How the current wallet was connected, so the account menu can show its name and disconnect it.
 let connected:{name:string;disconnect():Promise<void>}|undefined;
-function useWallet(w:LaunchWallet,name='Wallet',disconnect:()=>Promise<void>=async()=>{}){wallet=w;client=new LaunchClient(connection,w);connected={name,disconnect};el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();}
+let pendingCreate=false;
+let selectingWallet=false;
+function useWallet(w:LaunchWallet,name='Wallet',disconnect:()=>Promise<void>=async()=>{}){wallet=w;client=new LaunchClient(connection,w);connected={name,disconnect};el('wallet').textContent=short(w.publicKey);el('demo').hidden=true;void load();if(pendingCreate){pendingCreate=false;queueMicrotask(openCreate);}}
 function signOut(message?:string){wallet=undefined;client=undefined;connected=undefined;el('wallet').textContent='Connect wallet';el('demo').hidden=false;if(message)status(message);void load();}
 // An account switch or lock inside the wallet updates the page instead of leaving it signing for the old account.
 function walletChanged(name:string){return (w:LaunchWallet|undefined)=>{if(!w){signOut(`${name} disconnected.`);return;}if(wallet?.publicKey.equals(w.publicKey))return;useWallet(w,name,connected?.disconnect);status(`Switched to ${short(w.publicKey)} in ${name}.`);};}
 const walletDialog=document.createElement('dialog');walletDialog.id='wallet-dialog';walletDialog.setAttribute('aria-labelledby','wallet-dialog-title');document.body.append(walletDialog);
+walletDialog.addEventListener('close',()=>{if(!wallet&&!selectingWallet)pendingCreate=false;});
 walletDialog.addEventListener('click',e=>{if(e.target===walletDialog)walletDialog.close();});
 function renderWalletDialog(){
   if(wallet&&connected){
@@ -80,7 +134,7 @@ function renderWalletDialog(){
     const list=found.length?`<ul class="wallet-list">${found.map((w,i)=>`<li><button type="button" data-wallet="${i}"><img src="${h(w.icon)}" alt="" width="28" height="28">${h(w.name)}</button></li>`).join('')}</ul><p class="muted">Teek runs on Solana devnet. Switch your wallet to devnet so its previews match what you sign.</p>`
       :`<p>No Solana wallet was found in this browser. Install one, then reload this page.</p><ul class="wallet-install">${INSTALL_LINKS.map(l=>`<li><a href="${l.url}" target="_blank" rel="noreferrer">Get ${h(l.name)} ↗</a></li>`).join('')}</ul>`;
     walletDialog.innerHTML=`<div class="section-title"><h2 id="wallet-dialog-title">Connect a wallet</h2><button type="button" data-close aria-label="Close">×</button></div>${list}<button type="button" id="wallet-use-demo" class="quiet">Use a demo wallet instead</button>`;
-    walletDialog.querySelectorAll<HTMLButtonElement>('[data-wallet]').forEach(b=>b.onclick=()=>{const w=found[Number(b.dataset.wallet)];walletDialog.close();void action(el('wallet'),`Opening ${w.name}…`,async()=>{const c=await connectWallet(w,walletChanged(w.name));useWallet(c.wallet,c.name,c.disconnect);return {message:`Connected to ${c.name}.`};},false);});
+    walletDialog.querySelectorAll<HTMLButtonElement>('[data-wallet]').forEach(b=>b.onclick=()=>{const w=found[Number(b.dataset.wallet)];selectingWallet=true;walletDialog.close();void action(el('wallet'),`Opening ${w.name}…`,async()=>{const c=await connectWallet(w,walletChanged(w.name));useWallet(c.wallet,c.name,c.disconnect);return {message:`Connected to ${c.name}.`};},false).finally(()=>{selectingWallet=false;if(!wallet)pendingCreate=false;});});
     el<HTMLButtonElement>('wallet-use-demo').onclick=()=>{walletDialog.close();el<HTMLButtonElement>('demo').click();};
   }
   walletDialog.querySelector<HTMLButtonElement>('[data-close]')!.onclick=()=>walletDialog.close();
@@ -102,7 +156,7 @@ function readLaunchLink(){const query=new URLSearchParams(location.search).get('
 async function load(quiet=false){
   // A refresh asked for mid-load runs once that load ends, so post-action checks are never dropped.
   if(loading){reloadQueued=true;return;}loading=true;reloadQueued=false;
-  const ticket=++generation;if(!quiet)el('list').innerHTML='<div class="skeleton">Loading launch terms…</div>';
+  const ticket=++generation;if(!quiet){el('list').innerHTML='<div class="skeleton">Loading launches from Solana devnet…</div>';setTimeout(()=>{if(loading&&ticket===generation)el('list').innerHTML='<div class="empty"><h3>Devnet is taking a while</h3><p>Still checking live launches. You can inspect the two recorded outcomes while it loads.</p><a href="/evidence">See recorded launches ↗</a></div>';},8000);}
   try{
     const reader=client??new LaunchClient(connection,{publicKey:PublicKey.default,signTransaction:async()=>{throw Error('Connect wallet');},signAllTransactions:async()=>{throw Error('Connect wallet');},signMessage:async()=>{throw Error('Connect wallet');}} as LaunchWallet);
     if(!selected)readLaunchLink();
@@ -133,6 +187,7 @@ async function load(quiet=false){
     if(ticket!==generation)return;venues=result.reverse();
     el('list').innerHTML=venues.length?venues.map(v=>`<button class="launch-row" data-launch="${v.publicKey}"><span class="token-symbol">${h(v.settlement.metadata.symbol.slice(0,2))}</span><span><strong>${h(v.settlement.metadata.name)}</strong><small>${h(v.settlement.metadata.symbol)} · ${short(v.publicKey)}</small></span><span class="row-terms"><strong>${formatAmount(v.account.terms.maxRaise.toString(),v.decimals)} quote tokens</strong><small>Raise cap</small></span><span class="badge">${badge(v)}</span><span aria-hidden="true">↗</span></button>`).join(''):'<div class="empty"><h3>No launch venues yet</h3><p>Create a launch with immutable terms, then invite bidders to fund before opening.</p><button id="first-create" class="primary">Create the first launch</button></div>';
     document.querySelectorAll<HTMLButtonElement>('[data-launch]').forEach(button=>button.onclick=()=>{selected=new PublicKey(button.dataset.launch!);history.replaceState(null,'',`?launch=${selected}`);void detail().catch(error=>status(errorText(error),true));});
+    venues.forEach(v=>void hydrateLogo(v));
     const first=el<HTMLButtonElement>('first-create');if(first)first.onclick=openCreate;
     if(!selected)readLaunchLink();
     if(selected)await detail();
@@ -175,7 +230,7 @@ async function detail(){
     panel.insertAdjacentHTML('beforeend',`<section class="outcome"><h3>What happened</h3><table><thead><tr><th scope="col">Measure</th><th scope="col">Launch terms</th><th scope="col">Result on Solana</th></tr></thead><tbody><tr><th scope="row">Minimum raise</th><td>${amount(t.minRaise.toString())} quote</td><td>Not met</td></tr><tr><th scope="row">Opening spend</th><td>Only if the terms are met</td><td>${amount(v.settlement.quoteSpent.toString())} quote</td></tr><tr><th scope="row">Deposits</th><td>Refundable</td><td>Withdrawals enabled</td></tr></tbody></table><p class="muted">A launch can also enter refunds after cancellation or expiry. Each participant claims their own deposit.</p></section>`);
   }
   panel.insertAdjacentHTML('beforeend',passportHtml(v.receipt,s==="Refund deadline reached",v.refundsDone));
-  bind('share-receipt','Copying link…',async()=>{const url=new URL(location.href);url.search='';url.searchParams.set('launch',v.publicKey.toBase58());url.hash='passport';await navigator.clipboard.writeText(url.toString());return {message:'Launch receipt link copied. Anyone can inspect it without connecting a wallet.'};},false);
+  bind('share-receipt','Copying link…',async()=>{const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('launch',v.publicKey.toBase58());await navigator.clipboard.writeText(url.toString());return {message:'Launch link copied. Anyone can inspect the record without connecting a wallet.'};},false);
   bind('download-receipt','Preparing JSON…',async()=>{downloadReceipt(JSON.stringify(v.receipt,null,2),`teek-receipt-${v.publicKey}.json`,'application/json');return {message:'Receipt snapshot downloaded.'};},false);
   bind('download-receipt-card','Preparing card…',async()=>{downloadReceipt(receiptCard(v.receipt),`teek-receipt-${v.publicKey}.svg`,'image/svg+xml');return {message:'Share card downloaded. It includes the observation time and devnet label.'};},false);
   bind('verify-refund-history','Checking payments…',async()=>{
@@ -223,7 +278,7 @@ async function detail(){
 function bind(id:string,label:string,fn:()=>Promise<unknown>,refresh=true){const button=el<HTMLButtonElement>(id);if(button)button.onclick=()=>void action(button,label,fn,refresh);}
 async function poll(check:()=>Promise<boolean>,label:string){const end=Date.now()+45_000;while(!await check()){if(Date.now()>end)throw Error(`Timed out waiting for ${label}. Refresh to resume.`);await new Promise(r=>setTimeout(r,800));}}
 async function ata(mint:PublicKey){const c=requireClient(),address=getAssociatedTokenAddressSync(mint,c.wallet.publicKey);await (c.base.provider as AnchorProvider).sendAndConfirm(new Transaction().add(createAssociatedTokenAccountIdempotentInstruction(c.wallet.publicKey,address,c.wallet.publicKey,mint)));return address;}
-function openCreate(){if(!wallet){status('Connect a wallet or use a demo wallet before creating a launch.',true);return;}const now=Date.now();for(const [id,offset]of [['opens',10],['closes',20],['deadline',40]] as const){if(el<HTMLInputElement>(id).value)continue;const d=new Date(now+offset*60_000);el<HTMLInputElement>(id).value=new Date(d.getTime()-d.getTimezoneOffset()*60_000).toISOString().slice(0,16);}studio.show();el<HTMLDialogElement>('create-dialog').showModal();}
+function openCreate(){if(!wallet){pendingCreate=true;renderWalletDialog();walletDialog.showModal();return;}const now=Date.now();for(const [id,offset]of [['opens',10],['closes',20],['deadline',40]] as const){if(el<HTMLInputElement>(id).value)continue;const d=new Date(now+offset*60_000);el<HTMLInputElement>(id).value=new Date(d.getTime()-d.getTimezoneOffset()*60_000).toISOString().slice(0,16);}studio.show();el<HTMLDialogElement>('create-dialog').showModal();}
 const customCurveMode=()=>el<HTMLSelectElement>('curve-mode').value==='custom';
 el('quote').parentElement!.insertAdjacentHTML('afterend','<button id="studio-funds" type="button" class="quiet studio-funds">Get devnet test funds</button>');
 el<HTMLButtonElement>('studio-funds').onclick=()=>void action(el<HTMLButtonElement>('studio-funds'),'Getting devnet test funds…',()=>getTestFunds(new PublicKey(el<HTMLInputElement>('quote').value.trim())),false);

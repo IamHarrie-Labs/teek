@@ -25,6 +25,7 @@ export function installLaunchStudio(form: HTMLFormElement, review: ()=>Promise<s
   back.onclick=()=>{if(reviewing)return;step--;error.textContent='';render();};
   next.onclick=async()=>{
     if(reviewing)return;
+    if(step===0&&form.querySelector<HTMLInputElement>('#logo-file')?.files?.length&&!form.querySelector<HTMLInputElement>('#uri')?.value){error.textContent='Upload the selected logo, or remove it before continuing.';return;}
     const invalid=Array.from(sections[step].querySelectorAll<HTMLInputElement>('input')).find(input=>!input.checkValidity());
     if(invalid){invalid.closest('details')?.setAttribute('open','');invalid.reportValidity();return;}
     error.textContent='';
