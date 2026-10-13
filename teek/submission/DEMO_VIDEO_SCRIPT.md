@@ -6,7 +6,7 @@ A launch takes a few minutes of real waiting between steps, so record a fresh la
 
 ## Before you record
 
-Open https://useteek.xyz/launch.html, press Use demo wallet and then Get test funds, so the wallet has SOL. In the Studio, publish a launch with short times, like deposits closing in 3 minutes and bidding closing 3 minutes after that. Keep the evidence page open in another tab.
+Open https://useteek.xyz/launch, press Use demo wallet and then Get test funds, so the wallet has SOL. In the Studio, publish a launch with short times, like deposits closing in 3 minutes and bidding closing 3 minutes after that. Keep the evidence page open in another tab.
 
 ## The problem (about 20 seconds)
 

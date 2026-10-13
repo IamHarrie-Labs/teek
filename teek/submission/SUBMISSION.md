@@ -7,7 +7,7 @@ Links you'll need again and again
 - Live site https://useteek.xyz
 - Source code https://github.com/IamHarrie-Labs/teek
 - X https://x.com/useteekapp
-- Proof of the devnet runs https://useteek.xyz/evidence.html
+- Proof of the devnet runs https://useteek.xyz/evidence
 - Program on devnet `B6eqSCBhokuZLKqBrzwhquUho183P3Fvu8pgC4a9PFkY`
 - Launch film, 60 seconds https://drive.google.com/file/d/1SteukTND5wlHnbGc_e6WA0dRNSmsmta9/view
 

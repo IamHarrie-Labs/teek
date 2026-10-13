@@ -4,7 +4,7 @@ This folder holds the brand notes and the planning documents from earlier in the
 
 [brand.md](brand.md) covers the name, colours and type.
 
-The [history](history) folder has four documents. [PLAN.md](history/PLAN.md) is the build diary from September, when the project was a batch market called Tick. [PROJECT.md](history/PROJECT.md) is the long technical overview from early October, with every address, test result and decision at that point. [QUALITY_REVIEW.md](history/QUALITY_REVIEW.md) is the website quality check from October 8. [IMPLEMENTATION_ROADMAP.md](history/IMPLEMENTATION_ROADMAP.md) is the plan for what comes after the hackathon.
+The [history](history) folder has five documents. [PLAN.md](history/PLAN.md) is the build diary from September, when the project was a batch market called Tick. [PROJECT.md](history/PROJECT.md) is the long technical overview from early October, with every address, test result and decision at that point. [QUALITY_REVIEW.md](history/QUALITY_REVIEW.md) is the website quality check from October 8. [IMPLEMENTATION_ROADMAP.md](history/IMPLEMENTATION_ROADMAP.md) is the plan for what comes after the hackathon. [final-ux-review-2026-10-13.md](history/final-ux-review-2026-10-13.md) is the last interface review before submission.
 
 Some of these were written before later fixes landed, so where they disagree with the code or the README, the code and the README are right.
 

@@ -18,7 +18,7 @@ Run `cd teek && npm run dev -- --host 127.0.0.1`.
 
 Vite may select another port if 5173 is occupied; use the port printed in the terminal.
 The landing page is `/`, recorded proof is `/evidence.html`, and the local
-submission brief is `/submission/submission.html`.
+submission brief is `/submission`.
 
 Both pages read real Solana account state. Their bidding windows have ended;
 new viewers can inspect terms/outcomes, but cannot enter these old launches.
